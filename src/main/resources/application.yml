@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    active: ${activeSpringProfile:local}
+  application:
+    name: os-test-backend
+  liquibase:
+    enabled: true
+    change-log: db/changelog/db.changelog-master.xml
+  datasource:
+    url: ${datasourceUrl:jdbc:postgresql://localhost:5432/os_test}
+    username: ${datasourceUsername:postgres}
+    password: ${datasourcePassword:password}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy

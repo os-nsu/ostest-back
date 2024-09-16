@@ -1,0 +1,78 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.3.3'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id "org.liquibase.gradle" version "2.2.2"
+}
+
+group = 'ru.nsu'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.liquibase:liquibase-core'
+    implementation 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+
+    liquibaseRuntime 'org.liquibase:liquibase-core'
+    liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.0.1'
+    liquibaseRuntime 'info.picocli:picocli:4.7.5'
+    liquibaseRuntime 'org.yaml:snakeyaml:1.33'
+    liquibaseRuntime 'org.postgresql:postgresql'
+    liquibaseRuntime 'org.liquibase.ext:liquibase-hibernate6:4.24.0'
+    liquibaseRuntime 'org.springframework.boot:spring-boot-starter-data-jpa'
+    liquibaseRuntime 'org.springframework.boot:spring-boot'
+
+    // Adding sourceSets.main.output is necessary for Hibernate to find your entity classes.
+    liquibaseRuntime sourceSets.main.output
+    liquibaseRuntime sourceSets.main.runtimeClasspath
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/main/liquibase-mig'
+        }
+    }
+}
+
+liquibase {
+    activities {
+        main {
+            File propsFile = new File("${project.rootDir}/src/main/resources/liquibase-mig/liquibase.properties")
+            Properties properties = new Properties()
+            properties.load(new FileInputStream(propsFile))
+
+            changelogFile 'diff-changelog.xml'
+            url properties['url']
+            username properties['username']
+            password properties['password']
+            referenceUrl properties['referenceUrl']
+            referenceDriver properties['referenceDriver']
+        }
+    }
+    runList = 'main'
+}

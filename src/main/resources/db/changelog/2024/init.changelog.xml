@@ -1,0 +1,103 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="yattroman (generated)" id="1726506311789-1">
+        <createTable tableName="attempt">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="attemptPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="test_results" type="JSONB"/>
+            <column name="session_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-2">
+        <createTable tableName="group">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="groupPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-3">
+        <createTable tableName="laboratory">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="laboratoryPK"/>
+            </column>
+            <column name="deadline" type="TIMESTAMP(6) WITHOUT TIME ZONE"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="is_hidden" type="BOOLEAN"/>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-4">
+        <createTable tableName="session">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="sessionPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="laboratory_id" type="BIGINT"/>
+            <column name="student_id" type="BIGINT"/>
+            <column name="teacher_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-5">
+        <createTable tableName="test">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="testPK"/>
+            </column>
+            <column name="category" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="script_body" type="BYTEA"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-6">
+        <createTable tableName="test_laboratory_link">
+            <column name="is_switched_on" type="BOOLEAN"/>
+            <column name="laboratory_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="test_laboratory_linkPK"/>
+            </column>
+            <column name="test_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="test_laboratory_linkPK"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-7">
+        <createTable tableName="user">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="userPK"/>
+            </column>
+            <column name="firstname" type="VARCHAR(255)"/>
+            <column name="secondname" type="VARCHAR(255)"/>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="group_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-8">
+        <addUniqueConstraint columnNames="student_id" constraintName="UC_SESSIONSTUDENT_ID_COL" tableName="session"/>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-9">
+        <addUniqueConstraint columnNames="teacher_id" constraintName="UC_SESSIONTEACHER_ID_COL" tableName="session"/>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-10">
+        <addForeignKeyConstraint baseColumnNames="laboratory_id" baseTableName="test_laboratory_link" constraintName="FK5i291rvjc2ocf5a8ea335gxns" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="laboratory" validate="true"/>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-11">
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="user" constraintName="FKfa83d3bb616ectwmy9qd0hqlu" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="group" validate="true"/>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-12">
+        <addForeignKeyConstraint baseColumnNames="teacher_id" baseTableName="session" constraintName="FKinn1b3o636o2gvvuq0dc30j5x" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user" validate="true"/>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-13">
+        <addForeignKeyConstraint baseColumnNames="laboratory_id" baseTableName="session" constraintName="FKpwv4ytsp7dqu7kqy2v3xghm4s" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="laboratory" validate="true"/>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-14">
+        <addForeignKeyConstraint baseColumnNames="test_id" baseTableName="test_laboratory_link" constraintName="FKq9asnxuea0nm9lrk78gxqs8jk" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="test" validate="true"/>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-15">
+        <addForeignKeyConstraint baseColumnNames="session_id" baseTableName="attempt" constraintName="FKqeg72gnui5r22mamhbkqy06s4" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="session" validate="true"/>
+    </changeSet>
+    <changeSet author="yattroman (generated)" id="1726506311789-16">
+        <addForeignKeyConstraint baseColumnNames="student_id" baseTableName="session" constraintName="FKqfit0lr1pojjlfl4yd7il4lnr" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

@@ -2,7 +2,7 @@ spring:
   profiles:
     active: ${activeSpringProfile:local}
   application:
-    name: os-test-backend
+    name: os-test
   liquibase:
     enabled: true
     change-log: db/changelog/db.changelog-master.xml

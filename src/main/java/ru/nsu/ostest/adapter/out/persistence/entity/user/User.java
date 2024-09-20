@@ -7,10 +7,14 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 @Entity
 @ToString(onlyExplicitlyIncluded = true)
+@Table(name = "\"user\"")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
 
@@ -19,14 +23,23 @@ public class User {
     @EqualsAndHashCode.Include
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    @EqualsAndHashCode.Include
     private String username;
 
-    private String firstname;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
 
-    private String secondname;
+    @Column(name = "second_name", nullable = false)
+    private String secondName;
 
     @ManyToOne
-    @JoinColumn(name = "group_id")
+    @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserRole> roles = new ArrayList<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private UserPassword userPassword;
 }

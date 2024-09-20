@@ -1,6 +1,5 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,11 +16,9 @@ public class AuthController {
 
     private final AuthService authService;
 
-
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
-
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest) {
@@ -29,13 +26,11 @@ public class AuthController {
         return ResponseEntity.ok(token);
     }
 
-
     @PostMapping("/auth/refresh")
     public ResponseEntity<JwtResponse> getNewRefresh(@RequestBody RefreshJwtRequest request) {
         final JwtResponse token = authService.refresh(request.refreshToken());
         return ResponseEntity.ok(token);
     }
-
 
     @PostMapping("/auth/token")
     public ResponseEntity<JwtResponse> getNewAccessToken(@RequestBody RefreshJwtRequest request) {

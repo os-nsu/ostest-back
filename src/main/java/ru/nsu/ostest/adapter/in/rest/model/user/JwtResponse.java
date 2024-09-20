@@ -2,7 +2,6 @@ package ru.nsu.ostest.adapter.in.rest.model.user;
 
 import lombok.Data;
 
-
 /**
  * DTO для ответа JWT при авторизации.
  */

@@ -1,6 +1,5 @@
 package ru.nsu.ostest.adapter.in.rest.exception;
 
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -18,12 +17,10 @@ import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 import ru.nsu.ostest.security.impl.AuthConstants;
 
-
 @RestControllerAdvice
 @CrossOrigin(maxAge = 1440)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
-
 
     @ExceptionHandler({NotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(Exception e) {
@@ -45,7 +42,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String message = e.getMessage();
         return new ResponseEntity<>(Error.builder().code(401).message("Auth failed: " + message).build(), HttpStatus.UNAUTHORIZED);
     }
-
 
     @ExceptionHandler({ExpiredJwtException.class})
     protected ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException e) {
@@ -70,6 +66,5 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(Error.builder().code(400).message(AuthConstants.INVALID_TOKEN_MESSAGE + message).build(),
                 HttpStatus.UNAUTHORIZED);
     }
-
 
 }

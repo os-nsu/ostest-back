@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-
 /**
  * Реализация интерфейса Authentication для работы с JWT аутентификацией.
  */

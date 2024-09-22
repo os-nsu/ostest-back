@@ -14,9 +14,10 @@ import java.util.List;
 
 @Getter
 @Setter
-@Entity
-@ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
+@Entity
+@Table(name = "laboratory", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
 public class Laboratory {
 
     @Id
@@ -29,12 +30,14 @@ public class Laboratory {
 
     private String description;
 
+    private Byte semesterNumber;
+
     private LocalDateTime deadline;
 
     private Boolean isHidden;
 
     @OneToMany(mappedBy = "laboratory", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<TestLaboratoryLink> testsLinks  = new ArrayList<>();
+    private List<TestLaboratoryLink> testsLinks = new ArrayList<>();
 
     @OneToMany(mappedBy = "laboratory", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Session> sessions = new ArrayList<>();

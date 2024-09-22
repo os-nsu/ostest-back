@@ -102,4 +102,12 @@
     <changeSet author="yattroman (generated)" id="1726506311789-16">
         <addForeignKeyConstraint baseColumnNames="student_id" baseTableName="session" constraintName="FKqfit0lr1pojjlfl4yd7il4lnr" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="user" validate="true"/>
     </changeSet>
+    <changeSet author="anastasiya (generated)" id="1727002246319-1">
+        <addColumn tableName="laboratory">
+            <column name="semester_number" type="smallint"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="anastasiya (generated)" id="1727002246319-2">
+        <addUniqueConstraint columnNames="name" constraintName="UKjtl1shxyeh84tpfscdsu55dgs" tableName="laboratory"/>
+    </changeSet>
 </databaseChangeLog>

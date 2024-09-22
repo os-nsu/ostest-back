@@ -9,6 +9,7 @@ public record LaboratoryDto(
         Long id,
         String name,
         String description,
+        Byte semesterNumber,
         LocalDateTime deadline,
         Boolean isHidden,
         List<TestDto> tests

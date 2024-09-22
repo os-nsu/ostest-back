@@ -1,13 +1,20 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.*;
+import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
+import ru.nsu.ostest.domain.service.LaboratoryService;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/laboratory")
+@RequiredArgsConstructor
 public class LaboratoryController {
+
+    private final LaboratoryService laboratoryService;
 
     @GetMapping("/{id}")
     public LaboratoryDto getLaboratory(@PathVariable Long id) {
@@ -20,8 +27,10 @@ public class LaboratoryController {
     }
 
     @PostMapping
-    public LaboratoryDto createLaboratory(@RequestBody LaboratoryCreationRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+    @ResponseStatus(HttpStatus.CREATED)
+    public LaboratoryDto createLaboratory(@RequestBody LaboratoryCreationRequestDto request)
+            throws DuplicateLaboratoryNameException {
+        return laboratoryService.create(request);
     }
 
     @PutMapping

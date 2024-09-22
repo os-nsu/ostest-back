@@ -7,7 +7,7 @@ spring:
     enabled: true
     change-log: db/changelog/db.changelog-master.xml
   datasource:
-    url: ${datasourceUrl:jdbc:postgresql://localhost:5432/os_test}
+    url: ${datasourceUrl:jdbc:postgresql://localhost:5432/os-nsu}
     username: ${datasourceUsername:postgres}
     password: ${datasourcePassword:password}
   jpa:

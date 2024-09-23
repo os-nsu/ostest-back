@@ -1,17 +1,15 @@
 package ru.nsu.ostest.domain.service;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 
+@AllArgsConstructor
 @Service
 public class UserService {
     private final UserRepository userRepository;
-
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(

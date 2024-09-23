@@ -44,8 +44,12 @@ public class JwtProviderImpl implements JwtProvider {
             roles.add(role.getName());
         }
         log.info("Generated access token for user  with id [{}]", user.getId());
-        return Jwts.builder().setSubject(String.valueOf(user.getId())).setExpiration(accessExpiration).signWith(jwtAccessSecret).claim(
-                "roles", roles).claim("group", user.getGroup().getId()).claim("username", user.getUsername()).compact();
+        return Jwts.builder()
+                .setSubject(String.valueOf(user.getId()))
+                .setExpiration(accessExpiration).signWith(jwtAccessSecret)
+                .claim("roles", roles)
+                .claim("group", user.getGroup().getId())
+                .claim("username", user.getUsername()).compact();
     }
 
     public String generateRefreshToken(@NonNull User user) {
@@ -54,8 +58,10 @@ public class JwtProviderImpl implements JwtProvider {
         final Instant refreshExpirationInstant = now.plusDays(30).atZone(ZoneId.systemDefault()).toInstant();
         final Date refreshExpiration = Date.from(refreshExpirationInstant);
         log.info("Generated refresh token for user with id [{}]", user.getId());
-        return Jwts.builder().setSubject(String.valueOf(user.getId())).setExpiration(refreshExpiration).signWith(
-                jwtRefreshSecret).compact();
+        return Jwts.builder()
+                .setSubject(String.valueOf(user.getId()))
+                .setExpiration(refreshExpiration).signWith(
+                        jwtRefreshSecret).compact();
     }
 
     public boolean validateAccessToken(@NonNull String accessToken) {
@@ -70,7 +76,8 @@ public class JwtProviderImpl implements JwtProvider {
 
     private boolean validateToken(@NonNull String token, @NonNull Key secret) {
         try {
-            Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token);
+            Jwts.parserBuilder()
+                    .setSigningKey(secret).build().parseClaimsJws(token);
             return true;
         } catch (ExpiredJwtException expEx) {
             log.error("Token expired exception");
@@ -93,7 +100,8 @@ public class JwtProviderImpl implements JwtProvider {
     }
 
     private Claims getClaims(@NonNull String token, @NonNull Key secret) {
-        return Jwts.parserBuilder().setSigningKey(secret).build().parseClaimsJws(token).getBody();
+        return Jwts.parserBuilder()
+                .setSigningKey(secret).build().parseClaimsJws(token).getBody();
     }
 
 }

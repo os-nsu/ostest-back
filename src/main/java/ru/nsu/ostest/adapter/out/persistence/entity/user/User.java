@@ -27,19 +27,17 @@ public class User {
     @EqualsAndHashCode.Include
     private String username;
 
-    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "second_name", nullable = false)
     private String secondName;
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)
     private Group group;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<UserRole> roles = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     private UserPassword userPassword;
 }

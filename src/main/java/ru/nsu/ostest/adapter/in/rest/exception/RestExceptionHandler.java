@@ -43,27 +43,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(Error.builder().code(401).message("Auth failed: " + message).build(), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({ExpiredJwtException.class})
-    protected ResponseEntity<Object> handleExpiredJwtException(ExpiredJwtException e) {
+    @ExceptionHandler({ExpiredJwtException.class, MalformedJwtException.class, UnsupportedJwtException.class})
+    protected ResponseEntity<Object> handleJwtException(RuntimeException e) {
         String message = e.getMessage();
-        logger.error(AuthConstants.INVALID_TOKEN_MESSAGE + message, e);
-        return new ResponseEntity<>(Error.builder().code(400).message(AuthConstants.INVALID_TOKEN_MESSAGE + message).build(),
-                HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler({MalformedJwtException.class})
-    protected ResponseEntity<Object> handleMalformedJwtException(MalformedJwtException e) {
-        String message = e.getMessage();
-        logger.error(AuthConstants.INVALID_TOKEN_MESSAGE + message, e);
-        return new ResponseEntity<>(Error.builder().code(400).message(AuthConstants.INVALID_TOKEN_MESSAGE + message).build(),
-                HttpStatus.UNAUTHORIZED);
-    }
-
-    @ExceptionHandler({UnsupportedJwtException.class})
-    protected ResponseEntity<Object> handleUnsupportedJwtException(UnsupportedJwtException e) {
-        String message = e.getMessage();
-        logger.error(AuthConstants.INVALID_TOKEN_MESSAGE + message, e);
-        return new ResponseEntity<>(Error.builder().code(400).message(AuthConstants.INVALID_TOKEN_MESSAGE + message).build(),
+        logger.error(AuthConstants.INVALID_TOKEN_MESSAGE + "{}", message, e);
+        return new ResponseEntity<>(
+                Error.builder().code(400).message(AuthConstants.INVALID_TOKEN_MESSAGE + message).build(),
                 HttpStatus.UNAUTHORIZED);
     }
 

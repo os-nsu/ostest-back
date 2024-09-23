@@ -6,12 +6,10 @@ import lombok.ToString;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import ru.nsu.ostest.adapter.out.persistence.entity.user.Role;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Реализация интерфейса Authentication для работы с JWT аутентификацией.
@@ -23,13 +21,13 @@ public class JwtAuthentication implements Authentication {
 
     private boolean authenticated;
     private String userName;
-    private Set<Role> roles;
+    private List<String> roleNames;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        for (Role role : roles) {
-            authorities.add(new SimpleGrantedAuthority(role.getName()));
+        for (String role : roleNames) {
+            authorities.add(new SimpleGrantedAuthority(role));
         }
         return authorities;
     }

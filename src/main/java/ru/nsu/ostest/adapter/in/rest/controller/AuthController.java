@@ -1,5 +1,6 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -12,13 +13,10 @@ import ru.nsu.ostest.security.AuthService;
 
 @RestController
 @RequestMapping("/api/v1")
+@AllArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
-
-    public AuthController(AuthService authService) {
-        this.authService = authService;
-    }
 
     @PostMapping("/login")
     public ResponseEntity<JwtResponse> login(@RequestBody JwtRequest authRequest) {

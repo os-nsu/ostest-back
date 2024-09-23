@@ -1,11 +1,11 @@
 package ru.nsu.ostest.security.impl;
 
 import io.jsonwebtoken.Claims;
+import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.nsu.ostest.adapter.in.rest.config.BeanConfig;
+import ru.nsu.ostest.adapter.in.rest.config.SecurityConfig;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
@@ -18,25 +18,18 @@ import java.util.Map;
 
 @Slf4j
 @Service
+@AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
-    private final BeanConfig passwordEncoder;
+    private final SecurityConfig securityConfig;
     private final UserService userService;
     private final Map<String, String> refreshStorage = new HashMap<>();
     private final JwtProviderImpl jwtProviderImpl;
-
-    @Autowired
-    public AuthServiceImpl(BeanConfig passwordEncoder, UserService userServiceImpl,
-                           JwtProviderImpl jwtProviderImpl) {
-        this.passwordEncoder = passwordEncoder;
-        this.userService = userServiceImpl;
-        this.jwtProviderImpl = jwtProviderImpl;
-    }
 
     @Override
     public JwtResponse login(@NonNull JwtRequest authRequest) {
         log.info(AuthConstants.PROCESSING_LOGIN_REQUEST);
         User user = userService.findUserByUsername(authRequest.username());
-        if (passwordEncoder.getPasswordEncoder().matches(authRequest.password(), user.getUserPassword().getPassword())) {
+        if (securityConfig.getPasswordEncoder().matches(authRequest.password(), user.getUserPassword().getPassword())) {
             return getJwtResponse(user);
         } else {
             log.error(AuthConstants.WRONG_PASSWORD_MESSAGE);

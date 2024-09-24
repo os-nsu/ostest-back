@@ -18,6 +18,16 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes(
+                'Implementation-Version': version,
+                'Main-Class': 'ru.nsu.ostest.OsTestApplication'
+        )
+    }
+    archiveBaseName = "${rootProject.name}"
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'

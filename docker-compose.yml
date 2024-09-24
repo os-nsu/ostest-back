@@ -6,7 +6,7 @@ services:
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/os-nsu
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/os_test
       SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
@@ -20,6 +20,6 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: os-nsu
+      POSTGRES_DB: os_test
     volumes:
       - ./docker/config/init.sql:/docker-entrypoint-initdb.d/init.sql

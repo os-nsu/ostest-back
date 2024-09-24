@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1726815112478-4" author="alina">
+        <createTable tableName="role">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_role"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1726815112478-9" author="alina">
+        <createTable tableName="user_password">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_userpassword"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1726815112478-10" author="alina">
+        <createTable tableName="user_role">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true"
+                             primaryKeyName="pk_userrole"/>
+            </column>
+            <column name="user_id" type="BIGINT"/>
+            <column name="role_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1726815112478-14" author="alina">
+        <addUniqueConstraint columnNames="user_id"
+                             constraintName="uc_userpassword_user"
+                             tableName="user_password"/>
+    </changeSet>
+    <changeSet id="1726815112478-21" author="alina">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_password"
+                                 constraintName="FK_USERPASSWORD_ON_USER"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user"/>
+    </changeSet>
+    <changeSet id="1726815112478-22" author="alina">
+        <addForeignKeyConstraint baseColumnNames="role_id"
+                                 baseTableName="user_role"
+                                 constraintName="FK_USERROLE_ON_ROLE"
+                                 referencedColumnNames="id"
+                                 referencedTableName="role"/>
+    </changeSet>
+    <changeSet id="1726815112478-23" author="alina">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_role"
+                                 constraintName="FK_USERROLE_ON_USER"
+                                 referencedColumnNames="id"
+                                 referencedTableName="user"/>
+    </changeSet>
+
+</databaseChangeLog>

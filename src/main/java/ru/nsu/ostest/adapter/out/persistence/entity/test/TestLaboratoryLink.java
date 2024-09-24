@@ -1,6 +1,5 @@
 package ru.nsu.ostest.adapter.out.persistence.entity.test;
 
-
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

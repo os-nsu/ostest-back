@@ -10,6 +10,7 @@ import java.util.List;
 @Getter
 @Setter
 @Entity
+@Table(name = "\"group\"")
 @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -25,6 +26,5 @@ public class Group {
 
     @OneToMany(mappedBy = "group", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<User> users = new ArrayList<>();
-
 
 }

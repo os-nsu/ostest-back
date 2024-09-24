@@ -9,7 +9,7 @@ spring:
   datasource:
     url: ${datasourceUrl:jdbc:postgresql://localhost:5432/os_test}
     username: ${datasourceUsername:postgres}
-    password: ${datasourcePassword:postgres}
+    password: ${datasourcePassword:password}
   jpa:
     hibernate:
       ddl-auto: validate

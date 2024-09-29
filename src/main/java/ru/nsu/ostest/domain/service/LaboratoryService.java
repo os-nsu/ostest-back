@@ -4,10 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
+import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratorySearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryShortDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
+
+import java.util.List;
 
 
 @Service
@@ -24,5 +28,13 @@ public class LaboratoryService {
         }
         laboratoryRepository.save(laboratory);
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
+    }
+
+    public List<LaboratoryShortDto> filter(LaboratorySearchRequestDto laboratorySearchRequestDto) {
+        Boolean isHidden = laboratorySearchRequestDto.isHidden();
+        Integer semesterNumber = laboratorySearchRequestDto.semesterNumber();
+        List<Laboratory> filtered =
+                laboratoryRepository.findLaboratoriesByIsHiddenAndSemesterNumber(isHidden, semesterNumber);
+        return laboratoryMapper.laboratoriesToLaboratoryShortDtoList(filtered);
     }
 }

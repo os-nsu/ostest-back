@@ -5,6 +5,7 @@ import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
+import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryShortDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 
 @Mapper(
@@ -15,4 +16,6 @@ public interface LaboratoryMapper {
     Laboratory laboratoryCreationRequestDtoToLaboratory(LaboratoryCreationRequestDto laboratoryCreationRequestDto);
 
     LaboratoryDto laboratoryToLaboratoryDto(Laboratory laboratory);
+
+    LaboratoryShortDto laboratoryToLaboratoryShortDto(Laboratory laboratory);
 }

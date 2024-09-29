@@ -22,7 +22,7 @@ public class LaboratoryController {
 
     @PostMapping("/search")
     public List<LaboratoryShortDto> searchLaboratories(@RequestBody LaboratorySearchRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+        return laboratoryService.filter(request);
     }
 
     @PostMapping

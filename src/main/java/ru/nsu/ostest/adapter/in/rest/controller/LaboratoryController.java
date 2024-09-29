@@ -17,7 +17,7 @@ public class LaboratoryController {
 
     @GetMapping("/{id}")
     public LaboratoryDto getLaboratory(@PathVariable Long id) {
-        throw new IllegalArgumentException("Not implemented");
+        return laboratoryService.findById(id);
     }
 
     @PostMapping("/search")

@@ -37,4 +37,8 @@ public class LaboratoryService {
                 laboratoryRepository.findLaboratoriesByIsHiddenAndSemesterNumber(isHidden, semesterNumber);
         return laboratoryMapper.laboratoriesToLaboratoryShortDtoList(filtered);
     }
+
+    public LaboratoryDto findById(Long id) {
+        return laboratoryMapper.laboratoryToLaboratoryDto(laboratoryRepository.findById(id).orElse(null));
+    }
 }

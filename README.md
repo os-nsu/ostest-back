@@ -19,3 +19,9 @@
   - refs #{номер таски в redmine} Описание того, что было сделано в рамках коммита
 - Для слития в master нужно сформировать pull request и добавить Мишу, Никиту, Рому. 
 - Давайте придерживаться линейной истории master'a
+
+## Тестовые пользователи
+
+- ADMIN - username: **batman_forever** password: **batman_forever**
+- STUDENT - username: **dora_explorer** password: **dora_explorer**
+- TEACHER - username: **catch_me_if_u_can** password: **catch_me_if_u_can**

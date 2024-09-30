@@ -4,6 +4,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import org.apache.coyote.BadRequestException;
+import org.hibernate.PropertyValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,11 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ClassCastException.class})
     protected ResponseEntity<Object> handleClassCastException(Exception e) {
+        return new ResponseEntity<>(Error.builder().code(404).message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({PropertyValueException.class})
+    protected ResponseEntity<Object> handlePropertyValueException(Exception e) {
         return new ResponseEntity<>(Error.builder().code(404).message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
     }
 

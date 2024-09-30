@@ -48,7 +48,7 @@ public class User {
         userRoleEntity.setUser(this);
         userRoleEntity.setRole(role);
 
-        roles = List.of(userRoleEntity);
+        roles.add(userRoleEntity);
     }
 
 

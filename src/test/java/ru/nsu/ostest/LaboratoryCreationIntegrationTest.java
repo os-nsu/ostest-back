@@ -9,7 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
-import ru.nsu.ostest.adapter.out.persistence.repository.LaboratoryRepository;
+import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 
 import java.time.LocalDateTime;
 

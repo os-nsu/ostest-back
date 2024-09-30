@@ -6,7 +6,7 @@ import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestD
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
-import ru.nsu.ostest.adapter.out.persistence.repository.LaboratoryRepository;
+import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
 
 

@@ -14,9 +14,9 @@ import java.util.List;
 
 @Getter
 @Setter
-@Entity
-@ToString(onlyExplicitlyIncluded = true)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
+@Entity
 public class Laboratory {
 
     @Id
@@ -25,16 +25,19 @@ public class Laboratory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;
+
+    private Integer semesterNumber;
 
     private LocalDateTime deadline;
 
     private Boolean isHidden;
 
     @OneToMany(mappedBy = "laboratory", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<TestLaboratoryLink> testsLinks  = new ArrayList<>();
+    private List<TestLaboratoryLink> testsLinks = new ArrayList<>();
 
     @OneToMany(mappedBy = "laboratory", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Session> sessions = new ArrayList<>();

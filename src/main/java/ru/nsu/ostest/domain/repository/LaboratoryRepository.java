@@ -14,5 +14,5 @@ public interface LaboratoryRepository extends JpaRepository<Laboratory, Long> {
 
     @Query("SELECT l FROM Laboratory l WHERE (:isHidden IS NULL OR l.isHidden = :isHidden) " +
             "AND (:semesterNumber IS NULL OR l.semesterNumber = :semesterNumber)")
-    List<Laboratory> findLaboratoriesByIsHiddenAndSemesterNumber( Boolean isHidden, Byte semesterNumber);
+    List<Laboratory> findLaboratoriesByIsHiddenAndSemesterNumber( Boolean isHidden, Integer semesterNumber);
 }

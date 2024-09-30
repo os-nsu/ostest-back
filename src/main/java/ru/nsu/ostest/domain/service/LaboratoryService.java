@@ -30,15 +30,6 @@ public class LaboratoryService {
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
     }
 
-    private boolean isDuplicate(String laboratoryName) {
-        Laboratory laboratory = laboratoryRepository.findAll().stream()
-                .filter((l) -> l.getName().equals(laboratoryName))
-                .findFirst()
-                .orElse(null);
-
-        return laboratory != null;
-    }
-
     public List<LaboratoryShortDto> searchLaboratories(LaboratorySearchRequestDto laboratorySearchRequestDto) {
     public List<LaboratoryShortDto> filter(LaboratorySearchRequestDto laboratorySearchRequestDto) {
         Boolean isHidden = laboratorySearchRequestDto.isHidden();
@@ -50,5 +41,14 @@ public class LaboratoryService {
 
     public LaboratoryDto findById(Long id) {
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratoryRepository.findById(id).orElse(null));
+    }
+
+    private boolean isDuplicate(String laboratoryName) {
+        Laboratory laboratory = laboratoryRepository.findAll().stream()
+                .filter((l) -> l.getName().equals(laboratoryName))
+                .findFirst()
+                .orElse(null);
+
+        return laboratory != null;
     }
 }

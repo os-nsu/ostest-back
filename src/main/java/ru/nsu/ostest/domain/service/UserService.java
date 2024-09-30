@@ -43,11 +43,11 @@ public class UserService {
     public UserPasswordDto addUser(UserCreationRequestDto userDto) throws BadRequestException {
         log.info("Adding user");
         validateUserDto(userDto);
-        User user = userMapper.userCreationRequestDtoToUser(userDto);
         checkIfUsernameExists(userDto.username());
+        User user = userMapper.userCreationRequestDtoToUser(userDto);
         String password = prepareUserForSaving(user, userDto);
         User savedUser = userRepository.save(user);
-        log.info("User [{}] added", savedUser.getUsername());
+        log.info("User with login: {} added", savedUser.getUsername());
         return new UserPasswordDto(savedUser.getUsername(), password);
     }
 
@@ -60,14 +60,13 @@ public class UserService {
 
     private void checkIfUsernameExists(String username) throws BadRequestException {
         if (userRepository.findByUsername(username).isPresent()) {
-            log.error("Login [{}] is already used", username);
+            log.error("Login {} is already used", username);
             throw new BadRequestException("Login is already used");
         }
     }
 
     private String prepareUserForSaving(User user, UserCreationRequestDto userDto) {
         user.setId(null);
-        user.setUsername(userDto.username());
         user.setRoles(createUserRoles(user, userDto.role()));
         user.setGroup(groupService.findGroupByName(userDto.groupNumber()));
 

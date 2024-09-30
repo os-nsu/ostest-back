@@ -1,7 +1,6 @@
 package ru.nsu.ostest.domain.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
@@ -18,8 +17,7 @@ public class LaboratoryService {
     private final LaboratoryRepository laboratoryRepository;
     private final LaboratoryMapper laboratoryMapper;
 
-    public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto)
-            throws DuplicateLaboratoryNameException {
+    public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
         if (isDuplicate(laboratoryCreationRequestDto.name())) {
             throw DuplicateLaboratoryNameException.of(laboratory.getName());

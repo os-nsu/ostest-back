@@ -1,6 +1,6 @@
 package ru.nsu.ostest.domain.exception;
 
-public class DuplicateLaboratoryNameException extends Exception {
+public class DuplicateLaboratoryNameException extends RuntimeException {
 
     private DuplicateLaboratoryNameException(String message) {
         super(message);

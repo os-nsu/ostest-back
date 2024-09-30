@@ -29,8 +29,8 @@ public class AuthController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/registration")
-    public UserPasswordDto registrationMobile(@RequestBody UserCreationRequestDto user) throws BadRequestException {
-        return authService.registration(user);
+    public UserPasswordDto register(@RequestBody UserCreationRequestDto user) throws BadRequestException {
+        return authService.register(user);
     }
 
     @PostMapping("/auth/refresh")

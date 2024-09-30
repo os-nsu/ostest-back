@@ -8,17 +8,11 @@ import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
-import ru.nsu.ostest.adapter.out.persistence.entity.user.Role;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserPassword;
-import ru.nsu.ostest.adapter.out.persistence.entity.user.UserRole;
-import ru.nsu.ostest.domain.repository.RoleRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 import ru.nsu.ostest.security.utils.PasswordGenerator;
-
-import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @AllArgsConstructor
@@ -26,9 +20,9 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final GroupService groupService;
+    private final RoleService roleService;
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
@@ -42,8 +36,7 @@ public class UserService {
 
     public UserPasswordDto addUser(UserCreationRequestDto userDto) throws BadRequestException {
         log.info("Adding user");
-        validateUserDto(userDto);
-        checkIfUsernameExists(userDto.username());
+        validateCreationRequest(userDto);
         User user = userMapper.userCreationRequestDtoToUser(userDto);
         String password = prepareUserForSaving(user, userDto);
         User savedUser = userRepository.save(user);
@@ -51,61 +44,27 @@ public class UserService {
         return new UserPasswordDto(savedUser.getUsername(), password);
     }
 
-    private void validateUserDto(UserCreationRequestDto userDto) throws BadRequestException {
-        if (userDto.username() == null) {
-            log.error("User login is null");
-            throw new BadRequestException("Login is null");
-        }
-    }
-
-    private void checkIfUsernameExists(String username) throws BadRequestException {
-        if (userRepository.findByUsername(username).isPresent()) {
-            log.error("Login {} is already used", username);
+    private void validateCreationRequest(UserCreationRequestDto userDto) throws BadRequestException {
+        if (userRepository.findByUsername(userDto.username()).isPresent()) {
+            log.error("Login {} is already used", userDto.username());
             throw new BadRequestException("Login is already used");
         }
     }
 
     private String prepareUserForSaving(User user, UserCreationRequestDto userDto) {
         user.setId(null);
-        user.setRoles(createUserRoles(user, userDto.role()));
+        user.addRole(roleService.findRole(userDto.role()));
         user.setGroup(groupService.findGroupByName(userDto.groupNumber()));
 
         String password = PasswordGenerator.generatePassword();
-        UserPassword userPassword = new UserPassword();
-        userPassword.setUser(user);
-        userPassword.setPassword(passwordEncoder.encode(password));
+        UserPassword userPassword = UserPassword.builder()
+                .user(user)
+                .password(passwordEncoder.encode(password))
+                .build();
 
         user.setUserPassword(userPassword);
         return password;
     }
 
-    private List<UserRole> createUserRoles(User user, String role) {
-        Role userRole = getRoles(role);
-        UserRole userRoleEntity = new UserRole();
-        userRoleEntity.setUser(user);
-        userRoleEntity.setRole(userRole);
-
-        return List.of(userRoleEntity);
-    }
-
-    private Role getRoles(String role) {
-        String dbRoleName;
-        switch (role.toLowerCase()) {
-            case "teacher" -> dbRoleName = "TEACHER";
-            case "student" -> dbRoleName = "STUDENT";
-            default ->
-                    throw new IllegalArgumentException("Unknown role: " + role);
-        }
-        return findRole(dbRoleName);
-    }
-
-    private Role findRole(String name) {
-        Optional<Role> roleOptional = roleRepository.findByName(name);
-        if (roleOptional.isEmpty()) {
-            log.error("Couldn't find role [{}]", name);
-            throw new NotFoundException("Couldn't find role " + name);
-        }
-        return roleOptional.get();
-    }
 
 }

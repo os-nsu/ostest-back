@@ -86,7 +86,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public UserPasswordDto registration(@NonNull UserCreationRequestDto userDto) throws BadRequestException {
+    public UserPasswordDto register(@NonNull UserCreationRequestDto userDto) throws BadRequestException {
         log.info("Processing registration request");
         return userService.addUser(userDto);
     }

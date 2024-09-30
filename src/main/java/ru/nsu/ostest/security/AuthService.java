@@ -14,5 +14,5 @@ public interface AuthService {
 
     JwtResponse refresh(@NonNull String refreshToken);
 
-    UserPasswordDto registration(@NonNull UserCreationRequestDto userDto) throws BadRequestException;
+    UserPasswordDto register(@NonNull UserCreationRequestDto userDto) throws BadRequestException;
 }

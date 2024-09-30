@@ -12,7 +12,6 @@ import ru.nsu.ostest.adapter.out.persistence.entity.user.Role;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserPassword;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserRole;
-import ru.nsu.ostest.domain.repository.GroupRepository;
 import ru.nsu.ostest.domain.repository.RoleRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
@@ -29,7 +28,6 @@ public class UserService {
     private final UserMapper userMapper;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
-    private final GroupRepository groupRepository;
     private final GroupService groupService;
 
     public User findUserById(Long id) {

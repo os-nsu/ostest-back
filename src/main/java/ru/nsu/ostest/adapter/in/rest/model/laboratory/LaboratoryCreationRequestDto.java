@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record LaboratoryCreationRequestDto(String name,
                                            String description,
-                                           Byte semesterNumber,
+                                           Integer semesterNumber,
                                            LocalDateTime deadline,
                                            Boolean isHidden) {
 }

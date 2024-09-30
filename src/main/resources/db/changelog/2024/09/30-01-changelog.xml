@@ -5,7 +5,7 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet author="anastasiya (generated)" id="1727002246319-1">
         <addColumn tableName="laboratory">
-            <column name="semester_number" type="smallint"/>
+            <column name="semester_number" type="integer"/>
         </addColumn>
     </changeSet>
     <changeSet author="anastasiya (generated)" id="1727002246319-2">

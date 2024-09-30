@@ -30,7 +30,7 @@ public class Laboratory {
 
     private String description;
 
-    private Byte semesterNumber;
+    private Integer semesterNumber;
 
     private LocalDateTime deadline;
 

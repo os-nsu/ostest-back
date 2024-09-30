@@ -41,7 +41,7 @@ public class LaboratoryCreationIntegrationTest {
     public void createLaboratory_ShouldReturnCreated_WhenValidRequest() throws Exception {
         String name = "Test Laboratory";
         String description = "Test Description";
-        Byte semesterNumber = (byte) 1;
+        Integer semesterNumber = 1;
         LocalDateTime dateTime = LocalDateTime.now().plusDays(7);
         Boolean isHidden = false;
         LaboratoryCreationRequestDto request =
@@ -52,14 +52,15 @@ public class LaboratoryCreationIntegrationTest {
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Test Laboratory"))
-                .andExpect(jsonPath("$.description").value("Test Description"));
+                .andExpect(jsonPath("$.description").value("Test Description"))
+                .andExpect(jsonPath("$.semesterNumber").value("1"));
     }
 
     @Test
     public void createLaboratory_ShouldReturnConflict_WhenDuplicateName() throws Exception {
         String name = "Duplicate Laboratory";
         String description = "First Laboratory Description";
-        byte semesterNumber = (byte) 1;
+        int semesterNumber = 1;
         LocalDateTime dateTime = LocalDateTime.now().plusDays(7);
         boolean isHidden = false;
         LaboratoryCreationRequestDto request1 =
@@ -71,7 +72,7 @@ public class LaboratoryCreationIntegrationTest {
                 .andExpect(status().isCreated());
 
         description = "Second Laboratory Description";
-        semesterNumber = (byte) 2;
+        semesterNumber = 2;
         dateTime = LocalDateTime.now().plusDays(10);
         isHidden = true;
         LaboratoryCreationRequestDto request2 =

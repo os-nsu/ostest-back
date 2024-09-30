@@ -19,19 +19,10 @@ public class LaboratoryService {
 
     public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
-        if (isDuplicate(laboratoryCreationRequestDto.name())) {
+        if (laboratoryRepository.findByName(laboratoryCreationRequestDto.name()) == null) {
             throw DuplicateLaboratoryNameException.of(laboratory.getName());
         }
         laboratoryRepository.save(laboratory);
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
-    }
-
-    private boolean isDuplicate(String laboratoryName) {
-        Laboratory laboratory = laboratoryRepository.findAll().stream()
-                .filter((l) -> l.getName().equals(laboratoryName))
-                .findFirst()
-                .orElse(null);
-
-        return laboratory != null;
     }
 }

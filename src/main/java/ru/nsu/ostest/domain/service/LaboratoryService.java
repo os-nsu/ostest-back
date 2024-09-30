@@ -25,7 +25,7 @@ public class LaboratoryService {
 
     public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
-        if (laboratoryRepository.findByName(laboratoryCreationRequestDto.name()) == null) {
+        if (laboratoryRepository.findByName(laboratoryCreationRequestDto.name()) != null) {
             throw DuplicateLaboratoryNameException.of(laboratory.getName());
         }
         laboratoryRepository.save(laboratory);

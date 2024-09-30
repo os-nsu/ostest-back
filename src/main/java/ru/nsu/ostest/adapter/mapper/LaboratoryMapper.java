@@ -32,7 +32,7 @@ public interface LaboratoryMapper {
         Long id = laboratory.getId();
         String name = laboratory.getName();
         String description = laboratory.getDescription();
-        Byte semesterNumber = laboratory.getSemesterNumber();
+        Integer semesterNumber = laboratory.getSemesterNumber();
         LocalDateTime deadline = laboratory.getDeadline();
         Boolean isHidden = laboratory.getIsHidden();
 

@@ -1,6 +1,7 @@
 package ru.nsu.ostest.adapter.out.persistence.entity.user;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,7 @@ public class User {
     @Id
     @ToString.Include
     @EqualsAndHashCode.Include
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -40,4 +42,14 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true)
     private UserPassword userPassword;
+
+    public void addRole(@NotBlank Role role) {
+        UserRole userRoleEntity = new UserRole();
+        userRoleEntity.setUser(this);
+        userRoleEntity.setRole(role);
+
+        roles.add(userRoleEntity);
+    }
+
+
 }

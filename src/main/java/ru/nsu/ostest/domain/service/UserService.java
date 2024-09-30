@@ -5,8 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.nsu.ostest.adapter.in.rest.model.user.JwtRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.Role;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
@@ -42,7 +42,7 @@ public class UserService {
                 () -> new NotFoundException("Couldn't find user with username: " + username));
     }
 
-    public JwtRequest addUser(UserCreationRequestDto userDto) throws BadRequestException {
+    public UserPasswordDto addUser(UserCreationRequestDto userDto) throws BadRequestException {
         log.info("Adding user");
         validateUserDto(userDto);
         User user = userMapper.userCreationRequestDtoToUser(userDto);
@@ -50,7 +50,7 @@ public class UserService {
         String password = prepareUserForSaving(user, userDto);
         User savedUser = userRepository.save(user);
         log.info("User [{}] added", savedUser.getUsername());
-        return new JwtRequest(savedUser.getUsername(), password);
+        return new UserPasswordDto(savedUser.getUsername(), password);
     }
 
     private void validateUserDto(UserCreationRequestDto userDto) throws BadRequestException {

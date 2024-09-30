@@ -17,7 +17,7 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "laboratory", uniqueConstraints = @UniqueConstraint(columnNames = "name"))
+@Table(name = "laboratory")
 public class Laboratory {
 
     @Id
@@ -26,6 +26,7 @@ public class Laboratory {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String name;
 
     private String description;

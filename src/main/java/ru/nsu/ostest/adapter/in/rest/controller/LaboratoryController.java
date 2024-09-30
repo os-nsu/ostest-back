@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.*;
-import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
 import ru.nsu.ostest.domain.service.LaboratoryService;
 
 import java.util.List;

@@ -7,6 +7,8 @@ import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryShortDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 
+import java.util.List;
+
 @Mapper(
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         componentModel = MappingConstants.ComponentModel.SPRING,
@@ -19,5 +21,5 @@ public interface LaboratoryMapper {
     @Mapping(target = "tests", source = "testsLinks")
     LaboratoryDto laboratoryToLaboratoryDto(Laboratory laboratory);
 
-    LaboratoryShortDto laboratoryToLaboratoryShortDto(Laboratory laboratory);
+    List<LaboratoryShortDto> laboratoriesToLaboratoryShortDtoList(List<Laboratory> laboratories);
 }

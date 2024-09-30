@@ -30,6 +30,16 @@ public class LaboratoryService {
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
     }
 
+    private boolean isDuplicate(String laboratoryName) {
+        Laboratory laboratory = laboratoryRepository.findAll().stream()
+                .filter((l) -> l.getName().equals(laboratoryName))
+                .findFirst()
+                .orElse(null);
+
+        return laboratory != null;
+    }
+
+    public List<LaboratoryShortDto> searchLaboratories(LaboratorySearchRequestDto laboratorySearchRequestDto) {
     public List<LaboratoryShortDto> filter(LaboratorySearchRequestDto laboratorySearchRequestDto) {
         Boolean isHidden = laboratorySearchRequestDto.isHidden();
         Integer semesterNumber = laboratorySearchRequestDto.semesterNumber();

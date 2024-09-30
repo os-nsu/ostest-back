@@ -22,7 +22,7 @@ public class LaboratoryController {
 
     @PostMapping("/search")
     public List<LaboratoryShortDto> searchLaboratories(@RequestBody LaboratorySearchRequestDto request) {
-        return laboratoryService.filter(request);
+        return laboratoryService.searchLaboratories(request);
     }
 
     @PostMapping

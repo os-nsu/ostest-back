@@ -28,8 +28,7 @@ public class LaboratoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LaboratoryDto createLaboratory(@RequestBody LaboratoryCreationRequestDto request)
-            throws DuplicateLaboratoryNameException {
+    public LaboratoryDto createLaboratory(@RequestBody LaboratoryCreationRequestDto request) {
         return laboratoryService.create(request);
     }
 

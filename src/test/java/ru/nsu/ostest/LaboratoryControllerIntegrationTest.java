@@ -92,7 +92,7 @@ public class LaboratoryControllerIntegrationTest {
 
     @Test
     public void deleteLaboratory_ShouldReturnStatusOk_WhenLaboratoryExists() throws Exception {
-        String name = "Test Laboratory";
+        String name = "Test Laboratory to Delete";
         String description = "Test Description";
         Integer semesterNumber = 1;
         LocalDateTime dateTime = LocalDateTime.now().plusDays(7);
@@ -104,7 +104,7 @@ public class LaboratoryControllerIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value("Test Laboratory"))
+                .andExpect(jsonPath("$.name").value("Test Laboratory to Delete"))
                 .andExpect(jsonPath("$.description").value("Test Description"))
                 .andExpect(jsonPath("$.semesterNumber").value(1)).andReturn().getResponse();
 

@@ -3,6 +3,7 @@ package ru.nsu.ostest.domain.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratorySearchRequestDto;
@@ -23,6 +24,12 @@ public class LaboratoryService {
     private final LaboratoryRepository laboratoryRepository;
     private final LaboratoryMapper laboratoryMapper;
 
+    @Transactional
+    public void deleteById(Long id) {
+        laboratoryRepository.deleteById(id);
+    }
+
+    @Transactional
     public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
         if (laboratoryRepository.findByName(laboratoryCreationRequestDto.name()) != null) {

@@ -38,7 +38,6 @@ public class LaboratoryController {
 
     @DeleteMapping("/{id}")
     public void deleteLaboratory(@PathVariable Long id) {
-        throw new IllegalArgumentException("Not implemented");
+        laboratoryService.deleteById(id);
     }
-
 }

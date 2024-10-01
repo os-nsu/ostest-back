@@ -23,6 +23,10 @@ public class LaboratoryService {
     private final LaboratoryRepository laboratoryRepository;
     private final LaboratoryMapper laboratoryMapper;
 
+    public void deleteById(Long id) {
+        laboratoryRepository.deleteById(id);
+    }
+
     public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
         if (laboratoryRepository.findByName(laboratoryCreationRequestDto.name()) != null) {

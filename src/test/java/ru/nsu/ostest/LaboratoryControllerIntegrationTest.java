@@ -100,7 +100,6 @@ public class LaboratoryControllerIntegrationTest {
         LaboratoryCreationRequestDto request =
                 new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
 
-
         MockHttpServletResponse mvcResponse = mockMvc.perform(post(URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))

@@ -8,12 +8,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 
 import java.time.LocalDateTime;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -21,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Disabled
-public class LaboratoryCreationIntegrationTest {
+public class LaboratoryControllerIntegrationTest {
 
     private static final String URL = "/api/laboratory";
 
@@ -84,5 +88,37 @@ public class LaboratoryCreationIntegrationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request2)))
                 .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    public void deleteLaboratory_ShouldReturnStatusOk_WhenLaboratoryExists() throws Exception {
+        String name = "Test Laboratory";
+        String description = "Test Description";
+        Integer semesterNumber = 1;
+        LocalDateTime dateTime = LocalDateTime.now().plusDays(7);
+        Boolean isHidden = false;
+        LaboratoryCreationRequestDto request =
+                new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
+
+
+        MockHttpServletResponse mvcResponse = mockMvc.perform(post(URL)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name").value("Test Laboratory"))
+                .andExpect(jsonPath("$.description").value("Test Description"))
+                .andExpect(jsonPath("$.semesterNumber").value(1)).andReturn().getResponse();
+
+        LaboratoryDto laboratory =
+                objectMapper.createParser(mvcResponse.getContentAsByteArray()).readValueAs(LaboratoryDto.class);
+
+        Long laboratoryId = laboratory.id();
+        assertNotEquals(null, laboratoryRepository.findById(laboratoryId).orElse(null));
+
+        mockMvc.perform(delete("/api/laboratory/{id}", laboratoryId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk());
+
+        assertNull(laboratoryRepository.findById(laboratoryId).orElse(null));
     }
 }

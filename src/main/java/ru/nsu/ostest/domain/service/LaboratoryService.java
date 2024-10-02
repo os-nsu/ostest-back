@@ -35,6 +35,7 @@ public class LaboratoryService {
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
     }
 
+    @Transactional
     public LaboratoryDto editLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto) {
         checkIfDuplicatedName(laboratoryEditionRequestDto.name(), laboratoryEditionRequestDto.id());
 

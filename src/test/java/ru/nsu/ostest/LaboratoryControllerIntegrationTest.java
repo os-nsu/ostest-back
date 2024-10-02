@@ -28,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Disabled
 public class LaboratoryControllerIntegrationTest {
 
-    private static final String CREATE_OR_EDIT_URL = "/api/laboratory";
+    private static final String PATH = "/api/laboratory";
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,7 +54,7 @@ public class LaboratoryControllerIntegrationTest {
         LaboratoryCreationRequestDto request =
                 new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
 
-        mockMvc.perform(post(CREATE_OR_EDIT_URL)
+        mockMvc.perform(post(PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -74,7 +74,7 @@ public class LaboratoryControllerIntegrationTest {
         LaboratoryCreationRequestDto request1 =
                 new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
 
-        mockMvc.perform(post(CREATE_OR_EDIT_URL)
+        mockMvc.perform(post(PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request1)))
                 .andExpect(status().isCreated());
@@ -86,7 +86,7 @@ public class LaboratoryControllerIntegrationTest {
         LaboratoryCreationRequestDto request2 =
                 new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
 
-        mockMvc.perform(post(CREATE_OR_EDIT_URL)
+        mockMvc.perform(post(PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request2)))
                 .andExpect(status().isBadRequest());
@@ -102,7 +102,7 @@ public class LaboratoryControllerIntegrationTest {
         LaboratoryCreationRequestDto request =
                 new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
 
-        MockHttpServletResponse mvcResponse = mockMvc.perform(post(CREATE_OR_EDIT_URL)
+        MockHttpServletResponse mvcResponse = mockMvc.perform(post(PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
@@ -137,7 +137,7 @@ public class LaboratoryControllerIntegrationTest {
         LaboratoryCreationRequestDto creationRequest =
                 new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
 
-        MockHttpServletResponse mvcResponse = mockMvc.perform(post(CREATE_OR_EDIT_URL)
+        MockHttpServletResponse mvcResponse = mockMvc.perform(post(PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequest)))
                 .andExpect(status().isCreated())
@@ -159,7 +159,7 @@ public class LaboratoryControllerIntegrationTest {
             LaboratoryEditionRequestDto editionRequest =
                     new LaboratoryEditionRequestDto(laboratoryId, name, description, semesterNumber, dateTime, isHidden);
 
-            mockMvc.perform(put(CREATE_OR_EDIT_URL)
+            mockMvc.perform(put(PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(editionRequest)))
                     .andExpect(status().isOk())
@@ -180,7 +180,7 @@ public class LaboratoryControllerIntegrationTest {
         LaboratoryCreationRequestDto creationRequest =
                 new LaboratoryCreationRequestDto(duplicatedName, description, semesterNumber, dateTime, isHidden);
 
-        mockMvc.perform(post(CREATE_OR_EDIT_URL)
+        mockMvc.perform(post(PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequest)))
                 .andExpect(status().isCreated());
@@ -193,7 +193,7 @@ public class LaboratoryControllerIntegrationTest {
         creationRequest =
                 new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
 
-        MockHttpServletResponse mvcResponse = mockMvc.perform(post(CREATE_OR_EDIT_URL)
+        MockHttpServletResponse mvcResponse = mockMvc.perform(post(PATH)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequest)))
                 .andExpect(status().isCreated())
@@ -212,7 +212,7 @@ public class LaboratoryControllerIntegrationTest {
                     new LaboratoryEditionRequestDto(laboratoryId, duplicatedName, description,
                             semesterNumber, dateTime, isHidden);
 
-            mockMvc.perform(put(CREATE_OR_EDIT_URL)
+            mockMvc.perform(put(PATH)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(editionRequest)))
                     .andExpect(status().isBadRequest());

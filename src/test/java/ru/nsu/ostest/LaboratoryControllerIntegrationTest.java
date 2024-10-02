@@ -1,5 +1,6 @@
 package ru.nsu.ostest;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@Disabled
+//@Disabled
 public class LaboratoryControllerIntegrationTest {
 
     private static final String CREATE_OR_EDIT_URL = "/api/laboratory";
@@ -112,17 +113,18 @@ public class LaboratoryControllerIntegrationTest {
                 .andReturn()
                 .getResponse();
 
-        LaboratoryDto laboratory =
-                objectMapper.createParser(mvcResponse.getContentAsByteArray()).readValueAs(LaboratoryDto.class);
+        try (JsonParser jsonParser = objectMapper.createParser(mvcResponse.getContentAsByteArray())) {
+            LaboratoryDto laboratory = jsonParser.readValueAs(LaboratoryDto.class);
 
-        Long laboratoryId = laboratory.id();
-        assertNotEquals(null, laboratoryRepository.findById(laboratoryId).orElse(null));
+            Long laboratoryId = laboratory.id();
+            assertNotEquals(null, laboratoryRepository.findById(laboratoryId).orElse(null));
 
-        mockMvc.perform(delete("/api/laboratory/{id}", laboratoryId)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+            mockMvc.perform(delete("/api/laboratory/{id}", laboratoryId)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
 
-        assertNull(laboratoryRepository.findById(laboratoryId).orElse(null));
+            assertNull(laboratoryRepository.findById(laboratoryId).orElse(null));
+        }
     }
 
     @Test
@@ -149,22 +151,23 @@ public class LaboratoryControllerIntegrationTest {
         description = "Edited Test Description";
         isHidden = true;
 
-        LaboratoryDto laboratory =
-                objectMapper.createParser(mvcResponse.getContentAsByteArray()).readValueAs(LaboratoryDto.class);
+        try (JsonParser jsonParser = objectMapper.createParser(mvcResponse.getContentAsByteArray())) {
+            LaboratoryDto laboratory = jsonParser.readValueAs(LaboratoryDto.class);
 
-        Long laboratoryId = laboratory.id();
+            Long laboratoryId = laboratory.id();
 
-        LaboratoryEditionRequestDto editionRequest =
-                new LaboratoryEditionRequestDto(laboratoryId, name, description, semesterNumber, dateTime, isHidden);
+            LaboratoryEditionRequestDto editionRequest =
+                    new LaboratoryEditionRequestDto(laboratoryId, name, description, semesterNumber, dateTime, isHidden);
 
-        mockMvc.perform(put(CREATE_OR_EDIT_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(editionRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.description").value(description))
-                .andExpect(jsonPath("$.semesterNumber").value(semesterNumber))
-                .andExpect(jsonPath("$.isHidden").value(isHidden));
+            mockMvc.perform(put(CREATE_OR_EDIT_URL)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(editionRequest)))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.name").value(name))
+                    .andExpect(jsonPath("$.description").value(description))
+                    .andExpect(jsonPath("$.semesterNumber").value(semesterNumber))
+                    .andExpect(jsonPath("$.isHidden").value(isHidden));
+        }
     }
 
     @Test
@@ -200,19 +203,20 @@ public class LaboratoryControllerIntegrationTest {
         description = "Edited Test Description";
         isHidden = false;
 
-        LaboratoryDto laboratory =
-                objectMapper.createParser(mvcResponse.getContentAsByteArray()).readValueAs(LaboratoryDto.class);
+        try (JsonParser jsonParser = objectMapper.createParser(mvcResponse.getContentAsByteArray())) {
+            LaboratoryDto laboratory = jsonParser.readValueAs(LaboratoryDto.class);
 
-        Long laboratoryId = laboratory.id();
+            Long laboratoryId = laboratory.id();
 
-        LaboratoryEditionRequestDto editionRequest =
-                new LaboratoryEditionRequestDto(laboratoryId, duplicatedName, description,
-                        semesterNumber, dateTime, isHidden);
+            LaboratoryEditionRequestDto editionRequest =
+                    new LaboratoryEditionRequestDto(laboratoryId, duplicatedName, description,
+                            semesterNumber, dateTime, isHidden);
 
-        mockMvc.perform(put(CREATE_OR_EDIT_URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(editionRequest)))
-                .andExpect(status().isBadRequest());
+            mockMvc.perform(put(CREATE_OR_EDIT_URL)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(objectMapper.writeValueAsString(editionRequest)))
+                    .andExpect(status().isBadRequest());
+        }
     }
 
 }

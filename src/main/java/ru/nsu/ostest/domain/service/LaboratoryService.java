@@ -36,7 +36,7 @@ public class LaboratoryService {
     }
 
     public LaboratoryDto editLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto) {
-        checkIfDuplicatedName(laboratoryEditionRequestDto.name());
+        checkIfDuplicatedName(laboratoryEditionRequestDto.name(), laboratoryEditionRequestDto.id());
 
         Laboratory laboratory = laboratoryRepository.findById(laboratoryEditionRequestDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
@@ -61,6 +61,13 @@ public class LaboratoryService {
 
     public LaboratoryDto findById(Long id) {
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratoryRepository.findById(id).orElse(null));
+    }
+
+    private void checkIfDuplicatedName(String name, Long exceptedId) {
+        Laboratory laboratory = laboratoryRepository.findByName(name);
+        if (laboratory != null && !laboratory.getId().equals(exceptedId)) {
+            throw DuplicateLaboratoryNameException.of(name);
+        }
     }
 
     private void checkIfDuplicatedName(String name) {

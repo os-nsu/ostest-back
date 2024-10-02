@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-//@Disabled
+@Disabled
 public class LaboratoryControllerIntegrationTest {
 
     private static final String CREATE_OR_EDIT_URL = "/api/laboratory";

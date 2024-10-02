@@ -1,13 +1,11 @@
 package ru.nsu.ostest.domain.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
-import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratorySearchRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryShortDto;
+import ru.nsu.ostest.adapter.in.rest.model.laboratory.*;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
@@ -37,6 +35,21 @@ public class LaboratoryService {
         }
         laboratoryRepository.save(laboratory);
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
+    }
+
+    public LaboratoryDto editLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto) {
+        Laboratory laboratory = laboratoryRepository.findById(laboratoryEditionRequestDto.id())
+                .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
+
+        laboratory.setName(laboratoryEditionRequestDto.name());
+        laboratory.setDescription(laboratoryEditionRequestDto.description());
+        laboratory.setSemesterNumber(laboratoryEditionRequestDto.semesterNumber());
+        laboratory.setDeadline(laboratoryEditionRequestDto.deadline());
+        laboratory.setIsHidden(laboratoryEditionRequestDto.isHidden());
+
+        Laboratory updatedLaboratory = laboratoryRepository.save(laboratory);
+
+        return laboratoryMapper.laboratoryToLaboratoryDto(updatedLaboratory);
     }
 
     public List<LaboratoryShortDto> searchLaboratories(LaboratorySearchRequestDto laboratorySearchRequestDto) {

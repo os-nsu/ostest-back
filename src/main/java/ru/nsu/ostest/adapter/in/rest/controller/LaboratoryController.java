@@ -33,7 +33,7 @@ public class LaboratoryController {
 
     @PutMapping
     public LaboratoryDto editLaboratory(@RequestBody LaboratoryEditionRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+        return laboratoryService.editLaboratory(request);
     }
 
     @DeleteMapping("/{id}")

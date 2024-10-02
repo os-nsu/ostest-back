@@ -4,6 +4,7 @@ import org.mapstruct.*;
 import org.mapstruct.control.DeepClone;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
+import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryEditionRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryShortDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 
@@ -20,6 +21,8 @@ public interface LaboratoryMapper {
 
     @Mapping(target = "tests", source = "testsLinks")
     LaboratoryDto laboratoryToLaboratoryDto(Laboratory laboratory);
+
+    Laboratory laboratoryEditionRequestDtoToLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto);
 
     List<LaboratoryShortDto> laboratoriesToLaboratoryShortDtoList(List<Laboratory> laboratories);
 }

@@ -3,6 +3,7 @@ package ru.nsu.ostest.adapter.in.rest.exception;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.BadRequestException;
 import org.hibernate.PropertyValueException;
 import org.slf4j.Logger;
@@ -21,6 +22,11 @@ import ru.nsu.ostest.security.impl.AuthConstants;
 @CrossOrigin(maxAge = 1440)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
+
+    @ExceptionHandler({EntityNotFoundException.class})
+    public ResponseEntity<Object> handleException(EntityNotFoundException e) {
+        return new ResponseEntity<>(Error.builder().code(404).message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler({DuplicateLaboratoryNameException.class})
     public ResponseEntity<Object> handleException(DuplicateLaboratoryNameException e) {

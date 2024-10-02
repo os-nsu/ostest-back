@@ -1,13 +1,11 @@
 package ru.nsu.ostest.domain.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
-import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratorySearchRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryShortDto;
+import ru.nsu.ostest.adapter.in.rest.model.laboratory.*;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
@@ -32,11 +30,24 @@ public class LaboratoryService {
     @Transactional
     public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
-        if (laboratoryRepository.findByName(laboratoryCreationRequestDto.name()) != null) {
-            throw DuplicateLaboratoryNameException.of(laboratory.getName());
-        }
-        laboratoryRepository.save(laboratory);
+        checkIfDuplicatedName(laboratoryCreationRequestDto.name());
+        laboratory = laboratoryRepository.save(laboratory);
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
+    }
+
+    @Transactional
+    public LaboratoryDto editLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto) {
+        checkIfDuplicatedName(laboratoryEditionRequestDto.name(), laboratoryEditionRequestDto.id());
+
+        laboratoryRepository.findById(laboratoryEditionRequestDto.id())
+                .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
+
+        Laboratory updatedLaboratory
+                = laboratoryMapper.laboratoryEditionRequestDtoToLaboratory(laboratoryEditionRequestDto);
+
+        updatedLaboratory = laboratoryRepository.save(updatedLaboratory);
+
+        return laboratoryMapper.laboratoryToLaboratoryDto(updatedLaboratory);
     }
 
     public List<LaboratoryShortDto> searchLaboratories(LaboratorySearchRequestDto laboratorySearchRequestDto) {
@@ -48,5 +59,18 @@ public class LaboratoryService {
 
     public LaboratoryDto findById(Long id) {
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratoryRepository.findById(id).orElse(null));
+    }
+
+    private void checkIfDuplicatedName(String name, Long exceptedId) {
+        Laboratory laboratory = laboratoryRepository.findByName(name);
+        if (laboratory != null && !laboratory.getId().equals(exceptedId)) {
+            throw DuplicateLaboratoryNameException.of(name);
+        }
+    }
+
+    private void checkIfDuplicatedName(String name) {
+        if (laboratoryRepository.findByName(name) != null) {
+            throw DuplicateLaboratoryNameException.of(name);
+        }
     }
 }

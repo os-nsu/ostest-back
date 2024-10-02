@@ -193,7 +193,9 @@ public class LaboratoryControllerIntegrationTest {
         MockHttpServletResponse mvcResponse = mockMvc.perform(post(CREATE_OR_EDIT_URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequest)))
-                .andExpect(status().isCreated()).andReturn().getResponse();
+                .andExpect(status().isCreated())
+                .andReturn()
+                .getResponse();
 
         description = "Edited Test Description";
         isHidden = false;

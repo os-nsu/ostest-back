@@ -31,7 +31,7 @@ public class LaboratoryService {
     public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
         checkIfDuplicatedName(laboratoryCreationRequestDto.name());
-        laboratoryRepository.save(laboratory);
+        laboratory = laboratoryRepository.save(laboratory);
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
     }
 
@@ -39,16 +39,13 @@ public class LaboratoryService {
     public LaboratoryDto editLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto) {
         checkIfDuplicatedName(laboratoryEditionRequestDto.name(), laboratoryEditionRequestDto.id());
 
-        Laboratory laboratory = laboratoryRepository.findById(laboratoryEditionRequestDto.id())
+        laboratoryRepository.findById(laboratoryEditionRequestDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
 
-        laboratory.setName(laboratoryEditionRequestDto.name());
-        laboratory.setDescription(laboratoryEditionRequestDto.description());
-        laboratory.setSemesterNumber(laboratoryEditionRequestDto.semesterNumber());
-        laboratory.setDeadline(laboratoryEditionRequestDto.deadline());
-        laboratory.setIsHidden(laboratoryEditionRequestDto.isHidden());
+        Laboratory updatedLaboratory
+                = laboratoryMapper.laboratoryEditionRequestDtoToLaboratory(laboratoryEditionRequestDto);
 
-        Laboratory updatedLaboratory = laboratoryRepository.save(laboratory);
+        updatedLaboratory = laboratoryRepository.save(updatedLaboratory);
 
         return laboratoryMapper.laboratoryToLaboratoryDto(updatedLaboratory);
     }

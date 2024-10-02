@@ -30,14 +30,14 @@ public class LaboratoryService {
     @Transactional
     public LaboratoryDto create(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
-        if (laboratoryRepository.findByName(laboratoryCreationRequestDto.name()) != null) {
-            throw DuplicateLaboratoryNameException.of(laboratory.getName());
-        }
+        checkIfDuplicatedName(laboratoryCreationRequestDto.name());
         laboratoryRepository.save(laboratory);
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
     }
 
     public LaboratoryDto editLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto) {
+        checkIfDuplicatedName(laboratoryEditionRequestDto.name());
+
         Laboratory laboratory = laboratoryRepository.findById(laboratoryEditionRequestDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
 
@@ -61,5 +61,11 @@ public class LaboratoryService {
 
     public LaboratoryDto findById(Long id) {
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratoryRepository.findById(id).orElse(null));
+    }
+
+    private void checkIfDuplicatedName(String name) {
+        if (laboratoryRepository.findByName(name) != null) {
+            throw DuplicateLaboratoryNameException.of(name);
+        }
     }
 }

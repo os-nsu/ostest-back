@@ -2,6 +2,7 @@ package ru.nsu.ostest.adapter.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import ru.nsu.ostest.adapter.in.rest.model.test.ShortTestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
@@ -9,6 +10,8 @@ import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 
 @Mapper(componentModel = "spring")
 public interface TestMapper {
+    ShortTestDto toShortTestDtoFromEntity(Test test);
+
     TestDto toTestDto(TestCreationRequestDto requestDto);
 
     Test toTest(TestDto testDto);

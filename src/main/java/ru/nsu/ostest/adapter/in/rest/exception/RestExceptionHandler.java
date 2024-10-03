@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.nsu.ostest.adapter.in.rest.exception.model.Error;
 import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
+import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
 import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 import ru.nsu.ostest.security.impl.AuthConstants;
@@ -21,6 +22,11 @@ import ru.nsu.ostest.security.impl.AuthConstants;
 @CrossOrigin(maxAge = 1440)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
+
+    @ExceptionHandler({DuplicateTestNameException.class})
+    public ResponseEntity<Object> handleException(DuplicateTestNameException e) {
+        return new ResponseEntity<>(Error.builder().code(404).message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
+    }
 
     @ExceptionHandler({DuplicateLaboratoryNameException.class})
     public ResponseEntity<Object> handleException(DuplicateLaboratoryNameException e) {

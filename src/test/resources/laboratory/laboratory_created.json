@@ -1,0 +1,8 @@
+{
+  "id": null,
+  "name": "Test Laboratory",
+  "description": "Test Description",
+  "semesterNumber": 1,
+  "isHidden": false,
+  "tests": []
+}

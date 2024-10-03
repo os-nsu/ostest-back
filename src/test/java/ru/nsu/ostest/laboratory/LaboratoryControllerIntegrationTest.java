@@ -1,13 +1,13 @@
-package ru.nsu.ostest;
+package ru.nsu.ostest.laboratory;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,20 +18,30 @@ import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 
 import java.time.LocalDateTime;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
-@AutoConfigureMockMvc
-@Disabled
+@Import({LaboratoryTestSetup.class})
+@AutoConfigureMockMvc(addFilters = false)
 public class LaboratoryControllerIntegrationTest {
 
     private static final String PATH = "/api/laboratory";
 
+    private static final String LAB_NAME = "Test Laboratory";
+    private static final String LAB_DESCRIPTION = "Test Description";
+    private static final boolean IS_HIDDEN = false;
+    private static final int SEMESTER_NUMBER = 1;
+    private static final LocalDateTime DEADLINE = LocalDateTime.now().plusDays(7);
+
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private LaboratoryTestSetup laboratoryTestSetup;
 
     @Autowired
     private LaboratoryRepository laboratoryRepository;
@@ -46,50 +56,27 @@ public class LaboratoryControllerIntegrationTest {
 
     @Test
     public void createLaboratory_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        String name = "Test Laboratory";
-        String description = "Test Description";
-        Integer semesterNumber = 1;
-        LocalDateTime dateTime = LocalDateTime.now().plusDays(7);
-        Boolean isHidden = false;
-        LaboratoryCreationRequestDto request =
-                new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
+        var laboratoryDto = laboratoryTestSetup.createLaboratory(
+                new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN)
+        );
 
-        mockMvc.perform(post(PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.description").value(description))
-                .andExpect(jsonPath("$.semesterNumber").value(semesterNumber))
-                .andExpect(jsonPath("$.isHidden").value(isHidden));
+        checkLaboratory(laboratoryDto, laboratoryTestSetup.getLaboratoryDto("laboratory/laboratory_created.json"));
     }
 
     @Test
     public void createLaboratory_ShouldReturnConflict_WhenDuplicateName() throws Exception {
-        String name = "Duplicate Laboratory";
-        String description = "First Laboratory Description";
-        int semesterNumber = 1;
-        LocalDateTime dateTime = LocalDateTime.now().plusDays(7);
-        boolean isHidden = false;
-        LaboratoryCreationRequestDto request1 =
-                new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
+        laboratoryTestSetup.createLaboratory(
+                new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN)
+        );
 
-        mockMvc.perform(post(PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request1)))
-                .andExpect(status().isCreated());
-
-        description = "Second Laboratory Description";
-        semesterNumber = 2;
-        dateTime = LocalDateTime.now().plusDays(10);
-        isHidden = true;
-        LaboratoryCreationRequestDto request2 =
-                new LaboratoryCreationRequestDto(name, description, semesterNumber, dateTime, isHidden);
-
-        mockMvc.perform(post(PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request2)))
-                .andExpect(status().isBadRequest());
+        laboratoryTestSetup.createLaboratoryBad(
+                new LaboratoryCreationRequestDto(
+                        LAB_NAME,
+                        "Second Laboratory Description",
+                        2,
+                        LocalDateTime.now().plusDays(10),
+                        true
+                ));
     }
 
     @Test
@@ -217,6 +204,14 @@ public class LaboratoryControllerIntegrationTest {
                             .content(objectMapper.writeValueAsString(editionRequest)))
                     .andExpect(status().isBadRequest());
         }
+    }
+
+    // с deadline поразбирайтесь сами, потом уберите его
+    private void checkLaboratory(LaboratoryDto actual, LaboratoryDto expected) {
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("id", "deadline")
+                .isEqualTo(expected);
     }
 
 }

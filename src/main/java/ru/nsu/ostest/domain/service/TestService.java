@@ -22,7 +22,7 @@ public class TestService {
     private final TestRepository testRepository;
     private final TestMapper testMapper;
 
-    public Long create(TestDto testDto, byte[] script) {
+    public TestDto create(TestDto testDto, byte[] script) {
         Test test = testMapper.toTest(testDto);
         test.setScriptBody(script);
 
@@ -31,7 +31,7 @@ public class TestService {
         }
 
         try {
-            return testRepository.save(test).getId();
+            return testMapper.toTestDtoFromEntity(testRepository.save(test));
         } catch (DuplicateKeyException e) {
             throw new RuntimeException("Запись с таким ключом уже существует." + e.getMessage());
         } catch (DataIntegrityViolationException e) {
@@ -70,7 +70,7 @@ public class TestService {
         }
     }
 
-    public Long update(TestDto testDto, byte[] script) {
+    public TestDto update(TestDto testDto, byte[] script) {
         Test test = testMapper.toTest(testDto);
 
         delete(test.getId());

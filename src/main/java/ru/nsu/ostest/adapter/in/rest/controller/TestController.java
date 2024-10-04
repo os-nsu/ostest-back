@@ -20,53 +20,51 @@ public class TestController {
     private final TestMapper testMapper;
 
     @PostMapping
-    public ResponseEntity<String> createTest(
+    public TestDto createTest(
             @RequestPart("data") TestCreationRequestDto request,
             @RequestPart("file") MultipartFile file) {
 
         if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("На вход подан пустой файл.");
+            throw new RuntimeException("На вход подан пустой файл.");
         }
         byte[] script;
         try {
             script = file.getBytes();
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Не удалось прочитать файл.");
+            throw new RuntimeException("Не удалось прочитать файл.");
         }
 
         TestDto testDto = testMapper.toTestDto(request);
-        Long id = testService.create(testDto, script);
-        return ResponseEntity.ok(id.toString());
+        return testService.create(testDto, script);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TestDto> getTest(@PathVariable Long id) {
-        return ResponseEntity.ok(testService.getTest(id));
+    public TestDto getTest(@PathVariable Long id) {
+        return testService.getTest(id);
     }
 
     @PostMapping("/search")
-    public ResponseEntity<List<ShortTestDto>> searchTests() {
-        return ResponseEntity.ok(testService.getAllTests());
+    public List<ShortTestDto> searchTests() {
+        return testService.getAllTests();
     }
 
     @PutMapping
-    public ResponseEntity<String> editTest(
+    public TestDto editTest(
             @RequestPart("data") TestCreationRequestDto request,
             @RequestPart("file") MultipartFile file) {
 
         if (file.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("На вход подан пустой файл.");
+            throw new RuntimeException("На вход подан пустой файл.");
         }
         byte[] script;
         try {
             script = file.getBytes();
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Не удалось прочитать файл.");
+            throw new RuntimeException("Не удалось прочитать файл.");
         }
 
         TestDto testDto = testMapper.toTestDto(request);
-        Long id = testService.update(testDto, script);
-        return ResponseEntity.ok(id.toString());
+        return testService.update(testDto, script);
     }
 
     @DeleteMapping("/{id}")

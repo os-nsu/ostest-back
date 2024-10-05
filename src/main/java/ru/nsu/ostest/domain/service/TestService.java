@@ -32,7 +32,7 @@ public class TestService {
         try {
             script = file.getBytes();
         } catch (IOException e) {
-            throw new RuntimeException("Не удалось прочитать файл.");
+            throw new RuntimeException("Failed to read file.");
         }
 
         Test test = testMapper.testCreationRequestDtoToTest(testCreationRequestDto);
@@ -44,7 +44,7 @@ public class TestService {
 
     public TestDto getTest(Long id) {
         return testMapper.testToTestDto(testRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Test not found")));
+                .orElseThrow(() -> new EntityNotFoundException("Test not found.")));
     }
 
     public List<ShortTestDto> getAllTests() {
@@ -64,14 +64,14 @@ public class TestService {
         try {
             script = file.getBytes();
         } catch (IOException e) {
-            throw new RuntimeException("Не удалось прочитать файл.");
+            throw new RuntimeException("Failed to read file.");
         }
 
         Test test = testMapper.testEditionRequestDtoToTest(testEditionRequestDto);
         test.setScriptBody(script);
 
         testRepository.findById(testEditionRequestDto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Test not found"));
+                .orElseThrow(() -> new EntityNotFoundException("Test not found."));
 
         Test updatedTest
                 = testMapper.testEditionRequestDtoToTest(testEditionRequestDto);

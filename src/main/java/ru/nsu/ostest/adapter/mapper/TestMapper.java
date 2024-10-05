@@ -5,18 +5,21 @@ import org.mapstruct.Mapping;
 import ru.nsu.ostest.adapter.in.rest.model.test.ShortTestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface TestMapper {
-    ShortTestDto toShortTestDtoFromEntity(Test test);
+    Test testCreationRequestDtoToTest(TestCreationRequestDto testCreationRequestDto);
 
-    TestDto toTestDto(TestCreationRequestDto requestDto);
+    Test testEditionRequestDtoToTest(TestEditionRequestDto testEditionRequestDto);
 
-    Test toTest(TestDto testDto);
+    TestDto testToTestDto(Test test);
 
-    TestDto toTestDtoFromEntity(Test test);
+    List<ShortTestDto> testsToShortTestDtoList(List<Test> tests);
 
     @Mapping(source = "testLaboratoryLink.test.id", target = "id")
     @Mapping(source = "testLaboratoryLink.test.name", target = "name")

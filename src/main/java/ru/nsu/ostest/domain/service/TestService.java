@@ -43,7 +43,8 @@ public class TestService {
     }
 
     public TestDto getTest(Long id) {
-        return testMapper.testToTestDto(testRepository.findById(id).orElse(null));
+        return testMapper.testToTestDto(testRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Test not found")));
     }
 
     public List<ShortTestDto> getAllTests() {

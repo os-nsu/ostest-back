@@ -27,16 +27,8 @@ public class TestService {
     @Transactional
     public TestDto create(TestCreationRequestDto testCreationRequestDto, MultipartFile file) {
         checkIfDuplicatedName(testCreationRequestDto.name());
-
-        byte[] script;
-        try {
-            script = file.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read file.");
-        }
-
         Test test = testMapper.testCreationRequestDtoToTest(testCreationRequestDto);
-        test.setScriptBody(script);
+        test.setScriptBody(getBytesFromFile(file));
 
         test = testRepository.save(test);
         return testMapper.testToTestDto(test);
@@ -59,16 +51,8 @@ public class TestService {
     @Transactional
     public TestDto update(TestEditionRequestDto testEditionRequestDto, MultipartFile file) {
         checkIfDuplicatedName(testEditionRequestDto.name(), testEditionRequestDto.id());
-
-        byte[] script;
-        try {
-            script = file.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to read file.");
-        }
-
         Test test = testMapper.testEditionRequestDtoToTest(testEditionRequestDto);
-        test.setScriptBody(script);
+        test.setScriptBody(getBytesFromFile(file));
 
         testRepository.findById(testEditionRequestDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Test not found."));
@@ -79,6 +63,16 @@ public class TestService {
         updatedTest = testRepository.save(updatedTest);
 
         return testMapper.testToTestDto(updatedTest);
+    }
+
+    private static byte[] getBytesFromFile(MultipartFile file) {
+        byte[] script;
+        try {
+            script = file.getBytes();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read file.");
+        }
+        return script;
     }
 
     private void checkIfDuplicatedName(String name, Long exceptedId) {

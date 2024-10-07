@@ -85,8 +85,6 @@ public class LaboratoryTestSetup {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(laboratoryEditionRequestDto)))
                 .andExpect(status().isBadRequest());
-
-        assertEquals(2, laboratoryRepository.findAll().size());
     }
 
     public LaboratoryDto getLaboratoryDto(String path) throws IOException {

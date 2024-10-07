@@ -51,18 +51,12 @@ public class TestService {
     @Transactional
     public TestDto update(TestEditionRequestDto testEditionRequestDto, MultipartFile file) {
         checkIfDuplicatedName(testEditionRequestDto.name(), testEditionRequestDto.id());
-        Test test = testMapper.testEditionRequestDtoToTest(testEditionRequestDto);
-        test.setScriptBody(getBytesFromFile(file));
 
-        testRepository.findById(testEditionRequestDto.id())
+        Test test = testRepository.findById(testEditionRequestDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Test not found."));
+        testMapper.testEditionRequestDtoToTest(test, testEditionRequestDto);
 
-        Test updatedTest
-                = testMapper.testEditionRequestDtoToTest(testEditionRequestDto);
-
-        updatedTest = testRepository.save(updatedTest);
-
-        return testMapper.testToTestDto(updatedTest);
+        return testMapper.testToTestDto(test);
     }
 
     private static byte[] getBytesFromFile(MultipartFile file) {

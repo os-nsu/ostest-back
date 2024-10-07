@@ -2,6 +2,7 @@ package ru.nsu.ostest.adapter.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import ru.nsu.ostest.adapter.in.rest.model.test.ShortTestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
@@ -11,11 +12,15 @@ import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
+
+@Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = IGNORE)
 public interface TestMapper {
     Test testCreationRequestDtoToTest(TestCreationRequestDto testCreationRequestDto);
 
-    Test testEditionRequestDtoToTest(TestEditionRequestDto testEditionRequestDto);
+    void testEditionRequestDtoToTest(
+            @MappingTarget Test test, TestEditionRequestDto testEditionRequestDto
+    );
 
     TestDto testToTestDto(Test test);
 

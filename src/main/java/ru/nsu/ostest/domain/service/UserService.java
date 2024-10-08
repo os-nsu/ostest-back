@@ -10,6 +10,7 @@ import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserUpdateRequestDto;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
+import ru.nsu.ostest.adapter.mapper.UserUpdateDtoMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserPassword;
 import ru.nsu.ostest.domain.exception.UserNotFoundException;
@@ -28,7 +29,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final GroupService groupService;
     private final RoleService roleService;
-    private final PostMapper postMapper;
+    private final UserUpdateDtoMapper postMapper;
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(

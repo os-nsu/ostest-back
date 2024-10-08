@@ -6,6 +6,7 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
@@ -66,5 +67,8 @@ public class UserService {
         return password;
     }
 
-
+    public UserDto getCurrentUserInfoByUserId(Long userId) {
+        User user = findUserById(userId);
+        return userMapper.userToUserResponseDto(user);
+    }
 }

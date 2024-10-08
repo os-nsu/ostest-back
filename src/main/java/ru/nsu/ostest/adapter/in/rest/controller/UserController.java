@@ -24,8 +24,7 @@ public class UserController {
 
     @GetMapping("/me")
     public UserDto getCurrentUserInfo(HttpServletRequest request) {
-        Long userId = authService.getUserIdFromJwt(request);
-        return userService.getCurrentUserInfoByUserId(userId);
+        return userService.getCurrentUserInfoByUserId(authService.getUserIdFromJwt(request));
     }
 
     @PostMapping("/search")

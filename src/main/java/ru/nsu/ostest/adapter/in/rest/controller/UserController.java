@@ -43,6 +43,7 @@ public class UserController {
         throw new IllegalArgumentException("Not implemented");
     }
 
+
     @PostMapping("/batch")
     public List<UserDto> createUsers(@RequestBody UsersBatchCreationRequestDto request) {
         throw new IllegalArgumentException("Not implemented");

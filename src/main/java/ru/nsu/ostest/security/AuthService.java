@@ -3,6 +3,7 @@ package ru.nsu.ostest.security;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 
 public interface AuthService {

@@ -4,6 +4,7 @@ public record UserDto(
         Long id,
         String username,
         String firstName,
-        String secondName
+        String secondName,
+        String groupName
 ) {
 }

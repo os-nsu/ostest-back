@@ -1,6 +1,7 @@
 package ru.nsu.ostest.security.impl;
 
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +90,14 @@ public class AuthServiceImpl implements AuthService {
     public UserPasswordDto register(@NonNull UserCreationRequestDto userDto) throws BadRequestException {
         log.info("Processing registration request");
         return userService.addUser(userDto);
+    }
+
+    public Long getUserIdFromJwt(HttpServletRequest request) {
+        String jwt = jwtProviderImpl.getTokenFromRequest(request);
+        if (jwt != null && jwtProviderImpl.validateAccessToken(jwt)) {
+            return jwtProviderImpl.getUserIdFromJwt(jwt);
+        }
+        return null;
     }
 
 }

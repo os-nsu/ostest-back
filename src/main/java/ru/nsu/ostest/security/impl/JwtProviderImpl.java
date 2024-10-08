@@ -3,10 +3,12 @@ package ru.nsu.ostest.security.impl;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.Role;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserRole;
@@ -20,6 +22,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 
 @Slf4j
 @Component
@@ -102,6 +106,22 @@ public class JwtProviderImpl implements JwtProvider {
     private Claims getClaims(@NonNull String token, @NonNull Key secret) {
         return Jwts.parserBuilder()
                 .setSigningKey(secret).build().parseClaimsJws(token).getBody();
+    }
+
+    public String getTokenFromRequest(HttpServletRequest request) {
+        final String bearer = request.getHeader(AUTHORIZATION);
+        if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
+            return bearer.substring(7);
+        }
+        return null;
+    }
+
+    public Long getUserIdFromJwt(String token) {
+        return Long.valueOf(Jwts.parser()
+                .setSigningKey(jwtAccessSecret)
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject());
     }
 
 }

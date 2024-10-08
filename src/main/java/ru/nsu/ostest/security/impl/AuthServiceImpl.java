@@ -86,11 +86,6 @@ public class AuthServiceImpl implements AuthService {
         return getJwtResponse(user);
     }
 
-    @Override
-    public UserPasswordDto register(@NonNull UserCreationRequestDto userDto) throws BadRequestException {
-        log.info("Processing registration request");
-        return userService.addUser(userDto);
-    }
 
     public Long getUserIdFromJwt(HttpServletRequest request) {
         String jwt = jwtProviderImpl.getTokenFromRequest(request);

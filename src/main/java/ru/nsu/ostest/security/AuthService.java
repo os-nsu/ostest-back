@@ -15,6 +15,8 @@ public interface AuthService {
 
     JwtResponse refresh(@NonNull String refreshToken);
 
+    Long getUserIdFromJwt(HttpServletRequest request);
+
     UserPasswordDto register(@NonNull UserCreationRequestDto userDto) throws BadRequestException;
 
     Long getUserIdFromJwt(HttpServletRequest request);

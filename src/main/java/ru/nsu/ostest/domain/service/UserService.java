@@ -78,6 +78,10 @@ public class UserService {
         return password;
     }
 
+    public UserDto getCurrentUserInfoByUserId(Long userId) {
+        User user = findUserById(userId);
+        return userMapper.userToUserResponseDto(user);
+    }
     private void validateUserAccess(User user) {
         if (!AuthServiceCommon.hasAccessOrAdminRole(user.getUsername())) {
             log.error("User has no rights to update profile");

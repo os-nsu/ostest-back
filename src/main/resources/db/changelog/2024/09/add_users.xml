@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="2" author="alina">
+        <insert tableName="role">
+            <column name="name" value="ADMIN"/>
+            <column name="id" value="1"/>
+        </insert>
+        <insert tableName="role">
+            <column name="name" value="STUDENT"/>
+            <column name="id" value="2"/>
+        </insert>
+        <insert tableName="role">
+            <column name="id" value="3"/>
+            <column name="name" value="TEACHER"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="3" author="alina">
+        <insert tableName="group">
+            <column name="name" value="test_group"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="4" author="alina">
+        <insert tableName="user">
+            <column name="first_name" value="Robert"/>
+            <column name="second_name" value="Pattinson"/>
+            <column name="username" value="batman_forever"/>
+            <column name="group_id" value="1"/>
+        </insert>
+        <insert tableName="user">
+            <column name="first_name" value="Dora"/>
+            <column name="second_name" value="Explorer"/>
+            <column name="username" value="dora_explorer"/>
+            <column name="group_id" value="1"/>
+        </insert>
+        <insert tableName="user">
+            <column name="first_name" value="Tom"/>
+            <column name="second_name" value="Jerry"/>
+            <column name="username" value="catch_me_if_u_can"/>
+            <column name="group_id" value="1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="5" author="alina">
+        <insert tableName="user_role">
+            <column name="user_id" value="1"/>
+            <column name="role_id" value="1"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="user_id" value="2"/>
+            <column name="role_id" value="2"/>
+        </insert>
+        <insert tableName="user_role">
+            <column name="user_id" value="3"/>
+            <column name="role_id" value="3"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="6" author="alina">
+        <sql>CREATE
+        EXTENSION IF NOT EXISTS pgcrypto;</sql>
+    </changeSet>
+
+    <changeSet id="7" author="alina">
+        <insert tableName="user_password">
+            <column name="user_id" value="1"/>
+            <column name="password"
+                    value="$2a$08$JEns.7cR/LTISsXW9ePaOOnF8OMarJyyyEJTq5PDGdsVY6CqRgwfK"/>
+        </insert>
+        <insert tableName="user_password">
+            <column name="user_id" value="2"/>
+            <column name="password"
+                    value="$2a$08$vUvTUwyei5i7GN0PLZ1L7OWkSak3qkcCkTyR2qI/NgGamd.xzt72i"/>
+        </insert>
+        <insert tableName="user_password">
+            <column name="user_id" value="3"/>
+            <column name="password"
+                    value="$2a$08$gTkAVJH5HGlSp8tJIB8JAOTOoEyDRWtKQjTkA5PLN9ZbBVaFmHK3u"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

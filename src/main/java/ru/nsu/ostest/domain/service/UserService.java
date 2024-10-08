@@ -3,15 +3,20 @@ package ru.nsu.ostest.domain.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.mapstruct.MappingTarget;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.UserUpdateRequestDto;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserPassword;
+import ru.nsu.ostest.domain.exception.UserNotFoundException;
 import ru.nsu.ostest.domain.repository.UserRepository;
+import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
+import ru.nsu.ostest.security.impl.AuthServiceCommon;
 import ru.nsu.ostest.security.utils.PasswordGenerator;
 
 @Slf4j
@@ -23,6 +28,7 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final GroupService groupService;
     private final RoleService roleService;
+    private final PostMapper postMapper;
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
@@ -67,4 +73,20 @@ public class UserService {
     }
 
 
+    public void updateUser(Long userId, @MappingTarget UserUpdateRequestDto userUpdateDto) {
+        log.info("Processing update profile request");
+        if (userUpdateDto == null) {
+            return;
+        }
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException("User not found"));
+        if (!AuthServiceCommon.checkAuthorities(user.getUsername())) {
+            log.error("User has no rights to update profile");
+            throw new AuthException("No rights");
+        }
+
+        postMapper.update(userUpdateDto, user);
+        postMapper.mapGroup(userUpdateDto, user, groupService);
+
+        userRepository.save(user);
+    }
 }

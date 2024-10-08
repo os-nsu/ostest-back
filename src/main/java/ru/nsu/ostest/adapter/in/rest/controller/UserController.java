@@ -1,13 +1,21 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.user.*;
+import ru.nsu.ostest.domain.service.UserService;
+import ru.nsu.ostest.security.AuthService;
 
 import java.util.List;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/api/user")
 public class UserController {
+
+    private final AuthService authService;
+    private final UserService userService;
 
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable Long id) {
@@ -35,9 +43,10 @@ public class UserController {
         throw new IllegalArgumentException("Not implemented");
     }
 
-    @PutMapping
-    public UserDto editUser(@RequestBody UserEditionRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> editUser(@PathVariable Long id, @RequestBody UserUpdateRequestDto userUpdateRequest) {
+        userService.updateUser(id, userUpdateRequest);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")

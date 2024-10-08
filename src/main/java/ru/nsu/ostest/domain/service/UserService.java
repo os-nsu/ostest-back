@@ -57,14 +57,21 @@ public class UserService {
         user.setGroup(groupService.findGroupByName(userDto.groupNumber()));
 
         String password = PasswordGenerator.generatePassword();
-        UserPassword userPassword = UserPassword.builder()
-                .user(user)
-                .password(passwordEncoder.encode(password))
-                .build();
-
-        user.setUserPassword(userPassword);
+        setUserPassword(password, user);
         return password;
     }
 
+    public void changePassword(String username, String newPassword) {
+        User user = findUserByUsername(username);
+        setUserPassword(newPassword, user);
+        userRepository.save(user);
+    }
 
+    private void setUserPassword(String newPassword, User user) {
+        UserPassword userPassword = UserPassword.builder()
+                .user(user)
+                .password(passwordEncoder.encode(newPassword))
+                .build();
+        user.setUserPassword(userPassword);
+    }
 }

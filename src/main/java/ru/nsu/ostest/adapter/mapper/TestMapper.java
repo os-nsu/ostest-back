@@ -18,8 +18,9 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 public interface TestMapper {
     Test testCreationRequestDtoToTest(TestCreationRequestDto testCreationRequestDto);
 
+    @Mapping(source = "script", target = "test.scriptBody")
     void testEditionRequestDtoToTest(
-            @MappingTarget Test test, TestEditionRequestDto testEditionRequestDto
+            @MappingTarget Test test, TestEditionRequestDto testEditionRequestDto, byte[] script
     );
 
     TestDto testToTestDto(Test test);

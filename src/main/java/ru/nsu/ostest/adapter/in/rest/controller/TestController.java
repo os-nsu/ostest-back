@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import ru.nsu.ostest.adapter.in.rest.model.test.*;
-import ru.nsu.ostest.adapter.mapper.TestMapper;
 import ru.nsu.ostest.domain.service.TestService;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,7 +14,6 @@ import java.util.List;
 @RequestMapping("/api/test")
 public class TestController {
     private final TestService testService;
-    private final TestMapper testMapper;
 
     @PostMapping
     public TestDto createTest(
@@ -30,7 +28,7 @@ public class TestController {
         return testService.getTest(id);
     }
 
-    @PostMapping("/search")
+    @GetMapping("/search")
     public List<ShortTestDto> searchTests() {
         return testService.getAllTests();
     }

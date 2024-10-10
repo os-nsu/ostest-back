@@ -54,7 +54,7 @@ public class TestService {
 
         Test test = testRepository.findById(testEditionRequestDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Test not found."));
-        testMapper.testEditionRequestDtoToTest(test, testEditionRequestDto);
+        testMapper.testEditionRequestDtoToTest(test, testEditionRequestDto, getBytesFromFile(file));
 
         return testMapper.testToTestDto(test);
     }

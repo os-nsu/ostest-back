@@ -1,5 +1,6 @@
 package ru.nsu.ostest.domain.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,9 +25,10 @@ public class SessionService {
 
     @Transactional
     public SessionDto create(StartSessionRequestDto startSessionRequestDto) {
-        //TODO: role checking
-        User student = userRepository.findById(startSessionRequestDto.studentId()).orElse(null);
-        Laboratory laboratory = laboratoryRepository.findById(startSessionRequestDto.laboratoryId()).orElse(null);
+        User student = userRepository.findById(startSessionRequestDto.studentId())
+                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+        Laboratory laboratory = laboratoryRepository.findById(startSessionRequestDto.laboratoryId())
+                .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
 
         Session session = new Session();
         session.setStudent(student);

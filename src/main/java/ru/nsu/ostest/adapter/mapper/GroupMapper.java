@@ -6,7 +6,6 @@ import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
-import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 import java.util.List;
@@ -20,6 +19,6 @@ public interface GroupMapper {
 
     GroupDto groupToGroupDto(Group group);
 
-    List<GroupDto> groupsToGroupDtoList(List<Test> tests);
+    List<GroupDto> groupsToGroupDtoList(List<Group> groups);
 
 }

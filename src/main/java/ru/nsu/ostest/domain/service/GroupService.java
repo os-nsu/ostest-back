@@ -7,11 +7,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.ShortTestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.adapter.mapper.GroupMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
 import ru.nsu.ostest.domain.repository.GroupRepository;
+
+import java.util.List;
 
 @Slf4j
 @AllArgsConstructor
@@ -56,12 +59,15 @@ public class GroupService {
         return groupDto;
     }
 
+    public List<GroupDto> getAllGroups() {
+        List<GroupDto> list = groupMapper.groupsToGroupDtoList(groupRepository.findAll());
+
+        log.info(GROUPS_FOUND_MESSAGE_TEMPLATE, list.size());
+        return list;
+    }
+
     //-----------------------------------------------------------------------------
 
-//    public Group findGroupByName(String name) {
-//        return groupRepository.findByName(name).orElseThrow(
-//                () -> new NotFoundException("Couldn't find group with name: " + name));
-//    }
 
     private void checkIfDuplicatedName(String name, Long exceptedId) {
         Group group = groupRepository.findByName(name);

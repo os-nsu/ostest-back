@@ -21,13 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @Service
 public class GroupService {
-    private static final String GROUP_CREATED_MESSAGE_TEMPLATE = "Entity group created: {}";
-    private static final String GROUP_SAVED_MESSAGE_TEMPLATE = "Entity group saved: {}";
-    private static final String GROUP_FOUND_MESSAGE_TEMPLATE = "Found group with id = {}";
-    private static final String GROUPS_FOUND_MESSAGE_TEMPLATE = "N = {} groups found.";
-    private static final String GROUP_DELETED_MESSAGE_TEMPLATE = "Group with id = {} deleted";
     private static final String GROUP_NOT_FOUND_MESSAGE_TEMPLATE = "Group not found.";
-    private static final String GROUP_REPLACED_MESSAGE_TEMPLATE = "Group named {} replaced by group {}}";
     private static final String DUPLICATED_NAME_MESSAGE = "A group with this name already exists.";
 
     private final GroupRepository groupRepository;
@@ -42,10 +36,9 @@ public class GroupService {
         checkIfDuplicatedName(request.name());
 
         Group group = groupMapper.groupCreationRequestDtoToGroup(request);
-        log.debug(GROUP_CREATED_MESSAGE_TEMPLATE, group);
 
         group = groupRepository.save(group);
-        log.info(GROUP_SAVED_MESSAGE_TEMPLATE, group);
+        log.info("Entity group saved: {}", group);
 
         return groupMapper.groupToGroupDto(group);
     }
@@ -54,14 +47,12 @@ public class GroupService {
         GroupDto groupDto = groupMapper.groupToGroupDto(groupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE)));
 
-        log.info(GROUP_FOUND_MESSAGE_TEMPLATE, id);
         return groupDto;
     }
 
     public List<GroupSearchRequestDto> getAllGroups() {
         List<GroupSearchRequestDto> list = groupMapper.groupsToGroupDtoList(groupRepository.findAll());
 
-        log.info(GROUPS_FOUND_MESSAGE_TEMPLATE, list.size());
         return list;
     }
 
@@ -73,14 +64,13 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE));
         groupMapper.groupEditionRequestDtoToGroup(group, groupEditionRequestDto);
 
-        log.info(GROUP_REPLACED_MESSAGE_TEMPLATE, groupEditionRequestDto.name(), group);
+        log.info("Group named {} replaced by group {}}", groupEditionRequestDto.name(), group);
         return groupMapper.groupToGroupDto(group);
     }
 
     @Transactional
     public void delete(Long id) {
         groupRepository.deleteById(id);
-        log.info(GROUP_DELETED_MESSAGE_TEMPLATE, id);
     }
 
 

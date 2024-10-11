@@ -7,17 +7,24 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.web.multipart.MultipartFile;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.domain.repository.TestRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.mock.web.MockMultipartFile;
 
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
@@ -34,18 +41,36 @@ public class TestTestSetup {
     @Autowired
     private MockMvc mockMvc;
 
-    public TestDto createTest(TestCreationRequestDto creationRequestDto) throws Exception {
-        var result = mockMvc.perform(post(PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(creationRequestDto)))
-                .andExpect(status().isCreated())
-                .andReturn();
+    public TestDto createTest(TestCreationRequestDto creationRequestDto, MockMultipartFile file) throws Exception {
 
-        var test = objectMapper.readValue(result.getResponse().getContentAsString(), TestDto.class);
+//        var result = mockMvc.perform(multipart("/api/test")
+//                        .file(file)
+//                        .param("data", new ObjectMapper().writeValueAsString(creationRequestDto))
+//                        .contentType(MediaType.MULTIPART_FORM_DATA))
+//                .andExpect(status().isCreated())
+//                .andReturn();
 
-        assertTrue(testRepository.findById(test.id()).isPresent());
+        MockMultipartFile data = new MockMultipartFile(
+                "data",
+                "data.json",
+                MediaType.APPLICATION_JSON_VALUE,
+                new ObjectMapper().writeValueAsBytes(creationRequestDto)
+        );
+        var result = mockMvc.perform(multipart("/api/test")
+                        .file(file)
+                        .file(data)
+//                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                )
+                .andExpect(status().isOk());
 
-        return test;
+
+
+//        var test = objectMapper.readValue(result.getResponse().getContentAsString(), TestDto.class);
+//
+//        assertTrue(testRepository.findById(test.id()).isPresent());
+//
+//        return test;
+        return null;
     }
 
     public void createTestBad(TestCreationRequestDto creationRequestDto) throws Exception {

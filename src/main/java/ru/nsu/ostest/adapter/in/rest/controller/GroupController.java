@@ -10,6 +10,7 @@ import ru.nsu.ostest.adapter.in.rest.model.group.GroupSearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.ShortTestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
 import ru.nsu.ostest.domain.service.GroupService;
 
 import java.util.List;
@@ -36,15 +37,14 @@ public class GroupController {
         return groupService.getAllGroups();
     }
 
+    @PutMapping
+    public GroupDto editGroup(@RequestBody GroupEditionRequestDto request) {
+        return groupService.update(request);
+    }
+
 
 
     //----------------
-
-
-    @PutMapping
-    public GroupDto editGroup(@RequestBody GroupEditionRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
-    }
 
     @DeleteMapping("/{id}")
     public void deleteGroup(@PathVariable Long id) {

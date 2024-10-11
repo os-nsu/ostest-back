@@ -37,4 +37,11 @@ public class SessionService {
         session = sessionRepository.save(session);
         return sessionMapper.sessionToSessionDto(session);
     }
+
+    public SessionDto findById(Long id) {
+        Session session = sessionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Session not found"));
+
+        return sessionMapper.sessionToSessionDto(session);
+    }
 }

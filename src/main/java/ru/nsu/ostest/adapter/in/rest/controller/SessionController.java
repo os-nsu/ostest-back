@@ -24,7 +24,7 @@ public class SessionController {
 
     @GetMapping("/{id}")
     public SessionDto getSession(@PathVariable Long id) {
-        throw new IllegalArgumentException("Not implemented");
+        return sessionService.findById(id);
     }
 
     @PostMapping("/search")

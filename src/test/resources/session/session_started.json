@@ -1,0 +1,18 @@
+{
+  "id": null,
+  "student": {
+    "id": null,
+    "username": "username",
+    "firstName": "firstName",
+    "secondName": "secondName",
+    "groupNumber": "21207",
+    "role": "STUDENT"
+  },
+  "laboratory": {
+    "id": null,
+    "name": "Laboratory",
+    "deadline": "2024-10-07T07:02:27",
+    "isHidden": "false"
+  },
+  "attempts": []
+}

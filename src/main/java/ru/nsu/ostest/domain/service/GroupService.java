@@ -1,11 +1,13 @@
 package ru.nsu.ostest.domain.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.adapter.mapper.GroupMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
@@ -44,6 +46,14 @@ public class GroupService {
         log.info(GROUP_SAVED_MESSAGE_TEMPLATE, group);
 
         return groupMapper.groupToGroupDto(group);
+    }
+
+    public GroupDto getGroup(Long id) {
+        GroupDto groupDto = groupMapper.groupToGroupDto(groupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE)));
+
+        log.info(GROUP_FOUND_MESSAGE_TEMPLATE, id);
+        return groupDto;
     }
 
     //-----------------------------------------------------------------------------

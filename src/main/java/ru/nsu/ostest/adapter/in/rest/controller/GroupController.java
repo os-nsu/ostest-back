@@ -25,24 +25,20 @@ public class GroupController {
         return groupService.create(request);
     }
 
-
-    //----------------
-
     @GetMapping("/{id}")
     public GroupDto getGroup(@PathVariable Long id) {
-        throw new IllegalArgumentException("Not implemented");
+        return groupService.getGroup(id);
     }
+
+
+
+
+    //----------------
 
     @GetMapping("/search")
     public List<GroupDto> searchGroups(@RequestBody GroupSearchRequestDto request) {
         throw new IllegalArgumentException("Not implemented");
     }
-
-//    @PostMapping
-//    public GroupDto createGroup(@RequestBody GroupCreationRequestDto request) {
-//
-//        throw new IllegalArgumentException("Not implemented");
-//    }
 
     @PutMapping
     public GroupDto editGroup(@RequestBody GroupEditionRequestDto request) {

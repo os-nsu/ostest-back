@@ -56,6 +56,13 @@ public class TestService {
         return testDto;
     }
 
+    public byte[] getScript(Long id) {
+        Test test = testRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(TEST_NOT_FOUND_MESSAGE_TEMPLATE));
+
+        return test.getScriptBody();
+    }
+
     public List<ShortTestDto> getAllTests() {
         List<ShortTestDto> list = testMapper.testsToShortTestDtoList(testRepository.findAll());
 

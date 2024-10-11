@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.GroupSearchRequestDto;
 import ru.nsu.ostest.adapter.mapper.GroupMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
@@ -57,8 +58,8 @@ public class GroupService {
         return groupDto;
     }
 
-    public List<GroupDto> getAllGroups() {
-        List<GroupDto> list = groupMapper.groupsToGroupDtoList(groupRepository.findAll());
+    public List<GroupSearchRequestDto> getAllGroups() {
+        List<GroupSearchRequestDto> list = groupMapper.groupsToGroupDtoList(groupRepository.findAll());
 
         log.info(GROUPS_FOUND_MESSAGE_TEMPLATE, list.size());
         return list;

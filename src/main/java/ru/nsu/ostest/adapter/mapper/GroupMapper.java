@@ -5,6 +5,7 @@ import org.mapstruct.MappingTarget;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.GroupSearchRequestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
@@ -19,6 +20,6 @@ public interface GroupMapper {
 
     GroupDto groupToGroupDto(Group group);
 
-    List<GroupDto> groupsToGroupDtoList(List<Group> groups);
+    List<GroupSearchRequestDto> groupsToGroupDtoList(List<Group> groups);
 
 }

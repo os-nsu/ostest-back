@@ -52,6 +52,9 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.testcontainers:junit-jupiter'
+    testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 
     liquibaseRuntime 'org.liquibase:liquibase-core'
     liquibaseRuntime 'org.liquibase:liquibase-groovy-dsl:2.0.1'

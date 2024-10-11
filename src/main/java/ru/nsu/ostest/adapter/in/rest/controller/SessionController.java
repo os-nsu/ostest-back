@@ -29,7 +29,7 @@ public class SessionController {
 
     @PostMapping("/search")
     public List<SessionDto> searchSessions(@RequestBody SearchSessionRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+        return sessionService.searchSession(request);
     }
 
     @PostMapping("/{sessionId}/attempt")

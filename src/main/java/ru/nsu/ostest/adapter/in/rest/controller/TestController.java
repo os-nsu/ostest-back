@@ -24,7 +24,7 @@ public class TestController {
     }
 
     @GetMapping("/{id}")
-    public TestDto getTest(@PathVariable Long id) {
+    public FullTestDto getTest(@PathVariable Long id) {
         return testService.getTest(id);
     }
 

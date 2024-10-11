@@ -3,10 +3,7 @@ package ru.nsu.ostest.adapter.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import ru.nsu.ostest.adapter.in.rest.model.test.ShortTestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.*;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 
@@ -24,6 +21,8 @@ public interface TestMapper {
     );
 
     TestDto testToTestDto(Test test);
+
+    FullTestDto testToFullTestDto(Test test);
 
     List<ShortTestDto> testsToShortTestDtoList(List<Test> tests);
 

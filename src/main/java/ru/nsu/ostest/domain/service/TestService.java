@@ -48,12 +48,12 @@ public class TestService {
         return testMapper.testToTestDto(test);
     }
 
-    public TestDto getTest(Long id) {
-        TestDto testDto = testMapper.testToTestDto(testRepository.findById(id)
+    public FullTestDto getTest(Long id) {
+        FullTestDto fullTestDto = testMapper.testToFullTestDto(testRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(TEST_NOT_FOUND_MESSAGE_TEMPLATE)));
 
         log.info(TEST_FOUND_MESSAGE_TEMPLATE, id);
-        return testDto;
+        return fullTestDto;
     }
 
     public List<ShortTestDto> getAllTests() {

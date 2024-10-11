@@ -29,7 +29,7 @@ public class TestService {
     private static final String TEST_NOT_FOUND_MESSAGE_TEMPLATE = "Test not found.";
     private static final String TEST_REPLACED_MESSAGE_TEMPLATE = "Test named {} replaced by test {}}";
     private static final String FILE_READ_MESSAGE = "File read.";
-    private static final String DUPLICATED_NAME_MESSAGE = "A file with this name already exists.";
+    private static final String DUPLICATED_NAME_MESSAGE = "A test with this name already exists.";
     private static final String FILE_READING_FAILED_MESSAGE = "Failed to read file.";
 
     private final TestRepository testRepository;

@@ -16,4 +16,9 @@ public class GroupService {
                 () -> new NotFoundException("Couldn't find group with name: " + name));
     }
 
+    public Group findGroupById(Long id) {
+        return groupRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Couldn't find group with id: " + id));
+    }
+
 }

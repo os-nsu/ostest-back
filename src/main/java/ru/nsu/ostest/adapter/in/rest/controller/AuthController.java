@@ -2,12 +2,10 @@ package ru.nsu.ostest.adapter.in.rest.controller;
 
 import lombok.AllArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
 import ru.nsu.ostest.adapter.in.rest.model.user.RefreshJwtRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
@@ -29,6 +27,7 @@ public class AuthController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/registration")
+    @ResponseStatus(HttpStatus.CREATED)
     public UserPasswordDto register(@RequestBody UserCreationRequestDto user) throws BadRequestException {
         return authService.register(user);
     }

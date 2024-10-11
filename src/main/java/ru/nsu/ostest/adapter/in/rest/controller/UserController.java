@@ -1,9 +1,12 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.apache.coyote.BadRequestException;
 import org.springframework.web.bind.annotation.*;
-import ru.nsu.ostest.adapter.in.rest.model.user.*;
+import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.UserSearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.UsersBatchCreationRequestDto;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
 
@@ -33,10 +36,6 @@ public class UserController {
         throw new IllegalArgumentException("Not implemented");
     }
 
-    @PostMapping
-    public UserDto createUser(@RequestBody UserCreationRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
-    }
 
     @PostMapping("/batch")
     public List<UserDto> createUsers(@RequestBody UsersBatchCreationRequestDto request) {
@@ -44,14 +43,13 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> editUser(@PathVariable Long id, @RequestBody UserUpdateRequestDto userUpdateRequest) {
-        userService.updateUser(id, userUpdateRequest);
-        return ResponseEntity.ok().build();
+    public UserDto editUser(@PathVariable Long id, @RequestBody UserEditionRequestDto userUpdateRequest) throws BadRequestException {
+        return userService.updateUser(id, userUpdateRequest);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        throw new IllegalArgumentException("Not implemented");
+        userService.deleteById(id);
     }
 
 }

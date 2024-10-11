@@ -32,6 +32,11 @@ public class SessionController {
         return sessionService.searchSession(request);
     }
 
+    @GetMapping("/user/{userId}")
+    public List<SessionDto> getSessionsByUserId(@PathVariable Long userId) {
+        return sessionService.getSessionsByUserId(userId);
+    }
+
     @PostMapping("/{sessionId}/attempt")
     public AttemptDto makeAttempt() {
         throw new IllegalArgumentException("Not implemented");

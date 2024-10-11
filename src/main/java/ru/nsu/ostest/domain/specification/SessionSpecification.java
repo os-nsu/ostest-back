@@ -10,4 +10,11 @@ public class SessionSpecification {
                 criteriaBuilder.equal(root.get("laboratory.id"), laboratoryId)
         );
     }
+
+    public static Specification<Session> byUserId(Long userId) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.or(
+                criteriaBuilder.equal(root.get("student.id"), userId),
+                criteriaBuilder.equal(root.get("teacher.id"), userId)
+        );
+    }
 }

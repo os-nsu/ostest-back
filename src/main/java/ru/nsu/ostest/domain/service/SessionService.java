@@ -56,4 +56,9 @@ public class SessionService {
         Specification<Session> spec = SessionSpecification.byStudentIdAndLaboratoryId(studentId, laboratoryId);
         return sessionMapper.sessionToSessionDto(sessionRepository.findAll(spec));
     }
+
+    public List<SessionDto> getSessionsByUserId(Long userId) {
+        Specification<Session> spec = SessionSpecification.byUserId(userId);
+        return sessionMapper.sessionToSessionDto(sessionRepository.findAll(spec));
+    }
 }

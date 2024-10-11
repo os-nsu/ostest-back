@@ -1,45 +1,42 @@
 package ru.nsu.ostest.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
-import ru.nsu.ostest.domain.repository.TestRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import org.springframework.mock.web.MockMultipartFile;
 
-@SpringBootTest
-@Import({TestTestSetup.class})
+
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, statements = "delete from test")
+@Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
+@Import({TestTestSetup.class})
+@SpringBootTest(properties = {
+//        "logging.level.sql=trace"
+})
 public class TestControllerIntegrationTest {
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            "postgres:latest"
+    );
 
     private static final String TEST_NAME = "Test Test";
     private static final String TEST_DESCRIPTION = "Test Description";
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private TestTestSetup testTestSetup;
-
-    @Autowired
-    private TestRepository testRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setUp() {
-        testRepository.deleteAll();
-    }
 
 
     @Test
@@ -149,6 +146,7 @@ public class TestControllerIntegrationTest {
         );
         testTestSetup.editTestBad(request, editedFile);
     }
+
 
     private void checkTest(TestDto actual, TestDto expected) {
         assertThat(actual)

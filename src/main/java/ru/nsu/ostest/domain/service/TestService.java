@@ -5,17 +5,17 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import ru.nsu.ostest.adapter.in.rest.model.test.ShortTestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
-import ru.nsu.ostest.adapter.mapper.TestMapper;
+
+import ru.nsu.ostest.adapter.in.rest.model.test.*;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
-import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
+import ru.nsu.ostest.adapter.mapper.TestMapper;
 import ru.nsu.ostest.domain.repository.TestRepository;
 
+import org.springframework.web.multipart.MultipartFile;
+import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
+import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
+
 import java.util.List;
 
 @Slf4j

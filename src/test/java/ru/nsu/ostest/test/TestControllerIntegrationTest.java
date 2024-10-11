@@ -60,7 +60,6 @@ public class TestControllerIntegrationTest {
     public void createTest_ShouldReturnCreated_WhenValidRequest() throws Exception {
 
         TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, null);
-
         MockMultipartFile file = new MockMultipartFile(
                 "file",
                 "testfile.txt",
@@ -71,7 +70,7 @@ public class TestControllerIntegrationTest {
 
         var testDto = testTestSetup.createTest(request, file);
 
-//        checkTest(testDto, testTestSetup.getTestDto("test/test_created.json"));
+        checkTest(testDto, testTestSetup.getTestDto("test/test_created.json"));
     }
 
     @Test
@@ -199,7 +198,7 @@ public class TestControllerIntegrationTest {
     private void checkTest(TestDto actual, TestDto expected) {
         assertThat(actual)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "category", "scriptBody", "laboratoriesLinks")
+                .ignoringFields("id", "testCategory")
                 .isEqualTo(expected);
     }
 

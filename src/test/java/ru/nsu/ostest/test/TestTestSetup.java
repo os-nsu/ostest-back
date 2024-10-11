@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.multipart.MultipartFile;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
+import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import ru.nsu.ostest.domain.repository.TestRepository;
 
 import java.io.IOException;
@@ -43,34 +44,25 @@ public class TestTestSetup {
 
     public TestDto createTest(TestCreationRequestDto creationRequestDto, MockMultipartFile file) throws Exception {
 
-//        var result = mockMvc.perform(multipart("/api/test")
-//                        .file(file)
-//                        .param("data", new ObjectMapper().writeValueAsString(creationRequestDto))
-//                        .contentType(MediaType.MULTIPART_FORM_DATA))
-//                .andExpect(status().isCreated())
-//                .andReturn();
-
         MockMultipartFile data = new MockMultipartFile(
                 "data",
                 "data.json",
                 MediaType.APPLICATION_JSON_VALUE,
                 new ObjectMapper().writeValueAsBytes(creationRequestDto)
         );
+
         var result = mockMvc.perform(multipart("/api/test")
                         .file(file)
                         .file(data)
-//                        .contentType(MediaType.MULTIPART_FORM_DATA)
                 )
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andReturn();
 
 
+        var testDto = objectMapper.readValue(result.getResponse().getContentAsString(), TestDto.class);
+        assertTrue(testRepository.findById(testDto.id()).isPresent());
 
-//        var test = objectMapper.readValue(result.getResponse().getContentAsString(), TestDto.class);
-//
-//        assertTrue(testRepository.findById(test.id()).isPresent());
-//
-//        return test;
-        return null;
+        return testDto;
     }
 
     public void createTestBad(TestCreationRequestDto creationRequestDto) throws Exception {

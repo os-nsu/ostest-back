@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.ostest.adapter.in.rest.model.session.SearchSessionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.StartSessionRequestDto;
 import ru.nsu.ostest.adapter.mapper.SessionMapper;
@@ -15,7 +15,6 @@ import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
-import ru.nsu.ostest.domain.specification.SessionSpecification;
 
 import java.util.List;
 
@@ -50,15 +49,14 @@ public class SessionService {
         return sessionMapper.sessionToSessionDto(session);
     }
 
-    public List<SessionDto> searchSession(SearchSessionRequestDto searchSessionRequestDto) {
-        Long studentId = searchSessionRequestDto.studentId();
-        Long laboratoryId = searchSessionRequestDto.laboratoryId();
-        Specification<Session> spec = SessionSpecification.byStudentIdAndLaboratoryId(studentId, laboratoryId);
-        return sessionMapper.sessionToSessionDto(sessionRepository.findAll(spec));
+    public SessionDto getLabSessionForStudent(GetLabSessionFroStudentRequestDto getLabSessionFroStudentRequestDto) {
+        Long studentId = getLabSessionFroStudentRequestDto.studentId();
+        Long laboratoryId = getLabSessionFroStudentRequestDto.laboratoryId();
+        Session session = sessionRepository.getSessionByStudentIdAndLaboratoryId(studentId, laboratoryId);
+        return sessionMapper.sessionToSessionDto(session);
     }
 
-    public List<SessionDto> getSessionsByUserId(Long userId) {
-        Specification<Session> spec = SessionSpecification.byUserId(userId);
-        return sessionMapper.sessionToSessionDto(sessionRepository.findAll(spec));
+    public List<SessionDto> getUserSessions(Long userId) {
+        return sessionMapper.sessionToSessionDto(sessionRepository.getSessionByStudentIdOrTeacherId(userId, userId));
     }
 }

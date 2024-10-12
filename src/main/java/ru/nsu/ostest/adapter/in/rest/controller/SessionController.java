@@ -3,7 +3,7 @@ package ru.nsu.ostest.adapter.in.rest.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.session.AttemptDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.SearchSessionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.StartSessionRequestDto;
 import ru.nsu.ostest.domain.service.SessionService;
@@ -27,14 +27,14 @@ public class SessionController {
         return sessionService.findById(id);
     }
 
-    @PostMapping("/search")
-    public List<SessionDto> searchSessions(@RequestBody SearchSessionRequestDto request) {
-        return sessionService.searchSession(request);
+    @GetMapping
+    public SessionDto getLabSessionForStudent(@RequestBody GetLabSessionFroStudentRequestDto request) {
+        return sessionService.getLabSessionForStudent(request);
     }
 
     @GetMapping("/user/{userId}")
-    public List<SessionDto> getSessionsByUserId(@PathVariable Long userId) {
-        return sessionService.getSessionsByUserId(userId);
+    public List<SessionDto> getUserSessions(@PathVariable Long userId) {
+        return sessionService.getUserSessions(userId);
     }
 
     @PostMapping("/{sessionId}/attempt")

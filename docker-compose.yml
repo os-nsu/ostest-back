@@ -11,6 +11,8 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - postgres
+    command: ["/usr/local/bin/wait-for-it", "postgres:5432", "--", "java", "-jar", "/app/os-test-0.0.1-SNAPSHOT-plain.jar"]
+
 
   postgres:
     image: postgres:16
@@ -23,3 +25,7 @@ services:
       POSTGRES_DB: os_test
     volumes:
       - ./docker/config/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

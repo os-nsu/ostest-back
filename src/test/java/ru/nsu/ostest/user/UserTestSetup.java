@@ -44,8 +44,6 @@ public class UserTestSetup {
 
 
     public UserDto createUser(UserCreationRequestDto creationRequestDto) throws Exception {
-
-
         var result = mockMvc.perform(post("/api/v1/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequestDto))

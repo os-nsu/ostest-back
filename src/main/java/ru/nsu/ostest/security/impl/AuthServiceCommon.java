@@ -12,7 +12,7 @@ public class AuthServiceCommon {
         return (JwtAuthentication) SecurityContextHolder.getContext().getAuthentication();
     }
 
-    public static boolean checkAuthorities(String login) {
+    public static boolean hasAccessOrAdminRole(String login) {
         JwtAuthentication principal = getAuthInfo();
         if (principal == null || login == null) {
             return false;

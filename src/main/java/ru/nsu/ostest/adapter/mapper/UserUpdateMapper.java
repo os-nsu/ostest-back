@@ -10,7 +10,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
         componentModel = MappingConstants.ComponentModel.SPRING,
         unmappedTargetPolicy = ReportingPolicy.IGNORE
 )
-public abstract class UserUpdateDtoMapper {
+public abstract class UserUpdateMapper {
     public abstract void update(UserEditionRequestDto updateUser, @MappingTarget User target);
 
 }

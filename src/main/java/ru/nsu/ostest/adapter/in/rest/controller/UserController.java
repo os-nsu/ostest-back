@@ -1,12 +1,12 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.BadRequestException;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserSearchRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UsersBatchCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.*;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
 
@@ -23,6 +23,13 @@ public class UserController {
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable Long id) {
         throw new IllegalArgumentException("Not implemented");
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/registration")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserPasswordDto register(@RequestBody UserCreationRequestDto userDto) throws BadRequestException {
+        return userService.addUser(userDto);
     }
 
     @GetMapping("/me")
@@ -43,7 +50,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto editUser(@PathVariable Long id, @RequestBody UserEditionRequestDto userUpdateRequest) throws BadRequestException {
+    public UserDto editUser(@PathVariable Long id, @NotNull @RequestBody UserEditionRequestDto userUpdateRequest) throws BadRequestException {
         return userService.updateUser(id, userUpdateRequest);
     }
 

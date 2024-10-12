@@ -44,7 +44,7 @@ public class UserTestSetup {
 
 
     public UserDto createUser(UserCreationRequestDto creationRequestDto) throws Exception {
-        var result = mockMvc.perform(post("/api/v1/registration")
+        var result = mockMvc.perform(post("/api/user/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequestDto))
                 )
@@ -60,7 +60,7 @@ public class UserTestSetup {
 
     public void createUserBad(UserCreationRequestDto creationRequestDto) throws Exception {
 
-        mockMvc.perform(post("/api/v1/registration")
+        mockMvc.perform(post("/api/user/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequestDto)))
                 .andExpect(status().isBadRequest());

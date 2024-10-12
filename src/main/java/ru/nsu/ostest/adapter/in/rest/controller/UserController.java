@@ -22,6 +22,13 @@ public class UserController {
         throw new IllegalArgumentException("Not implemented");
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PostMapping("/registration")
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserPasswordDto register(@RequestBody UserCreationRequestDto userDto) throws BadRequestException {
+        return userService.addUser(userDto);
+    }
+
     @GetMapping("/me")
     public UserDto getCurrentUserInfo(HttpServletRequest request) {
         return userService.getCurrentUserInfoByUserId(authService.getUserIdFromJwt(request));
@@ -42,14 +49,14 @@ public class UserController {
         throw new IllegalArgumentException("Not implemented");
     }
 
-    @PutMapping
-    public UserDto editUser(@RequestBody UserEditionRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+    @PatchMapping("/{id}")
+    public UserDto editUser(@PathVariable Long id, @NotNull @RequestBody UserEditionRequestDto userUpdateRequest) throws BadRequestException {
+        return userService.updateUser(id, userUpdateRequest);
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        throw new IllegalArgumentException("Not implemented");
+        userService.deleteById(id);
     }
 
 }

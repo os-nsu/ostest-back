@@ -10,11 +10,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.nsu.ostest.adapter.in.rest.exception.model.Error;
 import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
 import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
+import ru.nsu.ostest.domain.exception.UserNotFoundException;
 import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 import ru.nsu.ostest.security.impl.AuthConstants;
@@ -42,7 +45,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(Error.builder().code(ERROR_CODE_404).message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({NotFoundException.class})
+    @ExceptionHandler({NotFoundException.class, UserNotFoundException.class})
     protected ResponseEntity<Object> handleNotFound(Exception e) {
         return new ResponseEntity<>(Error.builder().code(ERROR_CODE_404).message(e.getMessage()).build(), HttpStatus.NOT_FOUND);
     }

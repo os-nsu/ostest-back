@@ -1,3 +1,4 @@
+
 package ru.nsu.ostest.domain.service;
 
 import lombok.AllArgsConstructor;
@@ -14,6 +15,11 @@ public class GroupService {
     public Group findGroupByName(String name) {
         return groupRepository.findByName(name).orElseThrow(
                 () -> new NotFoundException("Couldn't find group with name: " + name));
+    }
+
+    public Group findGroupById(Long id) {
+        return groupRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Couldn't find group with id: " + id));
     }
 
 }

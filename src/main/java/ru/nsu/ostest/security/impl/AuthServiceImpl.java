@@ -4,11 +4,9 @@ import io.jsonwebtoken.Claims;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.service.UserService;
@@ -83,12 +81,6 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = userService.findUserById(Long.valueOf(userId));
         return getJwtResponse(user);
-    }
-
-    @Override
-    public UserPasswordDto register(@NonNull UserCreationRequestDto userDto) throws BadRequestException {
-        log.info("Processing registration request");
-        return userService.addUser(userDto);
     }
 
 }

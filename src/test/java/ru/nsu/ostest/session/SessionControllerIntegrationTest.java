@@ -1,12 +1,15 @@
 package ru.nsu.ostest.session;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.StartSessionRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
@@ -22,23 +25,31 @@ import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Import({SessionTestSetup.class})
 @AutoConfigureMockMvc(addFilters = false)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SessionControllerIntegrationTest {
     private static final String USER_NAME = "username";
     private static final String FIRST_NAME = "firstName";
     private static final String SECOND_NAME = "secondName";
     private static final String GROUP_NUMBER = "21207";
-    private static final RoleEnum ROLE = RoleEnum.STUDENT;
     private static final String LAB_NAME = "Laboratory";
     private static final String LAB_DESCRIPTION = "Description";
     private static final boolean IS_HIDDEN = false;
     private static final int SEMESTER_NUMBER = 1;
     private static final LocalDateTime DEADLINE = LocalDateTime.parse("2024-10-07T07:02:27");
+    private static final String SESSION_USER1_LAB1_DTO = "session/session_user1_lab1.json";
+    private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
+    private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";
+    private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
 
     @Autowired
     private LaboratoryMapper laboratoryMapper;
@@ -60,27 +71,138 @@ public class SessionControllerIntegrationTest {
 
     @Autowired
     private SessionTestSetup sessionTestSetup;
+    private final List<User> students = new ArrayList<>();
+    private final List<Laboratory> laboratories = new ArrayList<>();
+
+    @BeforeAll
+    void init() {
+        laboratoryRepository.deleteAll();
+        userRepository.deleteAll();
+        groupRepository.deleteAll();
+
+        Group group = createGroup(GROUP_NUMBER);
+        Laboratory laboratory1 = createLaboratory(createLaboratoryCreationRequestDto('1'));
+        Laboratory laboratory2 = createLaboratory(createLaboratoryCreationRequestDto('2'));
+        laboratories.add(laboratory1);
+        laboratories.add(laboratory2);
+
+        User student1 = createUser(createStudentCreationRequestDto('1'), group);
+        User student2 = createUser(createStudentCreationRequestDto('2'), group);
+        students.add(student1);
+        students.add(student2);
+    }
 
     @BeforeEach
     void setUp() {
-        userRepository.deleteAll();
         sessionRepository.deleteAll();
-        laboratoryRepository.deleteAll();
     }
 
     @Test
-    public void createSession_ShouldReturnOk_WhenValidRequest() throws Exception {
-        Group group = createGroup(GROUP_NUMBER);
+    public void createSession_ShouldReturnCreated_WhenValidRequest() throws Exception {
+        User student = students.getFirst();
+        Laboratory laboratory = laboratories.getFirst();
 
-        Laboratory laboratory = createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN));
+        var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.getId(), laboratory.getId()));
 
-        User user =
-                createUser(new UserCreationRequestDto(USER_NAME, FIRST_NAME, SECOND_NAME, GROUP_NUMBER, ROLE), group);
+        checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+    }
 
-        var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(user.getId(), laboratory.getId()));
+    @Test
+    public void getSessionById_ShouldReturnOk_WhenValidRequest() throws Exception {
+        User student1 = students.getFirst();
+        User student2 = students.get(1);
 
-        checkSession(sessionDto, sessionTestSetup.getSessionDto("session/session_started.json"));
+        Laboratory laboratory1 = laboratories.getFirst();
+        Laboratory laboratory2 = laboratories.get(1);
+
+        var sessionDto1 =
+                sessionTestSetup.startSession(new StartSessionRequestDto(student1.getId(), laboratory1.getId()));
+        var sessionDto2 =
+                sessionTestSetup.startSession(new StartSessionRequestDto(student2.getId(), laboratory2.getId()));
+
+        checkSession(sessionDto1, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+        checkSession(sessionDto2, sessionTestSetup.getSessionDto(SESSION_USER2_LAB2_DTO));
+
+        long session1Id = sessionDto1.id();
+        long session2Id = sessionDto2.id();
+
+        sessionDto1 = sessionTestSetup.getSessionById(session1Id);
+        sessionDto2 = sessionTestSetup.getSessionById(session2Id);
+
+        assertEquals(session1Id, sessionDto1.id());
+        assertEquals(session2Id, sessionDto2.id());
+
+        checkSession(sessionDto1, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+        checkSession(sessionDto2, sessionTestSetup.getSessionDto(SESSION_USER2_LAB2_DTO));
+    }
+
+    @Test
+    public void getLabSessionForStudent_ShouldReturnOk_WhenValidRequest() throws Exception {
+        User student1 = students.getFirst();
+        User student2 = students.get(1);
+
+        Laboratory laboratory1 = laboratories.getFirst();
+        Laboratory laboratory2 = laboratories.get(1);
+
+        var sessionDto1 =
+                sessionTestSetup.startSession(new StartSessionRequestDto(student1.getId(), laboratory1.getId()));
+        var sessionDto2 =
+                sessionTestSetup.startSession(new StartSessionRequestDto(student2.getId(), laboratory2.getId()));
+
+        checkSession(sessionDto1, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+        checkSession(sessionDto2, sessionTestSetup.getSessionDto(SESSION_USER2_LAB2_DTO));
+
+        long session1Id = sessionDto1.id();
+        long session2Id = sessionDto2.id();
+
+        sessionDto1 = sessionTestSetup.getLabSessionForStudent(
+                new GetLabSessionFroStudentRequestDto(student1.getId(), laboratory1.getId()));
+        sessionDto2 = sessionTestSetup.getLabSessionForStudent(
+                new GetLabSessionFroStudentRequestDto(student2.getId(), laboratory2.getId()));
+
+        assertEquals(session1Id, sessionDto1.id());
+        assertEquals(session2Id, sessionDto2.id());
+        assertEquals(laboratory1.getId(), sessionDto1.laboratory().id());
+        assertEquals(laboratory2.getId(), sessionDto2.laboratory().id());
+        assertEquals(student1.getId(), sessionDto1.student().id());
+        assertEquals(student2.getId(), sessionDto2.student().id());
+
+        checkSession(sessionDto1, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+        checkSession(sessionDto2, sessionTestSetup.getSessionDto(SESSION_USER2_LAB2_DTO));
+    }
+
+    @Test
+    public void getUserSessions_ShouldReturnOk_WhenValidRequest() throws Exception {
+        User student1 = students.getFirst();
+        User student2 = students.get(1);
+
+        Laboratory laboratory1 = laboratories.getFirst();
+        Laboratory laboratory2 = laboratories.get(1);
+
+        var sessionDto11 =
+                sessionTestSetup.startSession(new StartSessionRequestDto(student1.getId(), laboratory1.getId()));
+        var sessionDto22 =
+                sessionTestSetup.startSession(new StartSessionRequestDto(student2.getId(), laboratory2.getId()));
+        var sessionDto12 =
+                sessionTestSetup.startSession(new StartSessionRequestDto(student1.getId(), laboratory2.getId()));
+        var sessionDto21 =
+                sessionTestSetup.startSession(new StartSessionRequestDto(student2.getId(), laboratory1.getId()));
+
+        checkSession(sessionDto11, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+        checkSession(sessionDto22, sessionTestSetup.getSessionDto(SESSION_USER2_LAB2_DTO));
+        checkSession(sessionDto12, sessionTestSetup.getSessionDto(SESSION_USER1_LAB2_DTO));
+        checkSession(sessionDto21, sessionTestSetup.getSessionDto(SESSION_USER2_LAB1_DTO));
+
+        var user1Sessions = sessionTestSetup.getUserSessions(student1.getId());
+        var user2Sessions = sessionTestSetup.getUserSessions(student2.getId());
+
+        assertEquals(2, user1Sessions.size());
+        assertEquals(2, user2Sessions.size());
+
+        assertTrue(user1Sessions.contains(sessionDto11));
+        assertTrue(user1Sessions.contains(sessionDto12));
+        assertTrue(user2Sessions.contains(sessionDto21));
+        assertTrue(user2Sessions.contains(sessionDto22));
     }
 
     private Laboratory createLaboratory(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
@@ -98,6 +220,20 @@ public class SessionControllerIntegrationTest {
         Group group = new Group();
         group.setName(name);
         return groupRepository.save(group);
+    }
+
+    private LaboratoryCreationRequestDto createLaboratoryCreationRequestDto(char order) {
+        return new LaboratoryCreationRequestDto(LAB_NAME + order,
+                LAB_DESCRIPTION + order, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN);
+
+    }
+
+    private UserCreationRequestDto createStudentCreationRequestDto(char order) {
+        return new UserCreationRequestDto(USER_NAME + order,
+                FIRST_NAME + order,
+                SECOND_NAME + order,
+                GROUP_NUMBER, RoleEnum.STUDENT);
+
     }
 
     private void checkSession(SessionDto actual, SessionDto expected) {

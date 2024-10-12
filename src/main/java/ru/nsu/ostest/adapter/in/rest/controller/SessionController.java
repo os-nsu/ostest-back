@@ -1,6 +1,7 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.session.AttemptDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
@@ -18,6 +19,7 @@ public class SessionController {
     private final SessionService sessionService;
 
     @PostMapping("/start")
+    @ResponseStatus(HttpStatus.CREATED)
     public SessionDto startSession(@RequestBody StartSessionRequestDto request) {
         return sessionService.create(request);
     }

@@ -1,3 +1,4 @@
+
 package ru.nsu.ostest.domain.service;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -87,6 +88,11 @@ public class GroupService {
             log.error(DUPLICATED_NAME_MESSAGE);
             throw DuplicateTestNameException.of(name);
         }
+    }
+
+    public Group findGroupById(Long id) {
+        return groupRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Couldn't find group with id: " + id));
     }
 
 }

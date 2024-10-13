@@ -13,6 +13,7 @@ import java.util.List;
 @Table(name = "\"group\"")
 @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
+@RequiredArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Group {
 
@@ -22,6 +23,7 @@ public class Group {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     private String name;
 
     @OneToMany(mappedBy = "group", cascade = {CascadeType.PERSIST, CascadeType.MERGE})

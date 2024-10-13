@@ -14,6 +14,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
+import ru.nsu.ostest.domain.common.enums.TestCategory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,15 +42,8 @@ public class TestControllerIntegrationTest {
 
     @Test
     public void createTest_ShouldReturnCreated_WhenValidRequest() throws Exception {
-
-        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, null);
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "testfile.txt",
-                "text/plain",
-                "test content".getBytes()
-        );
-
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile("test content");
 
         var testDto = testTestSetup.createTest(request, file);
 
@@ -58,28 +52,16 @@ public class TestControllerIntegrationTest {
 
     @Test
     public void createTest_ShouldReturnConflict_WhenDuplicateName() throws Exception {
-
-        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, null);
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "testfile.txt",
-                "text/plain",
-                "test content".getBytes()
-        );
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile("test content");
 
         testTestSetup.createTestBad(request, file);
     }
 
     @Test
     public void deleteTest_ShouldReturnStatusOk_WhenTestExists() throws Exception {
-
-        TestCreationRequestDto request = new TestCreationRequestDto("test for deleting", TEST_DESCRIPTION, null);
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "testfile.txt",
-                "text/plain",
-                "test content".getBytes()
-        );
+        TestCreationRequestDto request = new TestCreationRequestDto("test for deleting", TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile("test content");
         var testDto = testTestSetup.createTest(request, file);
 
         testTestSetup.deleteTest(testDto.id());
@@ -87,24 +69,13 @@ public class TestControllerIntegrationTest {
 
     @Test
     public void editTest_ShouldReturnCreated_WhenValidRequest() throws Exception {
-
-        TestCreationRequestDto request = new TestCreationRequestDto("test name", "some description", null);
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "testfile.txt",
-                "text/plain",
-                "test content".getBytes()
-        );
+        TestCreationRequestDto request = new TestCreationRequestDto("test name", "some description", TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile("test content");
         TestDto createdTestDto = testTestSetup.createTest(request, file);
 
 
-        MockMultipartFile editedFile = new MockMultipartFile(
-                "file",
-                "testfile.txt",
-                "text/plain",
-                "new test content".getBytes()
-        );
-        TestEditionRequestDto testEditionRequestDto = new TestEditionRequestDto(createdTestDto.id(), "new name", "new description", null);
+        MockMultipartFile editedFile = createMultipartFile("new test content");
+        TestEditionRequestDto testEditionRequestDto = new TestEditionRequestDto(createdTestDto.id(), "new name", "new description", TestCategory.DEFAULT);
         TestDto editedTestDto = testTestSetup.editTest(testEditionRequestDto, editedFile);
 
 
@@ -116,43 +87,33 @@ public class TestControllerIntegrationTest {
         final String NAME1 = "name1";
         final String NAME2 = "name2";
 
-
-        TestCreationRequestDto request1 = new TestCreationRequestDto(NAME1, TEST_DESCRIPTION, null);
-        MockMultipartFile file1 = new MockMultipartFile(
-                "file",
-                "testfile.txt",
-                "text/plain",
-                "test content".getBytes()
-        );
+        TestCreationRequestDto request1 = new TestCreationRequestDto(NAME1, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file1 = createMultipartFile("test content 1");
         TestDto createdTestDto1 = testTestSetup.createTest(request1, file1);
 
-
-        TestCreationRequestDto request2 = new TestCreationRequestDto(NAME2, TEST_DESCRIPTION, null);
-        MockMultipartFile file2 = new MockMultipartFile(
-                "file",
-                "testfile.txt",
-                "text/plain",
-                "test content".getBytes()
-        );
+        TestCreationRequestDto request2 = new TestCreationRequestDto(NAME2, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file2 = createMultipartFile("test content 2");
         testTestSetup.createTest(request2, file2);
 
-
-        TestEditionRequestDto request = new TestEditionRequestDto(createdTestDto1.id(), NAME2, TEST_DESCRIPTION, null);
-        MockMultipartFile editedFile = new MockMultipartFile(
-                "file",
-                "testfile.txt",
-                "text/plain",
-                "new test content".getBytes()
-        );
+        TestEditionRequestDto request = new TestEditionRequestDto(createdTestDto1.id(), NAME2, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile editedFile = createMultipartFile("test content edited");
         testTestSetup.editTestBad(request, editedFile);
     }
 
 
+    private MockMultipartFile createMultipartFile(String content) {
+        return new MockMultipartFile(
+                "file",
+                "testfile.txt",
+                "text/plain",
+                content.getBytes()
+        );
+    }
+
     private void checkTest(TestDto actual, TestDto expected) {
         assertThat(actual)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "testCategory")
+                .ignoringFields("id")
                 .isEqualTo(expected);
     }
-
 }

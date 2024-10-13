@@ -14,6 +14,7 @@ import ru.nsu.ostest.adapter.mapper.GroupMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
 import ru.nsu.ostest.domain.repository.GroupRepository;
+import ru.nsu.ostest.security.exceptions.NotFoundException;
 
 import java.util.List;
 
@@ -39,7 +40,7 @@ public class GroupService {
         Group group = groupMapper.groupCreationRequestDtoToGroup(request);
 
         group = groupRepository.save(group);
-        log.info("Entity group saved: {}", group);
+        log.info("Entity group saved: {}", group.toString());
 
         return groupMapper.groupToGroupDto(group);
     }
@@ -65,7 +66,7 @@ public class GroupService {
                 .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE));
         groupMapper.groupEditionRequestDtoToGroup(group, groupEditionRequestDto);
 
-        log.info("Group named {} replaced by group {}}", groupEditionRequestDto.name(), group);
+        log.info("Group named {} replaced by group {}}", groupEditionRequestDto.name(), group.toString());
         return groupMapper.groupToGroupDto(group);
     }
 

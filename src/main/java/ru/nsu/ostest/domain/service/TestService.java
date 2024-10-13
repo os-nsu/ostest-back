@@ -3,6 +3,7 @@ package ru.nsu.ostest.domain.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 
 import ru.nsu.ostest.adapter.in.rest.model.test.*;
@@ -56,11 +57,11 @@ public class TestService {
         return testDto;
     }
 
-    public byte[] getScript(Long id) {
+    public ByteArrayResource getScript(Long id) {
         Test test = testRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(TEST_NOT_FOUND_MESSAGE_TEMPLATE));
 
-        return test.getScriptBody();
+        return new ByteArrayResource(test.getScriptBody());
     }
 
     public List<ShortTestDto> getAllTests() {

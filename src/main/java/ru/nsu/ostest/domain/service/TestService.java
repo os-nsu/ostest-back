@@ -22,14 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class TestService {
-    private static final String TEST_CREATED_MESSAGE_TEMPLATE = "Entity test created: {}";
-    private static final String TEST_SAVED_MESSAGE_TEMPLATE = "Entity test saved: {}";
-    private static final String TEST_FOUND_MESSAGE_TEMPLATE = "Found test with id = {}";
-    private static final String TESTS_FOUND_MESSAGE_TEMPLATE = "N = {} tests found.";
-    private static final String TEST_DELETED_MESSAGE_TEMPLATE = "Test with id = {} deleted";
     private static final String TEST_NOT_FOUND_MESSAGE_TEMPLATE = "Test not found.";
-    private static final String TEST_REPLACED_MESSAGE_TEMPLATE = "Test named {} replaced by test {}}";
-    private static final String FILE_READ_MESSAGE = "File read.";
     private static final String DUPLICATED_NAME_MESSAGE = "A file with this name already exists.";
     private static final String FILE_READING_FAILED_MESSAGE = "Failed to read file.";
 
@@ -42,10 +35,9 @@ public class TestService {
         checkIfDuplicatedName(testCreationRequestDto.name());
         Test test = testMapper.testCreationRequestDtoToTest(testCreationRequestDto);
         test.setScriptBody(getBytesFromFile(file));
-        log.debug(TEST_CREATED_MESSAGE_TEMPLATE, test);
 
         test = testRepository.save(test);
-        log.info(TEST_SAVED_MESSAGE_TEMPLATE, test);
+        log.info("Entity test saved: {}", test.toString());
         return testMapper.testToTestDto(test);
     }
 
@@ -53,7 +45,6 @@ public class TestService {
         TestDto testDto = testMapper.testToTestDto(testRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(TEST_NOT_FOUND_MESSAGE_TEMPLATE)));
 
-        log.info(TEST_FOUND_MESSAGE_TEMPLATE, id);
         return testDto;
     }
 
@@ -67,14 +58,13 @@ public class TestService {
     public List<ShortTestDto> getAllTests() {
         List<ShortTestDto> list = testMapper.testsToShortTestDtoList(testRepository.findAll());
 
-        log.info(TESTS_FOUND_MESSAGE_TEMPLATE, list.size());
         return list;
     }
 
     @Transactional
     public void delete(Long id) {
         testRepository.deleteById(id);
-        log.info(TEST_DELETED_MESSAGE_TEMPLATE, id);
+        log.info("Test with id = {} deleted", id);
     }
 
     @Transactional
@@ -85,7 +75,7 @@ public class TestService {
                 .orElseThrow(() -> new EntityNotFoundException(TEST_NOT_FOUND_MESSAGE_TEMPLATE));
         testMapper.testEditionRequestDtoToTest(test, testEditionRequestDto, getBytesFromFile(file));
 
-        log.info(TEST_REPLACED_MESSAGE_TEMPLATE, testEditionRequestDto.name(), test);
+        log.info("Test named {} replaced by test {}}", testEditionRequestDto.name(), test.toString());
         return testMapper.testToTestDto(test);
     }
 
@@ -97,7 +87,7 @@ public class TestService {
             log.error(FILE_READING_FAILED_MESSAGE);
             throw new RuntimeException(FILE_READING_FAILED_MESSAGE);
         }
-        log.info(FILE_READ_MESSAGE);
+        log.info("File read.");
         return script;
     }
 

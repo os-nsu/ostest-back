@@ -2,15 +2,16 @@
   "id": null,
   "student": {
     "id": null,
-    "username": "username",
-    "firstName": "firstName",
-    "secondName": "secondName",
+    "username": "username2",
+    "firstName": "firstName2",
+    "secondName": "secondName2",
     "groupNumber": "21207",
     "role": "STUDENT"
   },
   "laboratory": {
     "id": null,
-    "name": "Laboratory",
+    "name": "Laboratory1",
+    "description": "Description1",
     "deadline": "2024-10-07T07:02:27",
     "isHidden": "false"
   },

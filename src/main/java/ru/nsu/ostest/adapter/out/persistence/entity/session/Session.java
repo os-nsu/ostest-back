@@ -24,11 +24,11 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(cascade = {CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "student_id")
     private User student;
 
-    @OneToOne(cascade = {CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "teacher_id")
     private User teacher;
 

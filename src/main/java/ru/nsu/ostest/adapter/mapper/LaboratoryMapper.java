@@ -24,5 +24,7 @@ public interface LaboratoryMapper {
 
     Laboratory laboratoryEditionRequestDtoToLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto);
 
+    LaboratoryShortDto laboratoryDtoToLaboratoryShortDto(LaboratoryDto laboratoryDto);
+
     List<LaboratoryShortDto> laboratoriesToLaboratoryShortDtoList(List<Laboratory> laboratories);
 }

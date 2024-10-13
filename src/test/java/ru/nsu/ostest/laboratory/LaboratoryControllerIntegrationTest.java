@@ -9,11 +9,15 @@ import org.springframework.context.annotation.Import;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratorySearchRequestDto;
+import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 
 import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @Import({LaboratoryTestSetup.class})
@@ -25,12 +29,19 @@ public class LaboratoryControllerIntegrationTest {
     private static final boolean IS_HIDDEN = false;
     private static final int SEMESTER_NUMBER = 1;
     private static final LocalDateTime DEADLINE = LocalDateTime.parse("2024-10-07T07:02:27");
+    private static final String LABORATORY1_DTO = "laboratory/laboratory1.json";
+    private static final String LABORATORY2_DTO = "laboratory/laboratory2.json";
+    private static final String LABORATORY3_DTO = "laboratory/laboratory3.json";
+    private static final String LABORATORY4_DTO = "laboratory/laboratory4.json";
 
     @Autowired
     private LaboratoryTestSetup laboratoryTestSetup;
 
     @Autowired
     private LaboratoryRepository laboratoryRepository;
+
+    @Autowired
+    private LaboratoryMapper laboratoryMapper;
 
     @BeforeEach
     void setUp() {
@@ -109,6 +120,84 @@ public class LaboratoryControllerIntegrationTest {
                         createdLaboratoryDto.semesterNumber(),
                         createdLaboratoryDto.deadline(),
                         !IS_HIDDEN));
+    }
+
+    @Test
+    public void getLaboratoryById_ShouldReturnOk_WhenValidRequest() throws Exception {
+        var laboratoryDto1 = laboratoryTestSetup.createLaboratory(
+                new LaboratoryCreationRequestDto(LAB_NAME + '1', LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
+                        IS_HIDDEN));
+        var laboratoryDto2 = laboratoryTestSetup.createLaboratory(
+                new LaboratoryCreationRequestDto(LAB_NAME + '2', LAB_DESCRIPTION, 2, DEADLINE,
+                        true));
+
+        checkLaboratory(laboratoryDto1, laboratoryTestSetup.getLaboratoryDto(LABORATORY1_DTO));
+        checkLaboratory(laboratoryDto2, laboratoryTestSetup.getLaboratoryDto(LABORATORY2_DTO));
+
+        Long laboratory1Id = laboratoryDto1.id();
+        Long laboratory2Id = laboratoryDto2.id();
+
+        laboratoryDto1 = laboratoryTestSetup.getLaboratoryById(laboratory1Id);
+        laboratoryDto2 = laboratoryTestSetup.getLaboratoryById(laboratory2Id);
+
+        assertEquals(laboratory1Id, laboratoryDto1.id());
+        assertEquals(laboratory2Id, laboratoryDto2.id());
+
+        checkLaboratory(laboratoryDto1, laboratoryTestSetup.getLaboratoryDto(LABORATORY1_DTO));
+        checkLaboratory(laboratoryDto2, laboratoryTestSetup.getLaboratoryDto(LABORATORY2_DTO));
+    }
+
+    @Test
+    public void searchLaboratories_ShouldReturnOk_WhenValidRequest() throws Exception {
+        var laboratoryDto1 = laboratoryTestSetup.createLaboratory(
+                new LaboratoryCreationRequestDto(LAB_NAME + '1', LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
+                        IS_HIDDEN));
+        var laboratoryDto2 = laboratoryTestSetup.createLaboratory(
+                new LaboratoryCreationRequestDto(LAB_NAME + '2', LAB_DESCRIPTION, 2, DEADLINE,
+                        !IS_HIDDEN));
+        var laboratoryDto3 = laboratoryTestSetup.createLaboratory(
+                new LaboratoryCreationRequestDto(LAB_NAME + '3', LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
+                        !IS_HIDDEN));
+        var laboratoryDto4 = laboratoryTestSetup.createLaboratory(
+                new LaboratoryCreationRequestDto(LAB_NAME + '4', LAB_DESCRIPTION, 2, DEADLINE,
+                        IS_HIDDEN));
+
+        var laboratoryShortDto1 = laboratoryMapper.laboratoryDtoToLaboratoryShortDto(laboratoryDto1);
+        var laboratoryShortDto2 = laboratoryMapper.laboratoryDtoToLaboratoryShortDto(laboratoryDto2);
+        var laboratoryShortDto3 = laboratoryMapper.laboratoryDtoToLaboratoryShortDto(laboratoryDto3);
+        var laboratoryShortDto4 = laboratoryMapper.laboratoryDtoToLaboratoryShortDto(laboratoryDto4);
+
+        checkLaboratory(laboratoryDto1, laboratoryTestSetup.getLaboratoryDto(LABORATORY1_DTO));
+        checkLaboratory(laboratoryDto2, laboratoryTestSetup.getLaboratoryDto(LABORATORY2_DTO));
+        checkLaboratory(laboratoryDto3, laboratoryTestSetup.getLaboratoryDto(LABORATORY3_DTO));
+        checkLaboratory(laboratoryDto4, laboratoryTestSetup.getLaboratoryDto(LABORATORY4_DTO));
+
+        var searchedLaboratories =
+                laboratoryTestSetup.searchLaboratories(new LaboratorySearchRequestDto(false, 1));
+
+        assertEquals(1, searchedLaboratories.size());
+        assertTrue(searchedLaboratories.contains(laboratoryShortDto1));
+
+        searchedLaboratories =
+                laboratoryTestSetup.searchLaboratories(new LaboratorySearchRequestDto(true, 2));
+
+        assertEquals(1, searchedLaboratories.size());
+        assertTrue(searchedLaboratories.contains(laboratoryShortDto2));
+
+        searchedLaboratories =
+                laboratoryTestSetup.searchLaboratories(
+                        new LaboratorySearchRequestDto(false, null));
+
+        assertEquals(2, searchedLaboratories.size());
+        assertTrue(searchedLaboratories.contains(laboratoryShortDto1));
+        assertTrue(searchedLaboratories.contains(laboratoryShortDto4));
+
+        searchedLaboratories =
+                laboratoryTestSetup.searchLaboratories(
+                        new LaboratorySearchRequestDto(null, 1));
+        assertEquals(2, searchedLaboratories.size());
+        assertTrue(searchedLaboratories.contains(laboratoryShortDto1));
+        assertTrue(searchedLaboratories.contains(laboratoryShortDto3));
     }
 
     private void checkLaboratory(LaboratoryDto actual, LaboratoryDto expected) {

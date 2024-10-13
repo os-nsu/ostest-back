@@ -28,6 +28,11 @@ public class TestController {
         return testService.getTest(id);
     }
 
+    @GetMapping("/{id}/script")
+    public byte[] getScript(@PathVariable Long id) {
+        return testService.getScript(id);
+    }
+
     @GetMapping("/search")
     public List<ShortTestDto> searchTests() {
         return testService.getAllTests();

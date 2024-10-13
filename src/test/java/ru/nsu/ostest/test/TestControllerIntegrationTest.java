@@ -1,11 +1,13 @@
 package ru.nsu.ostest.test;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -48,6 +50,23 @@ public class TestControllerIntegrationTest {
         var testDto = testTestSetup.createTest(request, file);
 
         checkTest(testDto, testTestSetup.getTestDto("test/test_created.json"));
+    }
+
+    @Test
+    public void getTestScript_ShouldReturnSavedScript_WhenValidRequestAndScriptSaved() throws Exception {
+        String content = "test content";
+
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile(content);
+        var testDto = testTestSetup.createTest(request, file);
+
+        Long id = testDto.id();
+
+        byte[] actualBytes = testTestSetup.getScript(id);
+
+        byte[] expectedBytes = content.getBytes();
+
+        Assertions.assertArrayEquals(expectedBytes, actualBytes);
     }
 
     @Test

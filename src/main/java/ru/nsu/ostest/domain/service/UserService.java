@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.mapper.JsonNullableMapper;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
@@ -78,10 +77,11 @@ public class UserService {
         return password;
     }
 
-    public UserDto getCurrentUserInfoByUserId(Long userId) {
+    public UserDto getUserDtoById(Long userId) {
         User user = findUserById(userId);
-        return userMapper.userToUserResponseDto(user);
+        return userMapper.userToUserDto(user);
     }
+
     private void validateUserAccess(User user) {
         if (!AuthServiceCommon.hasAccessOrAdminRole(user.getUsername())) {
             log.error("User has no rights to update profile");
@@ -118,8 +118,5 @@ public class UserService {
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
-    public UserDto getCurrentUserInfoByUserId(Long userId) {
-        User user = findUserById(userId);
-        return userMapper.userToUserResponseDto(user);
-    }
+
 }

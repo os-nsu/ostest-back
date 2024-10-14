@@ -1,6 +1,8 @@
 {
-  "id": null,
   "username": "NewUserUserName",
   "firstName": "NewUserFirstName",
-  "secondName": "NewUserSecondName"
+  "secondName": "NewUserSecondName",
+  "group": {
+    "name": "Test GroupNumber"
+  }
 }

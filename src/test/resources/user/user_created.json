@@ -2,5 +2,7 @@
   "username": "Test Username",
   "firstName": "Test FirstName",
   "secondName": "Test SecondName",
-  "groupNumber": "Test GroupNumber"
+  "group": {
+    "name": "Test GroupNumber"
+  }
 }

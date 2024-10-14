@@ -68,13 +68,24 @@ public class UserService {
         user.setGroup(groupService.findGroupByName(userDto.groupNumber()));
 
         String password = PasswordGenerator.generatePassword();
+        setUserPassword(password, user);
+        return password;
+    }
+
+    public void changePassword(Long userId, String newPassword) {
+        User user = findUserById(userId);
+        UserPassword userPassword = user.getUserPassword();
+        userPassword.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
+    private void setUserPassword(String newPassword, User user) {
         UserPassword userPassword = UserPassword.builder()
                 .user(user)
-                .password(passwordEncoder.encode(password))
+                .password(passwordEncoder.encode(newPassword))
                 .build();
 
         user.setUserPassword(userPassword);
-        return password;
     }
 
     public UserDto getUserDtoById(Long userId) {

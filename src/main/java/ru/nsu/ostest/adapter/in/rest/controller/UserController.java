@@ -54,6 +54,17 @@ public class UserController {
         return userService.updateUser(id, userUpdateRequest);
     }
 
+    @PutMapping("/change-password")
+    public void changePassword(@RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
+        userService.changePassword(authService.getUserIdFromJwt(request), changePasswordDto.newPassword());
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/change-password/{id}")
+    public void changePassword(@RequestBody ChangePasswordDto changePasswordDto, @PathVariable Long id) {
+        userService.changePassword(id, changePasswordDto.newPassword());
+    }
+
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);

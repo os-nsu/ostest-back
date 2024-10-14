@@ -12,10 +12,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.*;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.repository.GroupRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
@@ -112,6 +109,45 @@ class UserControllerIntegrationTest {
         userTestSetup.deleteUser(userDto.id());
     }
 
+    @Test
+    @WithMockUser(username = USER_USERNAME, roles = {"STUDENT"})
+    void changeUserPassword_ShouldReturnStatusOk_WhenUserExists() throws Exception {
+
+        UserDto user = userTestSetup.createUser(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+
+
+        mockUserAuthorization(user);
+
+        String newPassword = "newPass";
+        userTestSetup.changeUserPassword(new ChangePasswordDto(newPassword));
+        userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, newPassword));
+    }
+
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void changeUserPasswordFromAdmin_ShouldReturnStatusOk_WhenUserExists() throws Exception {
+
+        UserDto user = userTestSetup.createUser(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+
+        String newPassword = "newPass";
+        userTestSetup.changeUserPassword(new ChangePasswordDto(newPassword), user.id());
+        userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, newPassword));
+    }
+
+    @Test
+    void loginUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
+
+        UserPasswordDto userPasswordDto = userTestSetup.getUserPasswordDto(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+
+        userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, userPasswordDto.password()));
+    }
 
     @Test
     void getUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {

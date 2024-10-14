@@ -1,5 +1,6 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -33,9 +34,8 @@ public class UserController {
     }
 
     @GetMapping("/me")
-    public UserDto getCurrentUserInfo() {
-        // Тут через security можно выцепить инфу по текущему пользователю
-        throw new IllegalArgumentException("Not implemented");
+    public UserDto getCurrentUserInfo(HttpServletRequest request) {
+        return userService.getUserDtoById(authService.getUserIdFromJwt(request));
     }
 
     @PostMapping("/search")

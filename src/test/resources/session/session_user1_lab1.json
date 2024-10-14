@@ -5,7 +5,9 @@
     "username": "username1",
     "firstName": "firstName1",
     "secondName": "secondName1",
-    "groupNumber": "21207",
+    "group": {
+      "name": "21207"
+    },
     "role": "STUDENT"
   },
   "laboratory": {

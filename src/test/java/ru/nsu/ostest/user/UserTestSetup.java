@@ -77,6 +77,25 @@ public class UserTestSetup {
         assertFalse(userRepository.findById(userToDeleteId).isPresent());
     }
 
+    public UserDto getUser() throws Exception {
+        var result = mockMvc.perform(get(PATH + "/me")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        return objectMapper.readValue(result.getResponse().getContentAsString(), UserDto.class);
+
+    }
+
+
+    public void getUserBadRequest() throws Exception {
+        mockMvc.perform(get(PATH + "/me")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNonAuthoritativeInformation())
+                .andReturn();
+    }
+
+
     public UserDto editUser(UserEditionRequestDto userEditionRequestDto, Long id) throws Exception {
 
         var result = mockMvc.perform(patch(PATH + "/{id}", id)

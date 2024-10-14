@@ -77,6 +77,11 @@ public class UserService {
         return password;
     }
 
+    public UserDto getUserDtoById(Long userId) {
+        User user = findUserById(userId);
+        return userMapper.userToUserDto(user);
+    }
+
     private void validateUserAccess(User user) {
         if (!AuthServiceCommon.hasAccessOrAdminRole(user.getUsername())) {
             log.error("User has no rights to update profile");
@@ -89,6 +94,7 @@ public class UserService {
             validateUsername(userEditDto.username().get());
         }
     }
+
 
     private void updateGroupIfNeeded(UserEditionRequestDto userEditDto, User user) {
         if (jsonNullableMapper.isPresentAndNotNull(userEditDto.groupId())) {

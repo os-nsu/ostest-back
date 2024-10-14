@@ -1,6 +1,7 @@
 package ru.nsu.ostest.security.impl;
 
 import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +82,15 @@ public class AuthServiceImpl implements AuthService {
         }
         User user = userService.findUserById(Long.valueOf(userId));
         return getJwtResponse(user);
+    }
+
+
+    public Long getUserIdFromJwt(HttpServletRequest request) {
+        String jwt = jwtProviderImpl.getTokenFromRequest(request);
+        if (jwt != null && jwtProviderImpl.validateAccessToken(jwt)) {
+            return jwtProviderImpl.getUserIdFromJwt(jwt);
+        }
+        return null;
     }
 
 }

@@ -1,11 +1,13 @@
 package ru.nsu.ostest.user;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -16,12 +18,18 @@ import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.repository.GroupRepository;
+import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
+import ru.nsu.ostest.security.AuthService;
 import ru.nsu.ostest.security.impl.JwtAuthentication;
+import ru.nsu.ostest.security.impl.JwtProviderImpl;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
 
 @SpringBootTest
 @Import({UserTestSetup.class})
@@ -43,10 +51,22 @@ class UserControllerIntegrationTest {
     @Autowired
     private GroupRepository groupRepository;
 
+    @MockBean
+    private JwtProviderImpl jwtProviderImpl;
+
+    @MockBean
+    private AuthService authService;
+
+    @Autowired
+    private SessionRepository sessionRepository;
+
+
     @BeforeEach
     void setUp() {
+        sessionRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();
+
         groupRepository.save(new Group(USER_GROUPNUMBER));
         String adminAuthority = "ADMIN";
         Authentication authentication = new JwtAuthentication(true, "password", List.of(adminAuthority));
@@ -90,6 +110,37 @@ class UserControllerIntegrationTest {
         );
 
         userTestSetup.deleteUser(userDto.id());
+    }
+
+
+    @Test
+    void getUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
+
+        UserDto user = userTestSetup.createUser(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+
+        mockUserAuthorization(user);
+
+        UserDto userDto = userTestSetup.getUser();
+        checkUser(userDto, userTestSetup.getUserDto("user/user_created.json"));
+    }
+
+    private void mockUserAuthorization(UserDto user) {
+        String mockJwtToken = "mockToken";
+        Long mockUserId = user.id();
+
+        when(jwtProviderImpl.getTokenFromRequest(any(HttpServletRequest.class)))
+                .thenReturn(mockJwtToken);
+
+        when(jwtProviderImpl.validateAccessToken(mockJwtToken))
+                .thenReturn(true);
+
+        when(jwtProviderImpl.getUserIdFromJwt(mockJwtToken))
+                .thenReturn(mockUserId);
+
+        when(authService.getUserIdFromJwt(any(HttpServletRequest.class)))
+                .thenReturn(mockUserId);
     }
 
     @Test
@@ -136,6 +187,7 @@ class UserControllerIntegrationTest {
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
+                .ignoringFields("group.id")
                 .isEqualTo(expected);
     }
 

@@ -5,7 +5,6 @@ import com.google.common.io.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
@@ -137,8 +136,7 @@ public class TestTestSetup {
 
     public byte[] getScript(Long id) throws Exception {
 
-        var result = mockMvc.perform(get("/api/test/{id}/script", id)
-                )
+        var result = mockMvc.perform(get("/api/test/{id}/script", id))
                 .andExpect(status().isOk())
                 .andReturn();
 

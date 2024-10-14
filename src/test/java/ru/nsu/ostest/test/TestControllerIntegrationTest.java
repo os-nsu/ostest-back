@@ -7,7 +7,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -62,11 +61,7 @@ public class TestControllerIntegrationTest {
 
         Long id = testDto.id();
 
-        byte[] actualBytes = testTestSetup.getScript(id);
-
-        byte[] expectedBytes = content.getBytes();
-
-        Assertions.assertArrayEquals(expectedBytes, actualBytes);
+        Assertions.assertArrayEquals(content.getBytes(), testTestSetup.getScript(id));
     }
 
     @Test

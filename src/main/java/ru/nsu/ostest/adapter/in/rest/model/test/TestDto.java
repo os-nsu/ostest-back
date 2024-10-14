@@ -6,6 +6,6 @@ public record TestDto(
         Long id,
         String name,
         String description,
-        TestCategory testCategory
+        TestCategory category
 ) {
 }

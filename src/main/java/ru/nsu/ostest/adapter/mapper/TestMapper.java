@@ -16,16 +16,13 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = IGNORE)
 public interface TestMapper {
-    @Mapping(source = "testCreationRequestDto.testCategory", target = "category")
     Test testCreationRequestDtoToTest(TestCreationRequestDto testCreationRequestDto);
 
-    @Mapping(source = "testEditionRequestDto.testCategory", target = "category")
     @Mapping(source = "script", target = "test.scriptBody")
     void testEditionRequestDtoToTest(
             @MappingTarget Test test, TestEditionRequestDto testEditionRequestDto, byte[] script
     );
 
-    @Mapping(source = "category", target = "testCategory")
     TestDto testToTestDto(Test test);
 
     List<ShortTestDto> testsToShortTestDtoList(List<Test> tests);
@@ -33,6 +30,6 @@ public interface TestMapper {
     @Mapping(source = "testLaboratoryLink.test.id", target = "id")
     @Mapping(source = "testLaboratoryLink.test.name", target = "name")
     @Mapping(source = "testLaboratoryLink.test.description", target = "description")
-    @Mapping(source = "testLaboratoryLink.test.category", target = "testCategory")
+    @Mapping(source = "testLaboratoryLink.test.category", target = "category")
     TestDto fromTestLaboratoryLink(TestLaboratoryLink testLaboratoryLink);
 }

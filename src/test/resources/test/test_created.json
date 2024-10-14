@@ -2,5 +2,5 @@
   "id": 12,
   "name": "Test Test",
   "description": "Test Description",
-  "testCategory": "DEFAULT"
+  "category": "DEFAULT"
 }

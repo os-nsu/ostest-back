@@ -78,7 +78,6 @@ public class UserTestSetup {
     }
 
     public UserDto getUser() throws Exception {
-
         var result = mockMvc.perform(get(PATH + "/me")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

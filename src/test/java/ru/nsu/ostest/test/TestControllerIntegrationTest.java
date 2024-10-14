@@ -1,197 +1,133 @@
 package ru.nsu.ostest.test;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
-import ru.nsu.ostest.domain.repository.TestRepository;
-
-import java.time.LocalDateTime;
+import ru.nsu.ostest.domain.common.enums.TestCategory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@Import({TestTestSetup.class})
+@Sql(executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, statements = "delete from test")
+@Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
+@Import({TestTestSetup.class})
+@SpringBootTest(properties = {
+//        "logging.level.sql=trace"
+})
 public class TestControllerIntegrationTest {
-
-    private static final String PATH = "/api/test";
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            "postgres:latest"
+    );
 
     private static final String TEST_NAME = "Test Test";
     private static final String TEST_DESCRIPTION = "Test Description";
 
     @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
     private TestTestSetup testTestSetup;
 
-    @Autowired
-    private TestRepository testRepository;
-
-    @Autowired
-    private ObjectMapper objectMapper;
-
-    @BeforeEach
-    void setUp() {
-        testRepository.deleteAll();
-    }
 
     @Test
     public void createTest_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        var testDto = testTestSetup.createTest(
-                new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, null)
-        );
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile("test content");
+
+        var testDto = testTestSetup.createTest(request, file);
 
         checkTest(testDto, testTestSetup.getTestDto("test/test_created.json"));
     }
 
     @Test
-    public void createTest_ShouldReturnConflict_WhenDuplicateName() throws Exception {
-        testTestSetup.createTest(
-                new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, null)
-        );
+    public void getTestScript_ShouldReturnSavedScript_WhenValidRequestAndScriptSaved() throws Exception {
+        String content = "test content";
 
-        testTestSetup.createTestBad(
-                new TestCreationRequestDto(
-                        TEST_NAME,
-                        "Second Test Description",
-                        null
-                ));
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile(content);
+        var testDto = testTestSetup.createTest(request, file);
+
+        Long id = testDto.id();
+
+        Assertions.assertArrayEquals(content.getBytes(), testTestSetup.getScript(id));
+    }
+
+    @Test
+    public void createTest_ShouldReturnConflict_WhenDuplicateName() throws Exception {
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile("test content");
+
+        testTestSetup.createTestBad(request, file);
     }
 
     @Test
     public void deleteTest_ShouldReturnStatusOk_WhenTestExists() throws Exception {
-        String name = "Test Test to Delete";
-        String description = "Test Description";
-        TestCreationRequestDto request =
-                new TestCreationRequestDto(name, description, null);
+        TestCreationRequestDto request = new TestCreationRequestDto("test for deleting", TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile("test content");
+        var testDto = testTestSetup.createTest(request, file);
 
-        MockHttpServletResponse mvcResponse = mockMvc.perform(post(PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.description").value(description))
-                .andReturn()
-                .getResponse();
-
-        try (JsonParser jsonParser = objectMapper.createParser(mvcResponse.getContentAsByteArray())) {
-            TestDto test = jsonParser.readValueAs(TestDto.class);
-
-            Long testId = test.id();
-            assertNotEquals(null, testRepository.findById(testId).orElse(null));//todo: тут throw
-
-            mockMvc.perform(delete("/api/test/{id}", testId)
-                            .contentType(MediaType.APPLICATION_JSON))
-                    .andExpect(status().isOk());
-
-            assertNull(testRepository.findById(testId).orElse(null));
-        }
+        testTestSetup.deleteTest(testDto.id());
     }
 
     @Test
     public void editTest_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        String name = "Test Test to Edit";
-        String description = "Test Description Not Edited";
-        Integer semesterNumber = 1;
-        LocalDateTime dateTime = LocalDateTime.now().plusDays(7);
-        boolean isHidden = false;
-        TestCreationRequestDto creationRequest =
-                new TestCreationRequestDto(name, description, null);
+        TestCreationRequestDto request = new TestCreationRequestDto("test name", "some description", TestCategory.DEFAULT);
+        MockMultipartFile file = createMultipartFile("test content");
+        TestDto createdTestDto = testTestSetup.createTest(request, file);
 
-        MockHttpServletResponse mvcResponse = mockMvc.perform(post(PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(creationRequest)))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.description").value(description))
-                .andExpect(jsonPath("$.semesterNumber").value(semesterNumber))
-                .andExpect(jsonPath("$.isHidden").value(isHidden))
-                .andReturn()
-                .getResponse();
 
-        description = "Edited Test Description";
-        isHidden = true;
+        MockMultipartFile editedFile = createMultipartFile("new test content");
+        TestEditionRequestDto testEditionRequestDto = new TestEditionRequestDto(createdTestDto.id(), "new name", "new description", TestCategory.DEFAULT);
+        TestDto editedTestDto = testTestSetup.editTest(testEditionRequestDto, editedFile);
 
-        try (JsonParser jsonParser = objectMapper.createParser(mvcResponse.getContentAsByteArray())) {
-            TestDto test = jsonParser.readValueAs(TestDto.class);
 
-            Long testId = test.id();
-
-            TestEditionRequestDto editionRequest =
-                    new TestEditionRequestDto(testId, name, description, null);
-
-            mockMvc.perform(put(PATH)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(editionRequest)))
-                    .andExpect(status().isOk())
-                    .andExpect(jsonPath("$.name").value(name))
-                    .andExpect(jsonPath("$.description").value(description));
-        }
+        checkTest(editedTestDto, testTestSetup.getTestDto("test/test_edited.json"));
     }
 
     @Test
     public void editTest_ShouldReturnConflict_WhenDuplicateName() throws Exception {
-        String duplicatedName = "Duplicate Test to Edit";
-        String description = "Test Description Not Edited";
-        TestCreationRequestDto creationRequest =
-                new TestCreationRequestDto(duplicatedName, description, null);
+        final String NAME1 = "name1";
+        final String NAME2 = "name2";
 
-        mockMvc.perform(post(PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(creationRequest)))
-                .andExpect(status().isCreated());
+        TestCreationRequestDto request1 = new TestCreationRequestDto(NAME1, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file1 = createMultipartFile("test content 1");
+        TestDto createdTestDto1 = testTestSetup.createTest(request1, file1);
 
-        String name = "Test to Edit";
+        TestCreationRequestDto request2 = new TestCreationRequestDto(NAME2, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile file2 = createMultipartFile("test content 2");
+        testTestSetup.createTest(request2, file2);
 
-        creationRequest =
-                new TestCreationRequestDto(name, description, null);
+        TestEditionRequestDto request = new TestEditionRequestDto(createdTestDto1.id(), NAME2, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        MockMultipartFile editedFile = createMultipartFile("test content edited");
+        testTestSetup.editTestBad(request, editedFile);
+    }
 
-        MockHttpServletResponse mvcResponse = mockMvc.perform(post(PATH)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(creationRequest)))
-                .andExpect(status().isCreated())
-                .andReturn()
-                .getResponse();
 
-        description = "Edited Test Description";
-
-        try (JsonParser jsonParser = objectMapper.createParser(mvcResponse.getContentAsByteArray())) {
-            TestDto test = jsonParser.readValueAs(TestDto.class);
-
-            Long testId = test.id();
-
-            TestEditionRequestDto editionRequest =
-                    new TestEditionRequestDto(testId, duplicatedName, description, null);
-
-            mockMvc.perform(put(PATH)
-                            .contentType(MediaType.APPLICATION_JSON)
-                            .content(objectMapper.writeValueAsString(editionRequest)))
-                    .andExpect(status().isBadRequest());
-        }
+    private MockMultipartFile createMultipartFile(String content) {
+        return new MockMultipartFile(
+                "file",
+                "testfile.txt",
+                "text/plain",
+                content.getBytes()
+        );
     }
 
     private void checkTest(TestDto actual, TestDto expected) {
         assertThat(actual)
                 .usingRecursiveComparison()
-                .ignoringFields("id", "category", "scriptBody", "laboratoriesLinks")
+                .ignoringFields("id")
                 .isEqualTo(expected);
     }
-
 }

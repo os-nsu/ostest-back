@@ -1,8 +1,6 @@
 {
-  "id": null,
+  "id": 12,
   "name": "Test Test",
   "description": "Test Description",
-  "category": null,
-  "scriptBody": null,
-  "laboratoriesLinks": []
+  "category": "DEFAULT"
 }

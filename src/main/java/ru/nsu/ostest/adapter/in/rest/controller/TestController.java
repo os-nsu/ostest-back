@@ -1,6 +1,7 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.web.bind.annotation.*;
 
 import ru.nsu.ostest.adapter.in.rest.model.test.*;
@@ -26,6 +27,11 @@ public class TestController {
     @GetMapping("/{id}")
     public TestDto getTest(@PathVariable Long id) {
         return testService.getTest(id);
+    }
+
+    @GetMapping("/{id}/script")
+    public ByteArrayResource getScript(@PathVariable Long id) {
+        return testService.getScript(id);
     }
 
     @GetMapping("/search")

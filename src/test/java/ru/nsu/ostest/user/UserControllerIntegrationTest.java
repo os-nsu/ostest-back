@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,6 +18,7 @@ import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.repository.GroupRepository;
+import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.AuthService;
 import ru.nsu.ostest.security.impl.JwtAuthentication;
@@ -57,9 +57,13 @@ class UserControllerIntegrationTest {
     @MockBean
     private AuthService authService;
 
+    @Autowired
+    private SessionRepository sessionRepository;
+
 
     @BeforeEach
     void setUp() {
+        sessionRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();
 

@@ -101,7 +101,6 @@ class UserControllerIntegrationTest {
 
     @Test
     void deleteUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
-
         UserDto userDto = userTestSetup.createUser(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
@@ -112,11 +111,9 @@ class UserControllerIntegrationTest {
     @Test
     @WithMockUser(username = USER_USERNAME, roles = {"STUDENT"})
     void changeUserPassword_ShouldReturnStatusOk_WhenUserExists() throws Exception {
-
         UserDto user = userTestSetup.createUser(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
-
 
         mockUserAuthorization(user);
 
@@ -129,7 +126,6 @@ class UserControllerIntegrationTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void changeUserPasswordFromAdmin_ShouldReturnStatusOk_WhenUserExists() throws Exception {
-
         UserDto user = userTestSetup.createUser(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
@@ -141,7 +137,6 @@ class UserControllerIntegrationTest {
 
     @Test
     void loginUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
-
         UserPasswordDto userPasswordDto = userTestSetup.getUserPasswordDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
@@ -151,7 +146,6 @@ class UserControllerIntegrationTest {
 
     @Test
     void getUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
-
         UserDto user = userTestSetup.createUser(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
@@ -226,6 +220,5 @@ class UserControllerIntegrationTest {
                 .ignoringFields("group.id")
                 .isEqualTo(expected);
     }
-
 
 }

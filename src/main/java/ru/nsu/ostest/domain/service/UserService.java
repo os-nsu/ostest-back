@@ -95,6 +95,7 @@ public class UserService {
         }
     }
 
+
     private void updateGroupIfNeeded(UserEditionRequestDto userEditDto, User user) {
         if (jsonNullableMapper.isPresentAndNotNull(userEditDto.groupId())) {
             Group updatedGroup = groupService.findGroupById(userEditDto.groupId().get());

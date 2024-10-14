@@ -96,6 +96,7 @@ public class UserTestSetup {
                 .andReturn();
     }
 
+
     public UserDto editUser(UserEditionRequestDto userEditionRequestDto, Long id) throws Exception {
 
         var result = mockMvc.perform(patch(PATH + "/{id}", id)

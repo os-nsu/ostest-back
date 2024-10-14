@@ -7,7 +7,6 @@ import java.util.List;
 
 public record SessionDto(
         Long id,
-        String name,
         UserDto student,
         UserDto teacher,
         LaboratoryShortDto laboratory,

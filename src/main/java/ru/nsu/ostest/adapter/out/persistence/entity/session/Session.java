@@ -24,8 +24,6 @@ public class Session {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String name;
-
     @OneToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "student_id")
     private User student;

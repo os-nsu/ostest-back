@@ -24,6 +24,9 @@ public class Attempt {
 
     private String name;
 
+    @Column(nullable = false)
+    private Long order;
+
     @JdbcTypeCode(SqlTypes.JSON)
     private TestResults testResults;
 

@@ -1,0 +1,9 @@
+{
+  "username": "Test Username",
+  "firstName": "Test FirstName",
+  "secondName": "Test SecondName",
+  "group": {
+    "name": "Test GroupNumber"
+  }
+
+}

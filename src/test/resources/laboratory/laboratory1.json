@@ -1,0 +1,9 @@
+{
+  "id": null,
+  "name": "Test Laboratory1",
+  "description": "Test Description",
+  "semesterNumber": 1,
+  "deadline": "2024-10-07T07:02:27",
+  "isHidden": false,
+  "tests": []
+}

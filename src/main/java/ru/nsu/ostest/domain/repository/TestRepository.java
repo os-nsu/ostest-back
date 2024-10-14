@@ -5,8 +5,6 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 
-import java.util.List;
-
 @Repository
 public interface TestRepository extends JpaRepository<Test, Long>, JpaSpecificationExecutor<Test> {
 

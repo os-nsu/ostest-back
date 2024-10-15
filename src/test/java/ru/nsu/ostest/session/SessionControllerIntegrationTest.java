@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
@@ -32,9 +35,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@Import({SessionTestSetup.class})
+@Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
+@Import({SessionTestSetup.class})
+@SpringBootTest
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SessionControllerIntegrationTest {
     private static final String USER_NAME = "username";
@@ -50,6 +54,11 @@ public class SessionControllerIntegrationTest {
     private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
     private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
+
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            "postgres:latest"
+    );
 
     @Autowired
     private LaboratoryMapper laboratoryMapper;
@@ -76,6 +85,10 @@ public class SessionControllerIntegrationTest {
 
     @BeforeAll
     void init() {
+        if (!postgres.isRunning()) {
+            postgres.start();
+        }
+
         laboratoryRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();

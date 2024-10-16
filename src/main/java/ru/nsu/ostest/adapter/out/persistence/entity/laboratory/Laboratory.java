@@ -1,6 +1,5 @@
 package ru.nsu.ostest.adapter.out.persistence.entity.laboratory;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -33,7 +32,6 @@ public class Laboratory {
 
     private Integer semesterNumber;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime deadline;
 
     private Boolean isHidden;

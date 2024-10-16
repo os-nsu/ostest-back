@@ -7,6 +7,7 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -39,7 +40,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @AutoConfigureMockMvc(addFilters = false)
 @Import({SessionTestSetup.class})
 @SpringBootTest
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class SessionControllerIntegrationTest {
     private static final String USER_NAME = "username";
     private static final String FIRST_NAME = "firstName";
@@ -56,6 +56,7 @@ public class SessionControllerIntegrationTest {
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
 
     @Container
+    @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
             "postgres:latest"
     );
@@ -83,15 +84,12 @@ public class SessionControllerIntegrationTest {
     private final List<User> students = new ArrayList<>();
     private final List<Laboratory> laboratories = new ArrayList<>();
 
-    @BeforeAll
-    void init() {
-        if (!postgres.isRunning()) {
-            postgres.start();
-        }
-
+    @BeforeEach
+    void setUp() {
         laboratoryRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();
+        sessionRepository.deleteAll();
 
         Group group = createGroup(GROUP_NUMBER);
         Laboratory laboratory1 = createLaboratory(createLaboratoryCreationRequestDto('1'));
@@ -103,11 +101,6 @@ public class SessionControllerIntegrationTest {
         User student2 = createUser(createStudentCreationRequestDto('2'), group);
         students.add(student1);
         students.add(student2);
-    }
-
-    @BeforeEach
-    void setUp() {
-        sessionRepository.deleteAll();
     }
 
     @Test

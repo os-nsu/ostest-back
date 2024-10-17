@@ -16,7 +16,6 @@ public class PasswordGenerator {
                             "!@#$%^&*()-_=+[]{}|;:,.<>?".indexOf(ch) != -1)
             .build();
 
-
     public static String generatePassword() {
         int passwordLength = 8 + random.nextInt(8);
         return generator.generate(passwordLength);

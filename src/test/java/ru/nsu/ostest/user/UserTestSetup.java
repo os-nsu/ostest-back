@@ -15,6 +15,7 @@ import ru.nsu.ostest.domain.repository.UserRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -39,16 +40,15 @@ public class UserTestSetup {
     @Autowired
     private MockMvc mockMvc;
 
-
-    public UserDto createUser(UserCreationRequestDto creationRequestDto) throws Exception {
-        var user = getUserPasswordDto(creationRequestDto);
+    public UserDto createUserReturnsUserDto(UserCreationRequestDto creationRequestDto) throws Exception {
+        var user = createUserReturnsUserPasswordDto(creationRequestDto);
 
         assertTrue(userRepository.findByUsername(user.username()).isPresent());
         User userFromRepository = userRepository.findByUsername(user.username()).orElseThrow(() -> new UserNotFoundException("User not found"));
         return userMapper.userToUserDto(userFromRepository);
     }
 
-    public UserPasswordDto getUserPasswordDto(UserCreationRequestDto creationRequestDto) throws Exception {
+    public UserPasswordDto createUserReturnsUserPasswordDto(UserCreationRequestDto creationRequestDto) throws Exception {
         var result = mockMvc.perform(post("/api/user/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequestDto))
@@ -88,7 +88,6 @@ public class UserTestSetup {
 
     }
 
-
     public UserDto editUser(UserEditionRequestDto userEditionRequestDto, Long id) throws Exception {
 
         var result = mockMvc.perform(patch(PATH + "/{id}", id)
@@ -111,8 +110,9 @@ public class UserTestSetup {
                 .andExpect(status().isBadRequest());
     }
 
-    public void changeUserPassword(ChangePasswordDto passwordDto) throws Exception {
+    public void changeUserPassword(ChangePasswordDto passwordDto, Principal mockPrincipal) throws Exception {
         mockMvc.perform(put(PATH + "/change-password")
+                        .principal(mockPrincipal)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(passwordDto)))
                 .andExpect(status().isOk());
@@ -137,7 +137,6 @@ public class UserTestSetup {
                         .content(objectMapper.writeValueAsString(userPasswordDto)))
                 .andExpect(status().isOk());
     }
-
 
     public void loginUserBadRequest(UserPasswordDto userPasswordDto) throws Exception {
         mockMvc.perform(post("/api/v1/login")

@@ -11,6 +11,7 @@ import ru.nsu.ostest.adapter.in.rest.model.user.*;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -43,7 +44,6 @@ public class UserController {
         throw new IllegalArgumentException("Not implemented");
     }
 
-
     @PostMapping("/batch")
     public List<UserDto> createUsers(@RequestBody UsersBatchCreationRequestDto request) {
         throw new IllegalArgumentException("Not implemented");
@@ -55,8 +55,9 @@ public class UserController {
     }
 
     @PutMapping("/change-password")
-    public void changePassword(@RequestBody ChangePasswordDto changePasswordDto, HttpServletRequest request) {
-        userService.changePassword(authService.getUserIdFromJwt(request), changePasswordDto.newPassword());
+    public void changePassword(@RequestBody ChangePasswordDto changePasswordDto, @NotNull Principal principal) {
+        String username = principal.getName();
+        userService.changePassword(username, changePasswordDto.newPassword());
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")

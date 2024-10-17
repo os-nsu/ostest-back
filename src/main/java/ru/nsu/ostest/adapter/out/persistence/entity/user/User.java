@@ -51,5 +51,4 @@ public class User {
         roles.add(userRoleEntity);
     }
 
-
 }

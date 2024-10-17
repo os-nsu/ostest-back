@@ -34,7 +34,6 @@ public class UserService {
     private final UserUpdateMapper userUpdateMapper;
     private JsonNullableMapper jsonNullableMapper;
 
-
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Couldn't find user with id: " + id));
@@ -72,6 +71,13 @@ public class UserService {
         return password;
     }
 
+    public void changePassword(String username, String newPassword) {
+        User user = findUserByUsername(username);
+        UserPassword userPassword = user.getUserPassword();
+        userPassword.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
+
     public void changePassword(Long userId, String newPassword) {
         User user = findUserById(userId);
         UserPassword userPassword = user.getUserPassword();
@@ -105,7 +111,6 @@ public class UserService {
             validateUsername(userEditDto.username().get());
         }
     }
-
 
     private void updateGroupIfNeeded(UserEditionRequestDto userEditDto, User user) {
         if (jsonNullableMapper.isPresentAndNotNull(userEditDto.groupId())) {

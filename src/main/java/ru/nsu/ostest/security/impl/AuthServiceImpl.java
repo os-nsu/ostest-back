@@ -84,7 +84,6 @@ public class AuthServiceImpl implements AuthService {
         return getJwtResponse(user);
     }
 
-
     public Long getUserIdFromJwt(HttpServletRequest request) {
         String jwt = jwtProviderImpl.getTokenFromRequest(request);
         if (jwt != null && jwtProviderImpl.validateAccessToken(jwt)) {

@@ -14,7 +14,6 @@ import ru.nsu.ostest.domain.repository.TestRepository;
 
 import org.springframework.web.multipart.MultipartFile;
 import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
-import jakarta.persistence.EntityNotFoundException;
 import java.io.IOException;
 
 import java.util.List;

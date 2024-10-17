@@ -2,15 +2,13 @@ package ru.nsu.ostest.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
+import org.openapitools.jackson.nullable.JsonNullableModule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.*;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.exception.UserNotFoundException;
@@ -18,13 +16,13 @@ import ru.nsu.ostest.domain.repository.UserRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.Principal;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-
 @AutoConfigureMockMvc(addFilters = false)
 public class UserTestSetup {
 
@@ -42,20 +40,26 @@ public class UserTestSetup {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    public void configureObjectMapper() {
+        objectMapper.registerModule(new JsonNullableModule());
+    }
 
-    public UserDto createUser(UserCreationRequestDto creationRequestDto) throws Exception {
+    public UserDto createUserReturnsUserDto(UserCreationRequestDto creationRequestDto) throws Exception {
+        var user = createUserReturnsUserPasswordDto(creationRequestDto);
+        assertTrue(userRepository.findByUsername(user.username()).isPresent());
+        User userFromRepository = userRepository.findByUsername(user.username()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        return userMapper.userToUserDto(userFromRepository);
+    }
+
+    public UserPasswordDto createUserReturnsUserPasswordDto(UserCreationRequestDto creationRequestDto) throws Exception {
         var result = mockMvc.perform(post("/api/user/registration")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(creationRequestDto))
                 )
                 .andExpect(status().isCreated())
                 .andReturn();
-
-        var user = objectMapper.readValue(result.getResponse().getContentAsString(), UserPasswordDto.class);
-
-        assertTrue(userRepository.findByUsername(user.username()).isPresent());
-        User userFromRepository = userRepository.findByUsername(user.username()).orElseThrow(() -> new UserNotFoundException("User not found"));
-        return userMapper.userToUserDto(userFromRepository);
+        return objectMapper.readValue(result.getResponse().getContentAsString(), UserPasswordDto.class);
     }
 
     public void createUserBad(UserCreationRequestDto creationRequestDto) throws Exception {
@@ -77,7 +81,7 @@ public class UserTestSetup {
         assertFalse(userRepository.findById(userToDeleteId).isPresent());
     }
 
-    public UserDto getUser() throws Exception {
+    public UserDto getCurrentUser() throws Exception {
         var result = mockMvc.perform(get(PATH + "/me")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -87,14 +91,27 @@ public class UserTestSetup {
 
     }
 
-
     public void getUserBadRequest() throws Exception {
         mockMvc.perform(get(PATH + "/me")
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNonAuthoritativeInformation())
+                .andExpect(status().isUnauthorized())
                 .andReturn();
     }
 
+    public void changeUserPassword(ChangePasswordDto passwordDto, Principal mockPrincipal) throws Exception {
+        mockMvc.perform(put(PATH + "/change-password")
+                        .principal(mockPrincipal)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isOk());
+    }
+
+    public void changeUserPassword(ChangePasswordDto passwordDto, Long id) throws Exception {
+        mockMvc.perform(put(PATH + "/change-password/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(passwordDto)))
+                .andExpect(status().isOk());
+    }
 
     public UserDto editUser(UserEditionRequestDto userEditionRequestDto, Long id) throws Exception {
 
@@ -122,6 +139,20 @@ public class UserTestSetup {
         return objectMapper.readValue(
                 Resources.toString(Resources.getResource(path), StandardCharsets.UTF_8), UserDto.class
         );
+    }
+
+    public void loginUser(UserPasswordDto userPasswordDto) throws Exception {
+        mockMvc.perform(post("/api/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userPasswordDto)))
+                .andExpect(status().isOk());
+    }
+
+    public void loginUserBadRequest(UserPasswordDto userPasswordDto) throws Exception {
+        mockMvc.perform(post("/api/v1/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userPasswordDto)))
+                .andExpect(status().isUnauthorized());
     }
 
 }

@@ -3,19 +3,21 @@ package ru.nsu.ostest.user;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.nsu.ostest.adapter.in.rest.model.user.*;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.repository.GroupRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
@@ -24,17 +26,24 @@ import ru.nsu.ostest.security.AuthService;
 import ru.nsu.ostest.security.impl.JwtAuthentication;
 import ru.nsu.ostest.security.impl.JwtProviderImpl;
 
+import java.security.Principal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-
+@Testcontainers
 @SpringBootTest
 @Import({UserTestSetup.class})
 @AutoConfigureMockMvc(addFilters = false)
 class UserControllerIntegrationTest {
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            "postgres:latest"
+    );
 
     private static final String USER_USERNAME = "Test Username";
     private static final String USER_FIRSTNAME = "Test FirstName";
@@ -60,7 +69,6 @@ class UserControllerIntegrationTest {
     @Autowired
     private SessionRepository sessionRepository;
 
-
     @BeforeEach
     void setUp() {
         sessionRepository.deleteAll();
@@ -77,7 +85,7 @@ class UserControllerIntegrationTest {
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void createUser_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        var userDto = userTestSetup.createUser(
+        var userDto = userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
 
@@ -86,10 +94,9 @@ class UserControllerIntegrationTest {
 
     @Test
     void createUser_ShouldReturnConflict_WhenDuplicateName() throws Exception {
-        userTestSetup.createUser(
+        userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
-
 
         userTestSetup.createUserBad(
                 new UserCreationRequestDto(
@@ -98,31 +105,62 @@ class UserControllerIntegrationTest {
                         "Second User SecondName",
                         "Second User GroupNumber",
                         USER_ROLE
-
                 ));
     }
 
     @Test
     void deleteUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
 
-        UserDto userDto = userTestSetup.createUser(
+        UserDto userDto = userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
 
         userTestSetup.deleteUser(userDto.id());
     }
 
+    @Test
+    void changeUserPassword_ShouldReturnStatusOk_WhenUserExists() throws Exception {
+        userTestSetup.createUserReturnsUserDto(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+        Principal mockPrincipal = Mockito.mock(Principal.class);
+        Mockito.when(mockPrincipal.getName()).thenReturn(USER_USERNAME);
+
+        String newPassword = "newPass";
+        userTestSetup.changeUserPassword(new ChangePasswordDto(newPassword), mockPrincipal);
+        userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, newPassword));
+    }
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void changeUserPasswordFromAdmin_ShouldReturnStatusOk_WhenUserExists() throws Exception {
+        UserDto user = userTestSetup.createUserReturnsUserDto(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+        String newPassword = "newPass";
+        userTestSetup.changeUserPassword(new ChangePasswordDto(newPassword), user.id());
+        userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, newPassword));
+    }
+
+    @Test
+    void loginUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
+        UserPasswordDto userPasswordDto = userTestSetup.createUserReturnsUserPasswordDto(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+
+        userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, userPasswordDto.password()));
+    }
 
     @Test
     void getUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
 
-        UserDto user = userTestSetup.createUser(
+        UserDto user = userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
 
         mockUserAuthorization(user);
 
-        UserDto userDto = userTestSetup.getUser();
+        UserDto userDto = userTestSetup.getCurrentUser();
         checkUser(userDto, userTestSetup.getUserDto("user/user_created.json"));
     }
 
@@ -145,7 +183,7 @@ class UserControllerIntegrationTest {
 
     @Test
     void editUser_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        var userDto = userTestSetup.createUser(
+        var userDto = userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
         UserDto editedUserDto = userTestSetup.editUser(
@@ -164,14 +202,13 @@ class UserControllerIntegrationTest {
 
     @Test
     void editUser_ShouldReturnConflict_WhenDuplicateName() throws Exception {
-        UserDto createdUserDto = userTestSetup.createUser(
+        UserDto createdUserDto = userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
 
-        userTestSetup.createUser(
+        userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto("Second Username", USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
-
 
         userTestSetup.editUserBad(
                 new UserEditionRequestDto(
@@ -190,6 +227,5 @@ class UserControllerIntegrationTest {
                 .ignoringFields("group.id")
                 .isEqualTo(expected);
     }
-
 
 }

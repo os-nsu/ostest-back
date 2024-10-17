@@ -28,6 +28,7 @@ public class Laboratory {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Column(columnDefinition = "text")
     private String description;
 
     private Integer semesterNumber;

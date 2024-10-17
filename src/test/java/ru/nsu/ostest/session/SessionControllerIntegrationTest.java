@@ -7,7 +7,11 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
@@ -32,10 +36,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@Import({SessionTestSetup.class})
+@Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Import({SessionTestSetup.class})
+@SpringBootTest
 public class SessionControllerIntegrationTest {
     private static final String USER_NAME = "username";
     private static final String FIRST_NAME = "firstName";
@@ -50,6 +54,12 @@ public class SessionControllerIntegrationTest {
     private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
     private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            "postgres:latest"
+    );
 
     @Autowired
     private LaboratoryMapper laboratoryMapper;
@@ -74,11 +84,12 @@ public class SessionControllerIntegrationTest {
     private final List<User> students = new ArrayList<>();
     private final List<Laboratory> laboratories = new ArrayList<>();
 
-    @BeforeAll
-    void init() {
+    @BeforeEach
+    void setUp() {
         laboratoryRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();
+        sessionRepository.deleteAll();
 
         Group group = createGroup(GROUP_NUMBER);
         Laboratory laboratory1 = createLaboratory(createLaboratoryCreationRequestDto('1'));
@@ -90,11 +101,6 @@ public class SessionControllerIntegrationTest {
         User student2 = createUser(createStudentCreationRequestDto('2'), group);
         students.add(student1);
         students.add(student2);
-    }
-
-    @BeforeEach
-    void setUp() {
-        sessionRepository.deleteAll();
     }
 
     @Test

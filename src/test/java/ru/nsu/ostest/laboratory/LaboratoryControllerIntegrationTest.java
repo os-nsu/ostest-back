@@ -5,7 +5,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryEditionRequestDto;
@@ -19,9 +23,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@Import({LaboratoryTestSetup.class})
+@Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
+@Import({LaboratoryTestSetup.class})
+@SpringBootTest
 public class LaboratoryControllerIntegrationTest {
 
     private static final String LAB_NAME = "Test Laboratory";
@@ -33,6 +38,12 @@ public class LaboratoryControllerIntegrationTest {
     private static final String LABORATORY2_DTO = "laboratory/laboratory2.json";
     private static final String LABORATORY3_DTO = "laboratory/laboratory3.json";
     private static final String LABORATORY4_DTO = "laboratory/laboratory4.json";
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
+            "postgres:latest"
+    );
 
     @Autowired
     private LaboratoryTestSetup laboratoryTestSetup;

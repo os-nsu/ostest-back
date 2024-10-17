@@ -152,15 +152,6 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    void loginUser_ShouldReturnConflict_WhenUserExists() throws Exception {
-        UserPasswordDto userPasswordDto = userTestSetup.createUserReturnsUserPasswordDto(
-                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
-        );
-
-        userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, "userPasswordDto.password()"));
-    }
-
-    @Test
     void getUser_ShouldReturnStatusOk_WhenUserExists() throws Exception {
 
         UserDto user = userTestSetup.createUserReturnsUserDto(

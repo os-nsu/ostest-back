@@ -149,7 +149,7 @@ class UserControllerIntegrationTest {
 
         mockUserAuthorization(user);
 
-        UserDto userDto = userTestSetup.getUser();
+        UserDto userDto = userTestSetup.getCurrentUser();
         checkUser(userDto, userTestSetup.getUserDto("user/user_created.json"));
     }
 

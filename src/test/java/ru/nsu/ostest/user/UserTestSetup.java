@@ -78,7 +78,7 @@ public class UserTestSetup {
         assertFalse(userRepository.findById(userToDeleteId).isPresent());
     }
 
-    public UserDto getUser() throws Exception {
+    public UserDto getCurrentUser() throws Exception {
         var result = mockMvc.perform(get(PATH + "/me")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

@@ -1,24 +1,26 @@
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
-VALUES ('Laboratory 1. Compile & assembling & launch',
-        '1. Создать программу master.c которая выводит "hello world" на экран:
+DO
+$$
+   DECLARE
+description TEXT;
+BEGIN
+   description
+:=
+'1. Создать программу master.c которая выводит "hello world" на экран:
     a. Получить исполняемый файл;
     b. Посмотреть зависимости (ldd);
     c. Запустить.
-
 2. Написать статическую библиотеку с функцией hello_from_static_lib() и использовать ее в master.c:
     a. Посмотреть исполняемый файл на предмет того, будет ли функция hello_from_static_lib() unresolved. Почему?
     b. Где находится код этой функции?
-
 3. Написать динамическую библиотеку с функцией hello_from_dynamic_lib() и использовать ее с master.c:
     a. Посмотреть состояние функции hello_from_dynamic_lib в получившемся исполняемом файле.
     b. Объяснить увиденное.
-
 4. Система плагинов:
     a. Создать папку contrib для плагинов;
     b. Создать папку plugin для вашего первого плагина. В данной папке написать код для динамической библиотеки ' ||
         'plugin.so (он должен находиться в top_build_directory/contrib/plugin и при сборке должен быть скопирован в ' ||
-        'top_build_directory/install/contrib). В библиотеке должна быть определена функция void init(void), выводящая ' ||
-        'строку "init successfully" на экран;
+        'top_build_directory/install/contrib). В библиотеке должна быть определена функция void init(void),' ||
+        ' выводящая строку "init successfully" на экран;
     c. Загрузить ее в master.c с помощью dlopen(3) и dlsym(3);
     d. Объяснить, что происходит;
     e. Сделать файл include/master.h, определить в нём указатель на функцию с именем Hook (void (*Hook)(void)), ' ||
@@ -28,14 +30,25 @@ VALUES ('Laboratory 1. Compile & assembling & launch',
     g. В master.c попытаться вызвать start_hook и объяснить, почему это не сработало (см. -export-dynamic gcc flag);
     h. Привести код в рабочее состояние (должен произойти вызов init, после чего из master.c должен быть сделан ' ||
         'вызов переопределённого хука start_hook() и выведена строка "hello from then_start()");
-    i. Сделать так, чтобы вызов end_hook выводил строку "init end" по аналогии со start_hook."',
+    i. Сделать так, чтобы вызов end_hook выводил строку "init end" по аналогии со start_hook."';
+
+INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+VALUES ('Laboratory 1. Compile & assembling & launch',
+        lo_from_bytea(0, description :: bytea),
         4,
         '2024-05-06 23:59:59',
         false);
 
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
-VALUES ('Laboratory 2. Files',
-        '1. Создать конфиг (статическая библиотека):
+END $$;
+
+DO
+$$
+   DECLARE
+description TEXT;
+BEGIN
+   description
+:=
+ '1. Создать конфиг (статическая библиотека):
     a. Поддерживаемые типы: long, double, string (одиночные и массивы).
     b. Путь к файлу конфигурации указывается при запуске после флага -c. Если флаг не указан, то программа ищет ' ||
         'файл конфигурации в текущей директории. Если файл не был найден, то устанавливаются стандартные значения ' ||
@@ -63,14 +76,25 @@ VALUES ('Laboratory 2. Files',
         'старой (используйте символьные ссылки).
 
 4. Работа с жёсткими ссылками:
-    a. Напишите плагин, который будет копировать лог файлы в резервную директорию, при этом не используя read и write.',
+    a. Напишите плагин, который будет копировать лог файлы в резервную директорию, при этом не используя read и write.';
+
+INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+VALUES ('Laboratory 2. Files',
+        lo_from_bytea(0, description :: bytea),
         4,
         '2025-05-06 23:59:59',
         false);
 
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
-VALUES ('Laboratory 3. Address space',
-        '1. Написать собственный аллокатор:
+END $$;
+
+DO
+$$
+   DECLARE
+description TEXT;
+BEGIN
+   description
+:=
+  '1. Написать собственный аллокатор:
     a. Присоедините анонимный регион (mmap(2));
     b. Реализуйте функцию my_malloc(), которая:
         i. Принимает размер памяти в байтах;
@@ -99,31 +123,58 @@ VALUES ('Laboratory 3. Address space',
         ii. Возвращает указатель на кэш в случае успеха и NULL в случае неудачи.
     d. Реализовать void destruct_cache(void), которая деконструирует кэш.
 3. Протестируйте кэш.
-    a. Закэшируйте файл /proc/self/maps, а после выведите его в лог.',
+    a. Закэшируйте файл /proc/self/maps, а после выведите его в лог.';
+
+INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+VALUES ('Laboratory 3. Address space',
+        lo_from_bytea(0, description :: bytea),
         4,
         '2025-05-06 23:59:59',
         false);
 
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
-VALUES ('Laboratory 4. Processes',
-        '1. Написать новое расширение для вычисления синуса с помощью разложения в ряд (или что угодно, ' ||
+END $$;
+
+DO
+$$
+   DECLARE
+description TEXT;
+BEGIN
+   description
+:=
+    '1. Написать новое расширение для вычисления синуса с помощью разложения в ряд (или что угодно, ' ||
         'что можно запустить в фоне параллельно основному процессу).
 2. Вынести выполнение этой операции в отдельный процесс с помощью системного вызова clone.
 3. Дочерние процессы должны не только порождаться, но и корректно завершаться (с освобождением стека и всем прочим),' ||
         ' а значит где-то надо хранить структуры, их описывающие.
-4. Добавить в логгер возможность логировать сообщения сразу нескольких процессов (пока без примитивов синхронизации).',
+4. Добавить в логгер возможность логировать сообщения сразу нескольких процессов (пока без примитивов синхронизации).';
+
+INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+VALUES ('Laboratory 4. Processes',
+        lo_from_bytea(0, description :: bytea),
         4,
         '2025-05-06 23:59:59',
         false);
+
+END $$;
+
+DO
+$$
+   DECLARE
+description TEXT;
+BEGIN
+   description
+:=
+    'Расширить процедуру создания дочерних процессов для расширений добавив возможность создавать' ||
+    ' дополнительный процесс-трассер, который будет подключаться к дочернему процессу с помощью ptrace и ' ||
+    'печатать коды системных вызовов нашего дочернего процесса. Дочерний процесс для расширения должен ' ||
+    'порождать трассер, поскольку иначе без изменений в конфигурационных файлах операционной системы это ' ||
+    'работать не будет. Соответственно он же отвечает за завершение этого дочернего процесса.';
 
 INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 5. System calls',
-        'Расширить процедуру создания дочерних процессов для расширений добавив возможность создавать' ||
-        ' дополнительный процесс-трассер, который будет подключаться к дочернему процессу с помощью ptrace и ' ||
-        'печатать коды системных вызовов нашего дочернего процесса. Дочерний процесс для расширения должен ' ||
-        'порождать трассер, поскольку иначе без изменений в конфигурационных файлах операционной системы это ' ||
-        'работать не будет. Соответственно он же отвечает за завершение этого дочернего процесса.',
+        lo_from_bytea(0, description :: bytea),
         4,
         '2025-05-06 23:59:59',
         false);
 
+END $$;

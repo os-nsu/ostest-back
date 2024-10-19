@@ -16,8 +16,12 @@ import static org.mapstruct.NullValuePropertyMappingStrategy.IGNORE;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = IGNORE)
 public interface TestMapper {
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "scriptBody", ignore = true)
+    @Mapping(target = "laboratoriesLinks", ignore = true)
     Test testCreationRequestDtoToTest(TestCreationRequestDto testCreationRequestDto);
 
+    @Mapping(target = "laboratoriesLinks", ignore = true)
     @Mapping(source = "script", target = "test.scriptBody")
     void testEditionRequestDtoToTest(
             @MappingTarget Test test, TestEditionRequestDto testEditionRequestDto, byte[] script

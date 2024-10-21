@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Length;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 
@@ -28,7 +29,7 @@ public class Laboratory {
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Lob
+    @Column(length = Length.LONG32)
     private String description;
 
     private Integer semesterNumber;

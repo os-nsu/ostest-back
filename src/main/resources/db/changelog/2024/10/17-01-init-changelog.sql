@@ -34,7 +34,7 @@ BEGIN
 
 INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 1. Compile & assembling & launch',
-        lo_from_bytea(0, description :: bytea),
+        description,
         4,
         '2024-05-06 23:59:59',
         false);
@@ -80,7 +80,7 @@ BEGIN
 
 INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 2. Files',
-        lo_from_bytea(0, description :: bytea),
+        description,
         4,
         '2025-05-06 23:59:59',
         false);
@@ -127,7 +127,7 @@ BEGIN
 
 INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 3. Address space',
-        lo_from_bytea(0, description :: bytea),
+        description,
         4,
         '2025-05-06 23:59:59',
         false);
@@ -150,7 +150,7 @@ BEGIN
 
 INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 4. Processes',
-        lo_from_bytea(0, description :: bytea),
+        description,
         4,
         '2025-05-06 23:59:59',
         false);
@@ -172,7 +172,7 @@ BEGIN
 
 INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 5. System calls',
-        lo_from_bytea(0, description :: bytea),
+        description,
         4,
         '2025-05-06 23:59:59',
         false);

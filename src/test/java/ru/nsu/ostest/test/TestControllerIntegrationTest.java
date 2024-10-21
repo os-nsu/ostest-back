@@ -31,7 +31,7 @@ public class TestControllerIntegrationTest {
     @Container
     @ServiceConnection
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>(
-            "postgres:latest"
+            "postgres:16"
     );
 
     private static final String TEST_NAME = "Test Test";

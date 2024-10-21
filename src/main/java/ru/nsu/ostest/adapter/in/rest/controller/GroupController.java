@@ -1,40 +1,44 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.group.GroupSearchRequestDto;
+import ru.nsu.ostest.domain.service.GroupService;
 
-import java.util.List;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/group")
 public class GroupController {
-
-    @GetMapping("/{id}")
-    public GroupDto getGroup(@PathVariable Long id) {
-        throw new IllegalArgumentException("Not implemented");
-    }
-
-    @PostMapping("/search")
-    public List<GroupDto> searchGroups(@RequestBody GroupSearchRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
-    }
+    private final GroupService groupService;
 
     @PostMapping
     public GroupDto createGroup(@RequestBody GroupCreationRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+        return groupService.create(request);
+    }
+
+    @GetMapping("/{id}")
+    public GroupDto getGroup(@PathVariable Long id) {
+        return groupService.getGroup(id);
+    }
+
+    @GetMapping("/search")
+    public Page<GroupDto> searchGroups(@PageableDefault(size = 100) Pageable pageable) {
+        return groupService.getAllGroups(pageable);
     }
 
     @PutMapping
     public GroupDto editGroup(@RequestBody GroupEditionRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+        return groupService.update(request);
     }
 
     @DeleteMapping("/{id}")
     public void deleteGroup(@PathVariable Long id) {
-        throw new IllegalArgumentException("Not implemented");
+        groupService.delete(id);
     }
-
 }

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.Role;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserRole;
@@ -20,8 +21,10 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 
@@ -47,12 +50,17 @@ public class JwtProviderImpl implements JwtProvider {
         for (Role role : user.getRoles().stream().map(UserRole::getRole).toList()) {
             roles.add(role.getName());
         }
+        List<String> groups = Optional.of(user)
+                .map(User::getGroups)
+                .stream().flatMap(Collection::stream)
+                .map(Group::getName)
+                .toList();
         log.info("Generated access token for user  with id [{}]", user.getId());
         return Jwts.builder()
                 .setSubject(String.valueOf(user.getId()))
                 .setExpiration(accessExpiration).signWith(jwtAccessSecret)
                 .claim("roles", roles)
-                .claim("group", user.getGroup().getId())
+                .claim("groups", groups)
                 .claim("username", user.getUsername()).compact();
     }
 

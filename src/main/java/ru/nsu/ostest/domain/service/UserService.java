@@ -22,6 +22,8 @@ import ru.nsu.ostest.security.exceptions.NotFoundException;
 import ru.nsu.ostest.security.impl.AuthServiceCommon;
 import ru.nsu.ostest.security.utils.PasswordGenerator;
 
+import java.util.Set;
+
 @Slf4j
 @AllArgsConstructor
 @Service
@@ -65,7 +67,8 @@ public class UserService {
     private String prepareUserForSaving(User user, UserCreationRequestDto userDto) {
         user.setId(null);
         user.addRole(roleService.findRole(userDto.role()));
-        user.setGroup(groupService.findGroupByName(userDto.groupNumber()));
+        Group group = groupService.findGroupByName(userDto.groupNumber());
+        user.getGroups().add(group);
 
         String password = PasswordGenerator.generatePassword();
         setUserPassword(password, user);
@@ -117,7 +120,7 @@ public class UserService {
     private void updateGroupIfNeeded(UserEditionRequestDto userEditDto, User user) {
         if (jsonNullableMapper.isPresentAndNotNull(userEditDto.groupId())) {
             Group updatedGroup = groupService.findGroupById(userEditDto.groupId().get());
-            user.setGroup(updatedGroup);
+            user.setGroups(Set.of(updatedGroup));
         }
     }
 

@@ -2,6 +2,7 @@
 package ru.nsu.ostest.domain.service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +41,8 @@ public class GroupService {
     private final UserMapper userMapper;
 
     public Group findGroupByName(String name) {
+        return groupRepository.findByName(name).orElseThrow(
+                () -> new EntityNotFoundException("Couldn't find group with name: " + name));
         return groupRepository.findByName(name);
     }
 
@@ -137,7 +140,7 @@ public class GroupService {
 
     public Group findGroupById(Long id) {
         return groupRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Couldn't find group with id: " + id));
+                () -> new EntityNotFoundException("Couldn't find group with id: " + id));
     }
 
 }

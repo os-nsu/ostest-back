@@ -5,6 +5,7 @@ import java.time.OffsetDateTime;
 public record LaboratoryShortDto(
         Long id,
         String name,
+        String description,
         OffsetDateTime deadline,
         String description,
         Boolean isHidden

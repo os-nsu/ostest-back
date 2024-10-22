@@ -46,6 +46,7 @@ public class SecurityConfig {
         http.cors(configurer -> configurer.configurationSource(request -> {
             var configuration = new CorsConfiguration().applyPermitDefaultValues();
             configuration.addAllowedMethod(HttpMethod.DELETE);
+            configuration.addAllowedMethod(HttpMethod.PUT);
             return configuration;
         }));
         http.csrf(AbstractHttpConfigurer::disable);

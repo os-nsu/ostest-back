@@ -27,6 +27,7 @@ import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 
 import java.text.MessageFormat;
+
 import ru.nsu.ostest.security.impl.AuthConstants;
 
 
@@ -53,6 +54,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({JwtException.class, BadCredentialsException.class})
     protected ResponseEntity<Object> handleAuthException(Exception e) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Auth failed: " + e.getMessage());
         String message = e.getMessage();
         logger.error(AUTH_FAILED_MESSAGE, message);
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Auth failed: " + e.getMessage());

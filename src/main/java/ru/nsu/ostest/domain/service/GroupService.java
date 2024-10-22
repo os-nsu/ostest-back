@@ -4,6 +4,7 @@ package ru.nsu.ostest.domain.service;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -136,6 +137,7 @@ public class GroupService {
             log.error(DUPLICATED_NAME_MESSAGE);
             throw DuplicateTestNameException.of(name);
         }
+                () -> new EntityNotFoundException("Couldn't find group with name: " + name));
     }
 
     public Group findGroupById(Long id) {

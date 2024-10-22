@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 
 import ru.nsu.ostest.adapter.in.rest.model.test.*;
@@ -13,7 +14,7 @@ import ru.nsu.ostest.adapter.mapper.TestMapper;
 import ru.nsu.ostest.domain.repository.TestRepository;
 
 import org.springframework.web.multipart.MultipartFile;
-import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
+
 import java.io.IOException;
 
 import java.util.List;
@@ -95,14 +96,14 @@ public class TestService {
         Test test = testRepository.findByName(name);
         if (test != null && !test.getId().equals(exceptedId)) {
             log.error(DUPLICATED_NAME_MESSAGE);
-            throw DuplicateTestNameException.of(name);
+            throw new DuplicateKeyException(String.format("Test with name '%s' already exists", name));
         }
     }
 
     private void checkIfDuplicatedName(String name) {
         if (testRepository.findByName(name) != null) {
             log.error(DUPLICATED_NAME_MESSAGE);
-            throw DuplicateTestNameException.of(name);
+            throw new DuplicateKeyException(String.format("Test with name '%s' already exists", name));
         }
     }
 }

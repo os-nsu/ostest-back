@@ -1,8 +1,10 @@
 package ru.nsu.ostest.domain.service;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +19,6 @@ import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserPassword;
 import ru.nsu.ostest.domain.repository.UserRepository;
-import ru.nsu.ostest.security.exceptions.AuthException;
-import ru.nsu.ostest.security.exceptions.NotFoundException;
 import ru.nsu.ostest.security.impl.AuthServiceCommon;
 import ru.nsu.ostest.security.utils.PasswordGenerator;
 
@@ -37,12 +37,12 @@ public class UserService {
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Couldn't find user with id: " + id));
+                () -> new EntityNotFoundException("Couldn't find user with id: " + id));
     }
 
     public User findUserByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(
-                () -> new NotFoundException("Couldn't find user with username: " + username));
+                () -> new EntityNotFoundException("Couldn't find user with username: " + username));
     }
 
     public UserPasswordDto addUser(UserCreationRequestDto userDto) throws BadRequestException {
@@ -103,7 +103,7 @@ public class UserService {
     private void validateUserAccess(User user) {
         if (!AuthServiceCommon.hasAccessOrAdminRole(user.getUsername())) {
             log.error("User has no rights to update profile");
-            throw new AuthException("No rights");
+            throw new AccessDeniedException("No rights");
         }
     }
 

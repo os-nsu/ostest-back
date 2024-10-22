@@ -2,6 +2,7 @@ package ru.nsu.ostest.domain.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +10,6 @@ import ru.nsu.ostest.adapter.in.rest.model.laboratory.*;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
-import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
 import ru.nsu.ostest.domain.specification.LaboratorySpecification;
 
 import java.util.List;
@@ -64,13 +64,13 @@ public class LaboratoryService {
     private void checkIfDuplicatedName(String name, Long exceptedId) {
         Laboratory laboratory = laboratoryRepository.findByName(name);
         if (laboratory != null && !laboratory.getId().equals(exceptedId)) {
-            throw DuplicateLaboratoryNameException.of(name);
+            throw new DuplicateKeyException(String.format("Laboratory with name '%s' already exists", name));
         }
     }
 
     private void checkIfDuplicatedName(String name) {
         if (laboratoryRepository.findByName(name) != null) {
-            throw DuplicateLaboratoryNameException.of(name);
+            throw new DuplicateKeyException(String.format("Laboratory with name '%s' already exists", name));
         }
     }
 }

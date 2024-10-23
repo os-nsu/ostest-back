@@ -54,7 +54,6 @@ public class User {
             inverseJoinColumns = @JoinColumn(name = "group_id")
     )
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @ToString.Exclude
     private Set<Group> groups = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)

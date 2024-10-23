@@ -46,7 +46,6 @@ public class Group {
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @ToString.Exclude
     private Set<User> users = new HashSet<>();
 
 }

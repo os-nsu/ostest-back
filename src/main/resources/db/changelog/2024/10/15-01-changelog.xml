@@ -1,0 +1,16 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="1729006687510-1" author="masha">
+        <createTable tableName="user_group">
+            <column name="user_id" type="bigint"/>
+            <column name="group_id" type="bigint"/>
+        </createTable>
+        <addPrimaryKey tableName="user_group" columnNames="user_id,group_id"/>
+    </changeSet>
+    <changeSet id="1729006687510-2" author="masha">
+        <sql>insert into user_group select id, group_id from "user"</sql>
+    </changeSet>
+    <changeSet id="1729006687510-3" author="masha">
+        <dropColumn tableName="user" columnName="group_id"/>
+    </changeSet>
+</databaseChangeLog>

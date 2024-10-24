@@ -1,9 +1,7 @@
 package ru.nsu.ostest.session;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,6 +10,7 @@ import org.springframework.context.annotation.Import;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import ru.nsu.ostest.TransactionalHelper;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
@@ -31,6 +30,7 @@ import ru.nsu.ostest.domain.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -84,12 +84,20 @@ public class SessionControllerIntegrationTest {
     private final List<User> students = new ArrayList<>();
     private final List<Laboratory> laboratories = new ArrayList<>();
 
+    @Autowired
+    private TransactionalHelper transactionalHelper;
+
     @BeforeEach
-    void setUp() {
+    void init() {
+        transactionalHelper.runInTransaction(this::initInTransaction);
+    }
+
+    void initInTransaction() {
         laboratoryRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();
         sessionRepository.deleteAll();
+        groupRepository.flush();
 
         Group group = createGroup(GROUP_NUMBER);
         Laboratory laboratory1 = createLaboratory(createLaboratoryCreationRequestDto('1'));
@@ -218,7 +226,7 @@ public class SessionControllerIntegrationTest {
 
     private User createUser(UserCreationRequestDto userCreationRequestDto, Group group) {
         User user = userMapper.userCreationRequestDtoToUser(userCreationRequestDto);
-        user.setGroup(group);
+        user.setGroups(Set.of(group));
         return userRepository.save(user);
     }
 

@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.model.user.*;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
@@ -45,6 +46,7 @@ public class UserTestSetup {
         objectMapper.registerModule(new JsonNullableModule());
     }
 
+    @Transactional
     public UserDto createUserReturnsUserDto(UserCreationRequestDto creationRequestDto) throws Exception {
         var user = createUserReturnsUserPasswordDto(creationRequestDto);
         assertTrue(userRepository.findByUsername(user.username()).isPresent());

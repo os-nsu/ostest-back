@@ -5,5 +5,16 @@
   "semesterNumber": 1,
   "deadline": "2024-10-07T07:02:27",
   "isHidden": true,
-  "tests": []
+  "tests": [{
+    "id": null,
+    "name": "Test Test1",
+    "description": "Test Description",
+    "category": "DEFAULT"
+  },
+    {
+      "id": null,
+      "name": "Test Test3",
+      "description": "Test Description",
+      "category": "DEFAULT"
+    }]
 }

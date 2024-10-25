@@ -1,5 +1,6 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class LaboratoryController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public LaboratoryDto createLaboratory(@RequestBody LaboratoryCreationRequestDto request) {
+    public LaboratoryDto createLaboratory(@Valid @RequestBody LaboratoryCreationRequestDto request) {
         return laboratoryService.create(request);
     }
 

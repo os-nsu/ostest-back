@@ -238,7 +238,7 @@ public class SessionControllerIntegrationTest {
 
     private LaboratoryCreationRequestDto createLaboratoryCreationRequestDto(char order) {
         return new LaboratoryCreationRequestDto(LAB_NAME + order,
-                LAB_DESCRIPTION + order, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN);
+                LAB_DESCRIPTION + order, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN, List.of());
 
     }
 

@@ -1,7 +1,7 @@
 package ru.nsu.ostest.adapter.mapper;
 
 import org.mapstruct.*;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 
 @Mapper(

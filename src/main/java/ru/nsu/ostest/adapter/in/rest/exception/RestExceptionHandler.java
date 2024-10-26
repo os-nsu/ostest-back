@@ -3,6 +3,9 @@ package ru.nsu.ostest.adapter.in.rest.exception;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
+import jakarta.persistence.EntityNotFoundException;
+import org.apache.coyote.BadRequestException;
+import org.hibernate.PropertyValueException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -34,6 +37,16 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleAccessDeniedException(Exception e) {
         logger.error(e.getMessage());
         return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler({PropertyValueException.class})
+    protected ResponseEntity<Object> handlePropertyValueException(Exception e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler({BadRequestException.class, IllegalArgumentException.class})
+    protected ResponseEntity<Object> handleBadRequest(Exception e) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler({AuthorizationException.class})

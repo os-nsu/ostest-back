@@ -15,8 +15,8 @@ import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestD
 import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.StartSessionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleEnum;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;

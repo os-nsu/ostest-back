@@ -7,7 +7,14 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.nsu.ostest.adapter.in.rest.model.user.*;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.search.UserSearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UsersBatchCreationRequestDto;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
 
@@ -40,8 +47,8 @@ public class UserController {
     }
 
     @PostMapping("/search")
-    public List<UserDto> searchUsers(@RequestBody UserSearchRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+    public UserResponse searchUsers(@RequestBody UserSearchRequestDto userRequest) {
+        return userService.getUsers(userRequest);
     }
 
     @PostMapping("/batch")

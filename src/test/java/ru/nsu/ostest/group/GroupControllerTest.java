@@ -1,7 +1,6 @@
 package ru.nsu.ostest.group;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +21,11 @@ import ru.nsu.ostest.TransactionalHelper;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.*;
+import ru.nsu.ostest.adapter.in.rest.model.user.auth.JwtResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleEnum;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.repository.GroupRepository;
@@ -32,7 +35,8 @@ import ru.nsu.ostest.test.TestTestSetup;
 import java.util.List;
 import java.util.Set;
 
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.UserRequestPostProcessor;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
 

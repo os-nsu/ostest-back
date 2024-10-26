@@ -6,9 +6,10 @@ public final class AuthConstants {
     public static final String PROCESSING_LOGIN_REQUEST = "Processing login request";
     public static final String PROCESSING_GET_ACCESS_TOKEN_REQUEST = "Processing get access token request";
     public static final String PROCESSING_REFRESH_REQUEST = "Processing refresh request";
+    public static final String PROCESSING_LOGOUT_REQUEST = "Processing logout request";
     public static final String VALIDATING_REFRESH_TOKEN_FAILED = "Validating refresh token failed";
     public static final String INVALID_TOKEN_MESSAGE = "Invalid token: ";
-
+    public static final long EXPIRATION_TIME_IN_MILLIS = 15 * 60 * 1000;
     private AuthConstants() {
     }
 }

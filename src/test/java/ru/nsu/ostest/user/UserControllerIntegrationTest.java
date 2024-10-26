@@ -1,5 +1,6 @@
 package ru.nsu.ostest.user;
 
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -31,6 +32,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @Testcontainers
@@ -228,4 +230,24 @@ class UserControllerIntegrationTest {
                 .isEqualTo(expected);
     }
 
+
+    @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
+    void logout_ShouldRemoveTokens_WhenValidRequest() throws Exception {
+        String validRefreshToken = "validRefreshToken";
+        String validAccessToken = "validAccessToken";
+
+        Claims claims = Mockito.mock(Claims.class);
+        when(claims.getSubject()).thenReturn("userId");
+
+        when(jwtProviderImpl.validateRefreshToken(validRefreshToken)).thenReturn(true);
+        when(jwtProviderImpl.getRefreshClaims(validRefreshToken)).thenReturn(claims);
+        when(jwtProviderImpl.validateAccessToken(validAccessToken)).thenReturn(true);
+
+        AccessAndRefreshTokens request = new AccessAndRefreshTokens(validAccessToken, validRefreshToken);
+
+        userTestSetup.logoutUser(request);
+
+        verify(authService).logout(request);
+    }
 }

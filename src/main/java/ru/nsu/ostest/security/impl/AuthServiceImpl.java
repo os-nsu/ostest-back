@@ -7,6 +7,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import ru.nsu.ostest.adapter.in.rest.model.user.AccessAndRefreshTokens;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
@@ -25,6 +26,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserService userService;
     private final Map<String, String> refreshStorage = new HashMap<>();
     private final JwtProviderImpl jwtProviderImpl;
+    private final BlacklistService blacklistService;
 
     @Override
     public JwtResponse login(@NonNull UserPasswordDto authRequest) {
@@ -78,7 +80,7 @@ public class AuthServiceImpl implements AuthService {
         final String userId = claims.getSubject();
         final String saveRefreshToken = refreshStorage.get(userId);
         if (saveRefreshToken == null || !saveRefreshToken.equals(refreshToken)) {
-            throw new AuthException("Invalid JWT");
+            throw new AuthException(AuthConstants.INVALID_JWT_MESSAGE);
         }
         User user = userService.findUserById(Long.valueOf(userId));
         return getJwtResponse(user);
@@ -93,4 +95,19 @@ public class AuthServiceImpl implements AuthService {
         return null;
     }
 
+    @Override
+    public void logout(@NonNull AccessAndRefreshTokens request) {
+        log.info(AuthConstants.PROCESSING_LOGOUT_REQUEST);
+
+        if (!jwtProviderImpl.validateRefreshToken(request.refreshToken())) {
+            log.error(AuthConstants.VALIDATING_REFRESH_TOKEN_FAILED);
+            throw new AuthException(AuthConstants.INVALID_JWT_MESSAGE);
+        }
+
+        Claims claims = jwtProviderImpl.getRefreshClaims(request.refreshToken());
+        String userId = claims.getSubject();
+
+        refreshStorage.remove(userId);
+        blacklistService.addToBlacklist(request.accessToken());
+    }
 }

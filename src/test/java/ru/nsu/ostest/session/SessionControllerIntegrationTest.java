@@ -27,7 +27,7 @@ import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -49,7 +49,7 @@ public class SessionControllerIntegrationTest {
     private static final String LAB_DESCRIPTION = "Description";
     private static final boolean IS_HIDDEN = false;
     private static final int SEMESTER_NUMBER = 1;
-    private static final LocalDateTime DEADLINE = LocalDateTime.parse("2024-10-07T07:02:27");
+    private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
     private static final String SESSION_USER1_LAB1_DTO = "session/session_user1_lab1.json";
     private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
     private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";

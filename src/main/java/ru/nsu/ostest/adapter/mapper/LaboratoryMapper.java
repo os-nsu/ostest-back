@@ -17,6 +17,8 @@ import java.util.List;
         uses = TestMapper.class
 )
 public interface LaboratoryMapper {
+
+    @Mapping(ignore = true, target = "testsLinks")
     Laboratory laboratoryCreationRequestDtoToLaboratory(LaboratoryCreationRequestDto laboratoryCreationRequestDto);
 
     @Mapping(target = "tests", source = "testsLinks")

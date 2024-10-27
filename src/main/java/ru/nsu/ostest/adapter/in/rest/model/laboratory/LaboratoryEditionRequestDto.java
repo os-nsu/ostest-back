@@ -1,15 +1,17 @@
 package ru.nsu.ostest.adapter.in.rest.model.laboratory;
 
-import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestLaboratoryLinkDto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public record LaboratoryEditionRequestDto(Long id,
                                           String name,
                                           String description,
                                           Integer semesterNumber,
-                                          LocalDateTime deadline,
+                                          OffsetDateTime deadline,
                                           Boolean isHidden,
-                                          List<TestDto> tests) {
+                                          List<TestLaboratoryLinkDto> addTestsLinks,
+                                          List<TestLaboratoryLinkDto> editTestsLinks,
+                                          List<TestLaboratoryLinkDto> deleteTestsLinks) {
 }

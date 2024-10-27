@@ -7,9 +7,10 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.Length;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
+import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,7 +35,7 @@ public class Laboratory {
 
     private Integer semesterNumber;
 
-    private LocalDateTime deadline;
+    private OffsetDateTime deadline;
 
     private Boolean isHidden;
 
@@ -44,4 +45,11 @@ public class Laboratory {
     @OneToMany(mappedBy = "laboratory", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Session> sessions = new ArrayList<>();
 
+    public void addTest(Test test, Boolean isSwitchedOn) {
+        TestLaboratoryLink testLaboratoryLink = new TestLaboratoryLink();
+        testLaboratoryLink.setTest(test);
+        testLaboratoryLink.setLaboratory(this);
+        testLaboratoryLink.setIsSwitchedOn(isSwitchedOn);
+        testsLinks.add(testLaboratoryLink);
+    }
 }

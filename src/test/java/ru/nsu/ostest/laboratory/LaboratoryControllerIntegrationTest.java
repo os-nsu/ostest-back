@@ -17,6 +17,7 @@ import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryEditionRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratorySearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestLaboratoryLinkDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.mapper.TestMapper;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
@@ -24,7 +25,7 @@ import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.TestRepository;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,7 +42,7 @@ public class LaboratoryControllerIntegrationTest {
     private static final String LAB_DESCRIPTION = "Test Description";
     private static final boolean IS_HIDDEN = false;
     private static final int SEMESTER_NUMBER = 1;
-    private static final LocalDateTime DEADLINE = LocalDateTime.parse("2024-10-07T07:02:27");
+    private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
     private static final String TEST_NAME = "Test Test";
     private static final String TEST_DESCRIPTION = "Test Description";
     private static final String LABORATORY1_DTO = "laboratory/laboratory1.json";
@@ -83,7 +84,8 @@ public class LaboratoryControllerIntegrationTest {
 
         var laboratoryDto = laboratoryTestSetup.createLaboratory(
                 new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN,
-                        List.of(testMapper.testToTestDto(test1), testMapper.testToTestDto(test2)))
+                        List.of(new TestLaboratoryLinkDto(test1.getId(), true),
+                                new TestLaboratoryLinkDto(test2.getId(), false)))
         );
 
         checkLaboratory(laboratoryDto, laboratoryTestSetup.getLaboratoryDto("laboratory/laboratory_created.json"));
@@ -101,7 +103,7 @@ public class LaboratoryControllerIntegrationTest {
                         LAB_NAME,
                         "Second Laboratory Description",
                         2,
-                        LocalDateTime.now().plusDays(10),
+                        DEADLINE,
                         true,
                         List.of()
                 ));
@@ -126,7 +128,8 @@ public class LaboratoryControllerIntegrationTest {
 
         LaboratoryDto createdLaboratoryDto = laboratoryTestSetup.createLaboratory(
                 new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN,
-                        List.of(testMapper.testToTestDto(test1), testMapper.testToTestDto(test2)))
+                        List.of(new TestLaboratoryLinkDto(test1.getId(), true),
+                                new TestLaboratoryLinkDto(test2.getId(), false)))
         );
 
         LaboratoryDto editedLaboratoryDto = laboratoryTestSetup.editLaboratory(
@@ -137,7 +140,9 @@ public class LaboratoryControllerIntegrationTest {
                         createdLaboratoryDto.semesterNumber(),
                         createdLaboratoryDto.deadline(),
                         !IS_HIDDEN,
-                        List.of(testMapper.testToTestDto(test1), testMapper.testToTestDto(test3))));
+                        List.of(new TestLaboratoryLinkDto(test3.getId(), false)),
+                        List.of(new TestLaboratoryLinkDto(test1.getId(), false)),
+                        List.of(new TestLaboratoryLinkDto(test2.getId(), false))));
 
         checkLaboratory(editedLaboratoryDto,
                 laboratoryTestSetup.getLaboratoryDto("laboratory/laboratory_edited.json"));
@@ -163,6 +168,8 @@ public class LaboratoryControllerIntegrationTest {
                         createdLaboratoryDto.semesterNumber(),
                         createdLaboratoryDto.deadline(),
                         !IS_HIDDEN,
+                        List.of(),
+                        List.of(),
                         List.of()));
     }
 

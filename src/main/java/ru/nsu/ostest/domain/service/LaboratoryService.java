@@ -2,11 +2,12 @@ package ru.nsu.ostest.domain.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.*;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestLaboratoryLinkDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
@@ -18,6 +19,7 @@ import ru.nsu.ostest.domain.repository.TestRepository;
 import ru.nsu.ostest.domain.specification.LaboratorySpecification;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -38,16 +40,12 @@ public class LaboratoryService {
         Laboratory laboratory = laboratoryMapper.laboratoryCreationRequestDtoToLaboratory(laboratoryCreationRequestDto);
         checkIfDuplicatedName(laboratoryCreationRequestDto.name());
 
-        List<TestDto> testDtos = laboratoryCreationRequestDto.tests();
+        List<TestLaboratoryLinkDto> testLinksDtos = laboratoryCreationRequestDto.testsLinks();
         laboratory = laboratoryRepository.save(laboratory);
-        for (TestDto testDto : testDtos) {
-            Test test = testRepository.findById(testDto.id()).orElseThrow(() ->
-                    new EntityNotFoundException("Test with name: " + testDto.name() + " not found"));
-            TestLaboratoryLink testLaboratoryLink = new TestLaboratoryLink();
-            testLaboratoryLink.setTest(test);
-            testLaboratoryLink.setLaboratory(laboratory);
-            testLaboratoryLink = testLaboratoryLinkRepository.save(testLaboratoryLink);
-            laboratory.getTestsLinks().add(testLaboratoryLink);
+        for (TestLaboratoryLinkDto testLink : testLinksDtos) {
+            Test test = testRepository.findById(testLink.testId()).orElseThrow(() ->
+                    new EntityNotFoundException("Test with id: " + testLink.testId() + " not found"));
+            laboratory.addTest(test, testLink.isSwitchedOn());
         }
 
         laboratory = laboratoryRepository.save(laboratory);
@@ -61,36 +59,25 @@ public class LaboratoryService {
         Laboratory existingLaboratory = laboratoryRepository.findById(laboratoryEditionRequestDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
 
-        List<Test> tests = laboratoryEditionRequestDto.tests().stream()
-                .map((testDto) -> testRepository.findById(testDto.id()).orElseThrow(() ->
-                        new EntityNotFoundException("Test with name: " + testDto.name() + " not found")))
-                .toList();
-
         Laboratory updatedLaboratory
                 = laboratoryMapper.laboratoryEditionRequestDtoToLaboratory(laboratoryEditionRequestDto);
+        updatedLaboratory.getTestsLinks().addAll(existingLaboratory.getTestsLinks());
         updatedLaboratory = laboratoryRepository.save(updatedLaboratory);
 
-        for (Test test : tests) {
-            TestLaboratoryLink testLaboratoryLink =
-                    testLaboratoryLinkRepository.findByLaboratoryIdAndTestId(existingLaboratory.getId(), test.getId());
-
-            if (testLaboratoryLink == null) {
-                testLaboratoryLink = new TestLaboratoryLink();
-                testLaboratoryLink.setTest(test);
-                testLaboratoryLink.setLaboratory(updatedLaboratory);
-                testLaboratoryLink = testLaboratoryLinkRepository.save(testLaboratoryLink);
-            }
-            updatedLaboratory.getTestsLinks().add(testLaboratoryLink);
+        List<TestLaboratoryLinkDto> deleteTestLaboratoryLinks = laboratoryEditionRequestDto.deleteTestsLinks();
+        if (CollectionUtils.isNotEmpty(deleteTestLaboratoryLinks)) {
+            deleteTestsLinksFromLaboratory(updatedLaboratory, deleteTestLaboratoryLinks);
         }
 
-        List<TestLaboratoryLink> existingLaboratoryTestLinks = existingLaboratory.getTestsLinks();
-
-        for (TestLaboratoryLink testLaboratoryLink : existingLaboratoryTestLinks) {
-            if (!updatedLaboratory.getTestsLinks().contains(testLaboratoryLink)) {
-                testLaboratoryLinkRepository.delete(testLaboratoryLink);
-            }
+        List<TestLaboratoryLinkDto> editTestLaboratoryLinks = laboratoryEditionRequestDto.editTestsLinks();
+        if (CollectionUtils.isNotEmpty(editTestLaboratoryLinks)) {
+            editTestsLinksForLaboratory(updatedLaboratory, editTestLaboratoryLinks);
         }
-        updatedLaboratory = laboratoryRepository.save(updatedLaboratory);
+
+        List<TestLaboratoryLinkDto> addTestLaboratoryLinks = laboratoryEditionRequestDto.addTestsLinks();
+        if (CollectionUtils.isNotEmpty(addTestLaboratoryLinks)) {
+            addTestsLinksToLaboratory(updatedLaboratory, addTestLaboratoryLinks);
+        }
 
         return laboratoryMapper.laboratoryToLaboratoryDto(updatedLaboratory);
     }
@@ -104,6 +91,47 @@ public class LaboratoryService {
 
     public LaboratoryDto findById(Long id) {
         return laboratoryMapper.laboratoryToLaboratoryDto(laboratoryRepository.findById(id).orElse(null));
+    }
+
+    private void addTestsLinksToLaboratory(Laboratory laboratory,
+                                           List<TestLaboratoryLinkDto> addTestLaboratoryLinks) {
+        List<TestLaboratoryLink> testLaboratoryLinks = laboratory.getTestsLinks();
+        List<Test> labTests = testLaboratoryLinks.stream()
+                .map(TestLaboratoryLink::getTest)
+                .toList();
+        List<TestLaboratoryLinkDto> laboratoryLinksToAdd = addTestLaboratoryLinks.stream()
+                .filter(link -> labTests.stream()
+                        .noneMatch(test -> Objects.equals(test.getId(), link.testId()))).toList();
+        for (TestLaboratoryLinkDto testLaboratoryLinkDto : laboratoryLinksToAdd) {
+            Test test = testRepository.findById(testLaboratoryLinkDto.testId())
+                    .orElseThrow(() -> new EntityNotFoundException(
+                            "Test with id: " + testLaboratoryLinkDto.testId() + " not found"));
+            laboratory.addTest(test, testLaboratoryLinkDto.isSwitchedOn());
+        }
+        laboratoryRepository.flush();
+    }
+
+    private void editTestsLinksForLaboratory(Laboratory laboratory,
+                                             List<TestLaboratoryLinkDto> addTestLaboratoryLinks) {
+        for (TestLaboratoryLinkDto dto : addTestLaboratoryLinks) {
+            TestLaboratoryLink testLaboratoryLink =
+                    testLaboratoryLinkRepository.findByLaboratoryIdAndTestId(laboratory.getId(), dto.testId());
+            if (testLaboratoryLink != null) {
+                testLaboratoryLink.setIsSwitchedOn(dto.isSwitchedOn());
+            }
+        }
+        testLaboratoryLinkRepository.flush();
+    }
+
+    private void deleteTestsLinksFromLaboratory(Laboratory laboratory, List<TestLaboratoryLinkDto> deleteTestLaboratoryLinks) {
+        List<TestLaboratoryLink> testLaboratoryLinks = laboratory.getTestsLinks();
+        List<TestLaboratoryLink> linksToDelete = testLaboratoryLinks.stream()
+                .filter(link -> deleteTestLaboratoryLinks.stream()
+                        .anyMatch(dto -> Objects.equals(dto.testId(), link.getTest().getId())))
+                .toList();
+        testLaboratoryLinks.removeAll(linksToDelete);
+        laboratoryRepository.flush();
+        testLaboratoryLinkRepository.deleteAll(linksToDelete);
     }
 
     private void checkIfDuplicatedName(String name, Long exceptedId) {

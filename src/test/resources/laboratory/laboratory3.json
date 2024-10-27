@@ -3,7 +3,7 @@
   "name": "Test Laboratory3",
   "description": "Test Description",
   "semesterNumber": 1,
-  "deadline": "2024-10-07T07:02:27",
+  "deadline": "2024-10-07T07:02:27Z",
   "isHidden": true,
   "tests": []
 }

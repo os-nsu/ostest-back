@@ -3,18 +3,20 @@
   "name": "New Laboratory Name",
   "description": "New Laboratory Description",
   "semesterNumber": 1,
-  "deadline": "2024-10-07T07:02:27",
+  "deadline": "2024-10-07T07:02:27Z",
   "isHidden": true,
-  "tests": [{
-    "id": null,
-    "name": "Test Test1",
-    "description": "Test Description",
-    "category": "DEFAULT"
-  },
+  "tests": [
+    {
+      "id": null,
+      "name": "Test Test1",
+      "description": "Test Description",
+      "category": "DEFAULT"
+    },
     {
       "id": null,
       "name": "Test Test3",
       "description": "Test Description",
       "category": "DEFAULT"
-    }]
+    }
+  ]
 }

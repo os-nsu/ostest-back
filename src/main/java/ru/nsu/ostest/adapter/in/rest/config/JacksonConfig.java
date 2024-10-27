@@ -28,7 +28,7 @@ public class JacksonConfig {
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         objectMapper.configOverride(OffsetDateTime.class)
-                .setFormat(JsonFormat.Value.forPattern("yyyy-MM-dd'T'HH:mm:ss[XXX][X]"));
+                .setFormat(JsonFormat.Value.forPattern("yyyy-MM-dd'T'HH:mm:ss[X]"));
         return objectMapper;
     }
 }

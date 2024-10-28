@@ -1,13 +1,17 @@
 package ru.nsu.ostest.adapter.in.rest.model.laboratory;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.Builder;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestLaboratoryLinkDto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.List;
 
 @Builder
-public record LaboratoryCreationRequestDto(String name,
+public record LaboratoryCreationRequestDto(@NotEmpty String name,
                                            String description,
                                            Integer semesterNumber,
-                                           LocalDateTime deadline,
-                                           Boolean isHidden) {
+                                           OffsetDateTime deadline,
+                                           Boolean isHidden,
+                                           List<TestLaboratoryLinkDto> testsLinks) {
 }

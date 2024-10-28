@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Configuration
 public class JacksonConfig {
@@ -27,8 +27,8 @@ public class JacksonConfig {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        objectMapper.configOverride(LocalDateTime.class)
-                .setFormat(JsonFormat.Value.forPattern("yyyy-MM-dd'T'HH:mm:ss[XXX][X]"));
+        objectMapper.configOverride(OffsetDateTime.class)
+                .setFormat(JsonFormat.Value.forPattern("yyyy-MM-dd'T'HH:mm:ss[X]"));
         return objectMapper;
     }
 }

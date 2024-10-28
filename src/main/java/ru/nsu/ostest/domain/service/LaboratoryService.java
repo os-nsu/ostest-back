@@ -56,30 +56,27 @@ public class LaboratoryService {
     public LaboratoryDto editLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto) {
         checkIfDuplicatedName(laboratoryEditionRequestDto.name(), laboratoryEditionRequestDto.id());
 
-        Laboratory existingLaboratory = laboratoryRepository.findById(laboratoryEditionRequestDto.id())
+        Laboratory laboratory = laboratoryRepository.findById(laboratoryEditionRequestDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
 
-        Laboratory updatedLaboratory
-                = laboratoryMapper.laboratoryEditionRequestDtoToLaboratory(laboratoryEditionRequestDto);
-        updatedLaboratory.getTestsLinks().addAll(existingLaboratory.getTestsLinks());
-        updatedLaboratory = laboratoryRepository.save(updatedLaboratory);
+        laboratoryMapper.updateLaboratoryFromEditionRequestDto(laboratoryEditionRequestDto, laboratory);
 
         List<TestLaboratoryLinkDto> deleteTestLaboratoryLinks = laboratoryEditionRequestDto.deleteTestsLinks();
         if (CollectionUtils.isNotEmpty(deleteTestLaboratoryLinks)) {
-            deleteTestsLinksFromLaboratory(updatedLaboratory, deleteTestLaboratoryLinks);
+            deleteTestsLinksFromLaboratory(laboratory, deleteTestLaboratoryLinks);
         }
 
         List<TestLaboratoryLinkDto> editTestLaboratoryLinks = laboratoryEditionRequestDto.editTestsLinks();
         if (CollectionUtils.isNotEmpty(editTestLaboratoryLinks)) {
-            editTestsLinksForLaboratory(updatedLaboratory, editTestLaboratoryLinks);
+            editTestsLinksForLaboratory(laboratory, editTestLaboratoryLinks);
         }
 
         List<TestLaboratoryLinkDto> addTestLaboratoryLinks = laboratoryEditionRequestDto.addTestsLinks();
         if (CollectionUtils.isNotEmpty(addTestLaboratoryLinks)) {
-            addTestsLinksToLaboratory(updatedLaboratory, addTestLaboratoryLinks);
+            addTestsLinksToLaboratory(laboratory, addTestLaboratoryLinks);
         }
 
-        return laboratoryMapper.laboratoryToLaboratoryDto(updatedLaboratory);
+        return laboratoryMapper.laboratoryToLaboratoryDto(laboratory);
     }
 
     public List<LaboratoryShortDto> searchLaboratories(LaboratorySearchRequestDto laboratorySearchRequestDto) {

@@ -18,13 +18,14 @@ import java.util.List;
 )
 public interface LaboratoryMapper {
 
+    @Mapping(target = "id", ignore = true)
+    void updateLaboratoryFromEditionRequestDto(LaboratoryEditionRequestDto dto, @MappingTarget Laboratory laboratory);
+
     @Mapping(ignore = true, target = "testsLinks")
     Laboratory laboratoryCreationRequestDtoToLaboratory(LaboratoryCreationRequestDto laboratoryCreationRequestDto);
 
     @Mapping(target = "tests", source = "testsLinks")
     LaboratoryDto laboratoryToLaboratoryDto(Laboratory laboratory);
-
-    Laboratory laboratoryEditionRequestDtoToLaboratory(LaboratoryEditionRequestDto laboratoryEditionRequestDto);
 
     LaboratoryShortDto laboratoryDtoToLaboratoryShortDto(LaboratoryDto laboratoryDto);
 

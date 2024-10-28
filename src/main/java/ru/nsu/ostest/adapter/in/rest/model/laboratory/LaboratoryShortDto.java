@@ -1,11 +1,11 @@
 package ru.nsu.ostest.adapter.in.rest.model.laboratory;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 public record LaboratoryShortDto(
         Long id,
         String name,
-        LocalDateTime deadline,
+        OffsetDateTime deadline,
         Boolean isHidden
 ) {
 }

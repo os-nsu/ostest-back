@@ -36,7 +36,7 @@ INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 1. Compile & assembling & launch',
         description,
         4,
-        '2024-05-06 23:59:59',
+        '2024-05-06 23:59:59Z',
         false);
 
 END $$;
@@ -82,7 +82,7 @@ INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 2. Files',
         description,
         4,
-        '2025-05-06 23:59:59',
+        '2025-05-06 23:59:59Z',
         false);
 
 END $$;
@@ -129,7 +129,7 @@ INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 3. Address space',
         description,
         4,
-        '2025-05-06 23:59:59',
+        '2025-05-06 23:59:59Z',
         false);
 
 END $$;
@@ -152,7 +152,7 @@ INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 4. Processes',
         description,
         4,
-        '2025-05-06 23:59:59',
+        '2025-05-06 23:59:59Z',
         false);
 
 END $$;
@@ -174,7 +174,7 @@ INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 5. System calls',
         description,
         4,
-        '2025-05-06 23:59:59',
+        '2025-05-06 23:59:59Z',
         false);
 
 END $$;

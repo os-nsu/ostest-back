@@ -15,6 +15,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 public class TestLaboratoryLink {
 
     @EmbeddedId
+    @EqualsAndHashCode. Include
     private TestLaboratoryKey id = new TestLaboratoryKey();
 
     @ManyToOne

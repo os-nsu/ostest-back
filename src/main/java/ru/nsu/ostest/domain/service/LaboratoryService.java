@@ -2,8 +2,8 @@ package ru.nsu.ostest.domain.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +14,6 @@ import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
-import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
 import ru.nsu.ostest.domain.repository.TestLaboratoryLinkRepository;
 import ru.nsu.ostest.domain.repository.TestRepository;
 import ru.nsu.ostest.domain.specification.LaboratorySpecification;

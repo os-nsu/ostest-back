@@ -1,12 +1,11 @@
-
 package ru.nsu.ostest.domain.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -16,10 +15,8 @@ import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
 import ru.nsu.ostest.adapter.mapper.GroupMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
-import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
 import ru.nsu.ostest.domain.repository.GroupRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
-import ru.nsu.ostest.security.exceptions.NotFoundException;
 
 import java.util.List;
 import java.util.Set;
@@ -38,8 +35,6 @@ public class GroupService {
     private final UserRepository userRepository;
 
     public Group findGroupByName(String name) {
-        return groupRepository.findByName(name).orElseThrow(
-                () -> new EntityNotFoundException("Couldn't find group with name: " + name));
         return groupRepository.findByName(name);
     }
 
@@ -123,14 +118,14 @@ public class GroupService {
         Group group = groupRepository.findByName(name);
         if (group != null && !group.getId().equals(exceptedId)) {
             log.error(DUPLICATED_NAME_MESSAGE);
-            throw DuplicateTestNameException.of(name);
+            throw new DuplicateKeyException("Group with name " + name + "already exist.");
         }
     }
 
     private void checkIfDuplicatedName(String name) {
         if (groupRepository.findByName(name) != null) {
             log.error(DUPLICATED_NAME_MESSAGE);
-            throw DuplicateTestNameException.of(name);
+            throw new DuplicateKeyException("Group with name " + name + "already exist.");
         }
     }
 

@@ -1,12 +1,10 @@
 package ru.nsu.ostest.security.impl;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
@@ -15,6 +13,8 @@ import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
+import ru.nsu.ostest.security.exception.InvalidJwtException;
+import ru.nsu.ostest.security.exception.WrongPasswordException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
             return getJwtResponse(user);
         } else {
             log.error(AuthConstants.WRONG_PASSWORD_MESSAGE);
-            throw new BadCredentialsException(AuthConstants.WRONG_PASSWORD_MESSAGE);
+            throw new WrongPasswordException();
         }
     }
 
@@ -70,7 +70,7 @@ public class AuthServiceImpl implements AuthService {
             }
         }
         log.error(AuthConstants.VALIDATING_REFRESH_TOKEN_FAILED);
-        throw new JwtException(AuthConstants.INVALID_JWT_MESSAGE);
+        throw new InvalidJwtException();
     }
 
     @Override
@@ -78,13 +78,13 @@ public class AuthServiceImpl implements AuthService {
         log.info("Processing refresh request");
         if (!jwtProviderImpl.validateRefreshToken(refreshToken)) {
             log.error(AuthConstants.VALIDATING_REFRESH_TOKEN_FAILED);
-            throw new JwtException(AuthConstants.INVALID_JWT_MESSAGE);
+            throw new InvalidJwtException();
         }
         final Claims claims = jwtProviderImpl.getRefreshClaims(refreshToken);
         final String userId = claims.getSubject();
         final String saveRefreshToken = refreshStorage.get(userId);
         if (saveRefreshToken == null || !saveRefreshToken.equals(refreshToken)) {
-            throw new JwtException(AuthConstants.INVALID_JWT_MESSAGE);
+            throw new InvalidJwtException();
         }
         User user = userService.findUserById(Long.valueOf(userId));
         return getJwtResponse(user);

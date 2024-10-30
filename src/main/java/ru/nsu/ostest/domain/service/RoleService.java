@@ -1,12 +1,11 @@
 package ru.nsu.ostest.domain.service;
 
-
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.Role;
+import ru.nsu.ostest.domain.exception.validation.RoleNotFoundException;
 import ru.nsu.ostest.domain.repository.RoleRepository;
 
 import java.util.Optional;
@@ -21,7 +20,7 @@ public class RoleService {
         Optional<Role> roleOptional = roleRepository.findByName(name.toString());
         if (roleOptional.isEmpty()) {
             log.error("Couldn't find role [{}]", name);
-            throw new EntityNotFoundException("Couldn't find role " + name);
+            throw RoleNotFoundException.notFoundRoleWithName(name.toString());
         }
         return roleOptional.get();
     }

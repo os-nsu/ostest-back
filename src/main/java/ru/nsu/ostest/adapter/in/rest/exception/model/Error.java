@@ -14,10 +14,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class Error {
-
-    @NotNull
-    private Integer code;
-
     @NotNull
     private String message;
 }

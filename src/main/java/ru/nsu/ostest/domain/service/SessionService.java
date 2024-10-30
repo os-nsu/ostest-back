@@ -1,6 +1,5 @@
 package ru.nsu.ostest.domain.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +10,9 @@ import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
+import ru.nsu.ostest.domain.exception.validation.LaboratoryNotFoundException;
+import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
+import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
 import ru.nsu.ostest.domain.common.enums.AttemptStatus;
 import ru.nsu.ostest.domain.exception.validation.AttemptNotFoundException;
 import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
@@ -36,9 +38,10 @@ public class SessionService {
     @Transactional
     public SessionDto create(StartSessionRequestDto startSessionRequestDto) {
         User student = userRepository.findById(startSessionRequestDto.studentId())
-                .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> UserNotFoundException.notFoundUserWithId(startSessionRequestDto.studentId()));
         Laboratory laboratory = laboratoryRepository.findById(startSessionRequestDto.laboratoryId())
-                .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
+                .orElseThrow(() -> LaboratoryNotFoundException
+                        .notFoundLaboratoryWithId(startSessionRequestDto.laboratoryId()));
 
         Session session = new Session();
         session.setStudent(student);
@@ -50,7 +53,7 @@ public class SessionService {
 
     public SessionDto findById(Long id) {
         Session session = sessionRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Session not found"));
+                .orElseThrow(() -> SessionNotFoundException.notFoundSessionWithId(id));
 
         return sessionMapper.sessionToSessionDto(session);
     }

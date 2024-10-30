@@ -3,7 +3,6 @@ package ru.nsu.ostest.adapter.in.rest.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +29,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserPasswordDto register(@RequestBody UserCreationRequestDto userDto) throws BadRequestException {
+    public UserPasswordDto register(@RequestBody UserCreationRequestDto userDto) {
         return userService.addUser(userDto);
     }
 
@@ -50,7 +49,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto editUser(@PathVariable Long id, @NotNull @RequestBody UserEditionRequestDto userUpdateRequest) throws BadRequestException {
+    public UserDto editUser(@PathVariable Long id, @NotNull @RequestBody UserEditionRequestDto userUpdateRequest) {
         return userService.updateUser(id, userUpdateRequest);
     }
 

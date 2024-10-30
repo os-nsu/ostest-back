@@ -1,10 +1,7 @@
 package ru.nsu.ostest.domain.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.BadRequestException;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +15,9 @@ import ru.nsu.ostest.adapter.mapper.UserUpdateMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserPassword;
+import ru.nsu.ostest.domain.exception.validation.DuplicateUserNameException;
+import ru.nsu.ostest.domain.exception.NoRightsException;
+import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.impl.AuthServiceCommon;
 import ru.nsu.ostest.security.utils.PasswordGenerator;
@@ -39,15 +39,15 @@ public class UserService {
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Couldn't find user with id: " + id));
+                () -> UserNotFoundException.notFoundUserWithId(id));
     }
 
     public User findUserByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(
-                () -> new EntityNotFoundException("Couldn't find user with username: " + username));
+                () -> UserNotFoundException.notFoundUserWithUsername(username));
     }
 
-    public UserPasswordDto addUser(UserCreationRequestDto userDto) throws BadRequestException {
+    public UserPasswordDto addUser(UserCreationRequestDto userDto) {
         log.info("Adding user");
         validateUsername(userDto.username());
         User user = userMapper.userCreationRequestDtoToUser(userDto);
@@ -57,10 +57,10 @@ public class UserService {
         return new UserPasswordDto(savedUser.getUsername(), password);
     }
 
-    private void validateUsername(String username) throws BadRequestException {
+    private void validateUsername(String username) {
         if (userRepository.findByUsername(username).isPresent()) {
             log.error("Login {} is already used", username);
-            throw new BadRequestException("Login is already used");
+            throw DuplicateUserNameException.of(username);
         }
     }
 
@@ -106,11 +106,11 @@ public class UserService {
     private void validateUserAccess(User user) {
         if (!AuthServiceCommon.hasAccessOrAdminRole(user.getUsername())) {
             log.error("User has no rights to update profile");
-            throw new AccessDeniedException("No rights");
+            throw new NoRightsException();
         }
     }
 
-    private void updateUsernameIfNeeded(UserEditionRequestDto userEditDto, User user) throws BadRequestException {
+    private void updateUsernameIfNeeded(UserEditionRequestDto userEditDto, User user) {
         if (userEditDto.username().isPresent() && !user.getUsername().equals(userEditDto.username().get())) {
             validateUsername(userEditDto.username().get());
         }
@@ -124,7 +124,7 @@ public class UserService {
         }
     }
 
-    public UserDto updateUser(Long userId, UserEditionRequestDto userEditDto) throws BadRequestException {
+    public UserDto updateUser(Long userId, UserEditionRequestDto userEditDto) {
         log.info("Processing update profile request");
         User user = findUserById(userId);
         validateUserAccess(user);

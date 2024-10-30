@@ -1,9 +1,7 @@
 package ru.nsu.ostest.domain.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +11,9 @@ import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
+import ru.nsu.ostest.domain.exception.validation.DuplicateLaboratoryNameException;
+import ru.nsu.ostest.domain.exception.validation.LaboratoryNotFoundException;
+import ru.nsu.ostest.domain.exception.validation.TestNotFoundException;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.TestLaboratoryLinkRepository;
 import ru.nsu.ostest.domain.repository.TestRepository;
@@ -44,7 +45,7 @@ public class LaboratoryService {
         laboratory = laboratoryRepository.save(laboratory);
         for (TestLaboratoryLinkDto testLink : testLinksDtos) {
             Test test = testRepository.findById(testLink.testId()).orElseThrow(() ->
-                    new EntityNotFoundException("Test with id: " + testLink.testId() + " not found"));
+                    TestNotFoundException.notFoundTestWithId(testLink.testId()));
             laboratory.addTest(test, testLink.isSwitchedOn());
         }
 
@@ -57,7 +58,8 @@ public class LaboratoryService {
         checkIfDuplicatedName(laboratoryEditionRequestDto.name(), laboratoryEditionRequestDto.id());
 
         Laboratory laboratory = laboratoryRepository.findById(laboratoryEditionRequestDto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Laboratory not found"));
+                .orElseThrow(() -> LaboratoryNotFoundException
+                        .notFoundLaboratoryWithId(laboratoryEditionRequestDto.id()));
 
         laboratoryMapper.updateLaboratoryFromEditionRequestDto(laboratoryEditionRequestDto, laboratory);
 
@@ -101,8 +103,7 @@ public class LaboratoryService {
                         .noneMatch(test -> Objects.equals(test.getId(), link.testId()))).toList();
         for (TestLaboratoryLinkDto testLaboratoryLinkDto : laboratoryLinksToAdd) {
             Test test = testRepository.findById(testLaboratoryLinkDto.testId())
-                    .orElseThrow(() -> new EntityNotFoundException(
-                            "Test with id: " + testLaboratoryLinkDto.testId() + " not found"));
+                    .orElseThrow(() -> TestNotFoundException.notFoundTestWithId(testLaboratoryLinkDto.testId()));
             laboratory.addTest(test, testLaboratoryLinkDto.isSwitchedOn());
         }
         laboratoryRepository.flush();
@@ -134,13 +135,13 @@ public class LaboratoryService {
     private void checkIfDuplicatedName(String name, Long exceptedId) {
         Laboratory laboratory = laboratoryRepository.findByName(name);
         if (laboratory != null && !laboratory.getId().equals(exceptedId)) {
-            throw new DuplicateKeyException(String.format("Laboratory with name '%s' already exists", name));
+            throw DuplicateLaboratoryNameException.of(name);
         }
     }
 
     private void checkIfDuplicatedName(String name) {
         if (laboratoryRepository.findByName(name) != null) {
-            throw new DuplicateKeyException(String.format("Laboratory with name '%s' already exists", name));
+            throw DuplicateLaboratoryNameException.of(name);
         }
     }
 }

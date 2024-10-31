@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
+import ru.nsu.ostest.domain.common.enums.AttemptStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,4 +40,16 @@ public class Session {
     @OneToMany(mappedBy = "session", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Attempt> attempts = new ArrayList<>();
 
+    public Attempt makeAttempt() {
+        Attempt attempt = new Attempt();
+        attempt.setSession(this);
+        attempt.setStatus(AttemptStatus.IN_QUEUE);
+        if (attempts.isEmpty()) {
+            attempt.setOrder(1L);
+        } else {
+            attempt.setOrder(attempts.getLast().getOrder() + 1L);
+        }
+        attempts.add(attempt);
+        return attempt;
+    }
 }

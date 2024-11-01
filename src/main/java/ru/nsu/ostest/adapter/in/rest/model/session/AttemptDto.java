@@ -8,7 +8,7 @@ import java.util.UUID;
 public record AttemptDto(
         UUID id,
         Long order,
-        AttemptStatus attemptStatus,
+        AttemptStatus status,
         TestResults testResults
 ) {
 }

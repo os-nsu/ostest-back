@@ -12,9 +12,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.TransactionalHelper;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.StartSessionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.*;
 import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
@@ -31,6 +29,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -49,11 +48,16 @@ public class SessionControllerIntegrationTest {
     private static final String LAB_DESCRIPTION = "Description";
     private static final boolean IS_HIDDEN = false;
     private static final int SEMESTER_NUMBER = 1;
+    private static final String REPOSITORY_LINK = "Link";
+    private static final String BRANCH_NAME = "Branch";
     private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
     private static final String SESSION_USER1_LAB1_DTO = "session/session_user1_lab1.json";
     private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
     private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
+    private static final String SESSION_USER1_LAB1_WITH_ATTEMPTS_DTO = "session/session_user1_lab1_with_attempts.json";
+    private static final String ATTEMPT1_DTO = "session/attempt1.json";
+    private static final String ATTEMPT2_DTO = "session/attempt2.json";
 
     @Container
     @ServiceConnection
@@ -119,6 +123,55 @@ public class SessionControllerIntegrationTest {
         var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.getId(), laboratory.getId()));
 
         checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+    }
+
+    @Test
+    public void makeAttempt_ShouldReturnCreated_WhenValidRequest() throws Exception {
+        User student = students.getFirst();
+        Laboratory laboratory = laboratories.getFirst();
+
+        var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.getId(), laboratory.getId()));
+        checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+
+        var makeAttemptDto = new MakeAttemptDto(REPOSITORY_LINK, BRANCH_NAME, laboratory.getId());
+
+        var attemptDto = sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto.id());
+        checkAttempt(attemptDto, sessionTestSetup.getAttemptDto(ATTEMPT1_DTO));
+
+        attemptDto = sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto.id());
+        checkAttempt(attemptDto, sessionTestSetup.getAttemptDto(ATTEMPT2_DTO));
+
+        sessionDto = sessionTestSetup.getSessionById(sessionDto.id());
+        checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_WITH_ATTEMPTS_DTO));
+    }
+
+    @Test
+    public void getAttemptById_ShouldReturnOk_WhenValidRequest() throws Exception {
+        User student = students.getFirst();
+        Laboratory laboratory = laboratories.getFirst();
+
+        var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.getId(), laboratory.getId()));
+        checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
+
+        var makeAttemptDto = new MakeAttemptDto(REPOSITORY_LINK, BRANCH_NAME, laboratory.getId());
+
+        var attemptDto1 = sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto.id());
+        checkAttempt(attemptDto1, sessionTestSetup.getAttemptDto(ATTEMPT1_DTO));
+
+        var attemptDto2 = sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto.id());
+        checkAttempt(attemptDto2, sessionTestSetup.getAttemptDto(ATTEMPT2_DTO));
+
+        UUID attempt1Id = attemptDto1.id();
+        UUID attempt2Id = attemptDto2.id();
+
+        attemptDto1 = sessionTestSetup.getAttemptById(attempt1Id);
+        attemptDto2 = sessionTestSetup.getAttemptById(attempt2Id);
+
+        assertEquals(attempt1Id, attemptDto1.id());
+        assertEquals(attempt2Id, attemptDto2.id());
+
+        checkAttempt(attemptDto1, sessionTestSetup.getAttemptDto(ATTEMPT1_DTO));
+        checkAttempt(attemptDto2, sessionTestSetup.getAttemptDto(ATTEMPT2_DTO));
     }
 
     @Test
@@ -255,6 +308,13 @@ public class SessionControllerIntegrationTest {
                 .usingRecursiveComparison()
                 .ignoringFields("id")
                 .ignoringFieldsMatchingRegexes(".*\\.id")
+                .isEqualTo(expected);
+    }
+
+    private void checkAttempt(AttemptDto actual, AttemptDto expected) {
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
                 .isEqualTo(expected);
     }
 }

@@ -7,6 +7,6 @@ import java.util.UUID;
 public record AttemptShortDto(
         UUID id,
         Long order,
-        AttemptStatus attemptStatus
+        AttemptStatus status
 ) {
 }

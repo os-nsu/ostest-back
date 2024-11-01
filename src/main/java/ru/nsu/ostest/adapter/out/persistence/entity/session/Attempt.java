@@ -25,7 +25,7 @@ public class Attempt {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "order_number")
     private Long order;
 
     @Enumerated(EnumType.STRING)

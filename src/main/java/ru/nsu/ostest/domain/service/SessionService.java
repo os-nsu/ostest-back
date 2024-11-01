@@ -19,6 +19,7 @@ import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -69,10 +70,11 @@ public class SessionService {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> SessionNotFoundException.notFoundSessionWithId(sessionId));
         Attempt attempt = session.makeAttempt();
+        sessionRepository.flush();
         return attemptMapper.attemptToAttemptDto(attempt);
     }
 
-    public AttemptDto findAttemptById(Long id) {
+    public AttemptDto findAttemptById(UUID id) {
         return attemptMapper.attemptToAttemptDto(attemptRepository.findById(id)
                 .orElseThrow(() -> AttemptNotFoundException.notFoundAttemptWithId(id)));
     }

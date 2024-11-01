@@ -1,0 +1,19 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="anastasiya (generated)" id="1730444774909-4">
+        <addColumn tableName="attempt">
+            <column name="order_number" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="anastasiya (generated)" id="1730444774909-5">
+        <addPrimaryKey columnNames="id" constraintName="attemptPK" tableName="attempt"/>
+    </changeSet>
+    <changeSet author="anastasiya (generated)" id="1730444774909-10">
+        <dropColumn columnName="order" tableName="attempt"/>
+    </changeSet>
+    <changeSet author="anastasiya (generated)" id="1730444774909-1">
+        <addNotNullConstraint columnDataType="uuid" columnName="id" tableName="attempt" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

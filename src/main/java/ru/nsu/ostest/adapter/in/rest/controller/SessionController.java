@@ -7,6 +7,7 @@ import ru.nsu.ostest.adapter.in.rest.model.session.*;
 import ru.nsu.ostest.domain.service.SessionService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -37,12 +38,13 @@ public class SessionController {
     }
 
     @PostMapping("/{sessionId}/attempt")
+    @ResponseStatus(HttpStatus.CREATED)
     public AttemptDto makeAttempt(@RequestBody MakeAttemptDto makeAttemptDto, @PathVariable Long sessionId) {
         return sessionService.makeAttempt(sessionId);
     }
 
     @GetMapping("/attempt/{attemptId}")
-    public AttemptDto getAttempt(@PathVariable Long attemptId) {
+    public AttemptDto getAttempt(@PathVariable UUID attemptId) {
         return sessionService.findAttemptById(attemptId);
     }
 }

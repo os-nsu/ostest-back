@@ -6,6 +6,7 @@ public record LaboratoryShortDto(
         Long id,
         String name,
         OffsetDateTime deadline,
+        String description,
         Boolean isHidden
 ) {
 }

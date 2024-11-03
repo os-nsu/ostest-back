@@ -13,6 +13,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -35,5 +36,5 @@ public interface UserMapper {
                 .orElse(null);
     }
 
-    GroupMemberUserDto mapToGroupMemberUserDto(User user);
+    List<GroupMemberUserDto> mapToGroupMembers(Set<User> users);
 }

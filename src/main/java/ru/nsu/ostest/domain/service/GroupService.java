@@ -56,12 +56,6 @@ public class GroupService {
         return groupMapper.groupToGroupDto(group);
     }
 
-    public GroupDto getGroup(Long id) {
-        return groupRepository.findById(id)
-                .map(groupMapper::groupToGroupDto)
-                .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE));
-    }
-
     public Page<GroupDto> getAllGroups(Pageable pageRequest) {
         return groupRepository.findAll(pageRequest)
                 .map(groupMapper::groupToGroupDto);
@@ -71,11 +65,7 @@ public class GroupService {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE));
 
-        List<GroupMemberUserDto> groupMembers = new ArrayList<>();
-        for (User u : group.getUsers()) {
-            groupMembers.add(userMapper.mapToGroupMemberUserDto(u));
-        }
-        return groupMembers;
+        return userMapper.mapToGroupMembers(group.getUsers());
     }
 
     @Transactional

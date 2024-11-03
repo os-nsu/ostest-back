@@ -27,12 +27,7 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
-    public GroupDto getGroup(@PathVariable Long id) {
-        return groupService.getGroup(id);
-    }
-
-    @GetMapping("/{id}/users")
-    public List<GroupMemberUserDto> getGroupUsers(@PathVariable Long id) {
+    public List<GroupMemberUserDto> getGroup(@PathVariable Long id) {
         return groupService.getGroupUsers(id);
     }
 

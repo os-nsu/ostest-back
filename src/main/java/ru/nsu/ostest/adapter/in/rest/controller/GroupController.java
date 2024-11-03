@@ -8,12 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.GroupMemberUserDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.GroupFullDto;
 import ru.nsu.ostest.domain.service.GroupService;
-
-import java.util.List;
-
 
 @RequiredArgsConstructor
 @RestController
@@ -27,7 +23,7 @@ public class GroupController {
     }
 
     @GetMapping("/{id}")
-    public List<GroupMemberUserDto> getGroup(@PathVariable Long id) {
+    public GroupFullDto getGroup(@PathVariable Long id) {
         return groupService.getGroupUsers(id);
     }
 

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.GroupMemberUserDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.GroupFullDto;
 import ru.nsu.ostest.adapter.mapper.GroupMapper;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
@@ -22,7 +22,6 @@ import ru.nsu.ostest.domain.repository.GroupRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -61,11 +60,11 @@ public class GroupService {
                 .map(groupMapper::groupToGroupDto);
     }
 
-    public List<GroupMemberUserDto> getGroupUsers(Long id) {
+    public GroupFullDto getGroupUsers(Long id) {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE));
 
-        return userMapper.mapToGroupMembers(group.getUsers());
+        return groupMapper.mapToGroupFullDto(group);
     }
 
     @Transactional

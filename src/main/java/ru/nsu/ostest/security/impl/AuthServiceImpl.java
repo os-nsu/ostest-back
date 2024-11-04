@@ -7,8 +7,8 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.nsu.ostest.adapter.in.rest.model.user.AccessAndRefreshTokens;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.service.UserService;
@@ -28,15 +28,18 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProviderImpl jwtProviderImpl;
     private final BlacklistService blacklistService;
 
+    public static final String INVALID_JWT_MESSAGE = "Invalid JWT";
+    public static final String VALIDATING_REFRESH_TOKEN_FAILED = "Validating refresh token failed";
+
     @Override
     public JwtResponse login(@NonNull UserPasswordDto authRequest) {
-        log.info(AuthConstants.PROCESSING_LOGIN_REQUEST);
+        log.info("Processing login request");
         User user = userService.findUserByUsername(authRequest.username());
         if (passwordEncoder.matches(authRequest.password(), user.getUserPassword().getPassword())) {
             return getJwtResponse(user);
         } else {
-            log.error(AuthConstants.WRONG_PASSWORD_MESSAGE);
-            throw new AuthException(AuthConstants.WRONG_PASSWORD_MESSAGE);
+            log.error("Wrong password");
+            throw new AuthException("Wrong password");
         }
     }
 
@@ -52,7 +55,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponse getAccessToken(@NonNull String refreshToken) {
-        log.info(AuthConstants.PROCESSING_GET_ACCESS_TOKEN_REQUEST);
+        log.info("Processing get access token request");
         if (jwtProviderImpl.validateRefreshToken(refreshToken)) {
             final Claims claims = jwtProviderImpl.getRefreshClaims(refreshToken);
             final String userId = claims.getSubject();
@@ -65,22 +68,22 @@ public class AuthServiceImpl implements AuthService {
                 return jwtResponse;
             }
         }
-        log.error(AuthConstants.VALIDATING_REFRESH_TOKEN_FAILED);
-        throw new AuthException(AuthConstants.INVALID_JWT_MESSAGE);
+        log.error(VALIDATING_REFRESH_TOKEN_FAILED);
+        throw new AuthException(INVALID_JWT_MESSAGE);
     }
 
     @Override
     public JwtResponse refresh(@NonNull String refreshToken) {
-        log.info(AuthConstants.PROCESSING_REFRESH_REQUEST);
+        log.info("Processing refresh request");
         if (!jwtProviderImpl.validateRefreshToken(refreshToken)) {
-            log.error(AuthConstants.VALIDATING_REFRESH_TOKEN_FAILED);
-            throw new AuthException(AuthConstants.INVALID_JWT_MESSAGE);
+            log.error(VALIDATING_REFRESH_TOKEN_FAILED);
+            throw new AuthException(INVALID_JWT_MESSAGE);
         }
         final Claims claims = jwtProviderImpl.getRefreshClaims(refreshToken);
         final String userId = claims.getSubject();
         final String saveRefreshToken = refreshStorage.get(userId);
         if (saveRefreshToken == null || !saveRefreshToken.equals(refreshToken)) {
-            throw new AuthException(AuthConstants.INVALID_JWT_MESSAGE);
+            throw new AuthException(INVALID_JWT_MESSAGE);
         }
         User user = userService.findUserById(Long.valueOf(userId));
         return getJwtResponse(user);
@@ -96,12 +99,12 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout(@NonNull AccessAndRefreshTokens request) {
-        log.info(AuthConstants.PROCESSING_LOGOUT_REQUEST);
+    public void logout(@NonNull LogoutRequest request) {
+        log.info("Processing logout request");
 
         if (!jwtProviderImpl.validateRefreshToken(request.refreshToken())) {
-            log.error(AuthConstants.VALIDATING_REFRESH_TOKEN_FAILED);
-            throw new AuthException(AuthConstants.INVALID_JWT_MESSAGE);
+            log.error(VALIDATING_REFRESH_TOKEN_FAILED);
+            throw new AuthException(INVALID_JWT_MESSAGE);
         }
 
         Claims claims = jwtProviderImpl.getRefreshClaims(request.refreshToken());

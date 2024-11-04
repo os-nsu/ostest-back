@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.nsu.ostest.adapter.in.rest.model.user.AccessAndRefreshTokens;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.RefreshJwtRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 import ru.nsu.ostest.security.AuthService;
@@ -38,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public void logout(@RequestBody AccessAndRefreshTokens request) {
+    public void logout(@RequestBody LogoutRequest request) {
         authService.logout(request);
     }
 

@@ -157,7 +157,7 @@ public class UserTestSetup {
                 .andExpect(status().isUnauthorized());
     }
 
-    public void logoutUser(AccessAndRefreshTokens accessAndRefreshTokens) throws Exception {
+    public void logoutUser(LogoutRequest accessAndRefreshTokens) throws Exception {
         mockMvc.perform(post("/api/v1/logout")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(accessAndRefreshTokens)))

@@ -33,7 +33,8 @@ public class JwtProviderImpl implements JwtProvider {
     private final BlacklistService blacklistService;
 
     public JwtProviderImpl(@Value("${jwt.secret.access}") String jwtAccessSecret,
-                           @Value("${jwt.secret.refresh}") String jwtRefreshSecret, BlacklistService blacklistService) {
+                           @Value("${jwt.secret.refresh}") String jwtRefreshSecret,
+                           BlacklistService blacklistService) {
         this.jwtAccessSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessSecret));
         this.jwtRefreshSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtRefreshSecret));
         this.blacklistService = blacklistService;

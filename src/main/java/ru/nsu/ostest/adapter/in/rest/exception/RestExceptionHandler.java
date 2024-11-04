@@ -20,7 +20,6 @@ import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
 import ru.nsu.ostest.domain.exception.UserNotFoundException;
 import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
-import ru.nsu.ostest.security.impl.AuthConstants;
 
 @RestControllerAdvice
 @CrossOrigin(maxAge = 1440)
@@ -79,10 +78,10 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ExpiredJwtException.class, MalformedJwtException.class, UnsupportedJwtException.class})
     protected ResponseEntity<Object> handleJwtException(RuntimeException e) {
         String message = e.getMessage();
-        logger.error(AuthConstants.INVALID_TOKEN_MESSAGE + "{}", message, e);
+        logger.error("Invalid token: {}", message, e);
         return new ResponseEntity<>(
                 Error.builder().code(HttpStatus.UNAUTHORIZED.value())
-                        .message(AuthConstants.INVALID_TOKEN_MESSAGE + message).build(), HttpStatus.UNAUTHORIZED);
+                        .message("Invalid token: " + message).build(), HttpStatus.UNAUTHORIZED);
     }
 
 }

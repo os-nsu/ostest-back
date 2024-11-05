@@ -70,7 +70,7 @@ public class SessionService {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> SessionNotFoundException.notFoundSessionWithId(sessionId));
         Attempt attempt = session.makeAttempt();
-        sessionRepository.flush();
+        attempt = attemptRepository.save(attempt);
         return attemptMapper.attemptToAttemptDto(attempt);
     }
 

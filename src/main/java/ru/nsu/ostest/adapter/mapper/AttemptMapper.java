@@ -4,6 +4,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 import ru.nsu.ostest.adapter.in.rest.model.session.AttemptDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.AttemptShortDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
 
 @Mapper(
@@ -13,4 +14,6 @@ import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
 public interface AttemptMapper {
 
     AttemptDto attemptToAttemptDto(Attempt attempt);
+
+    AttemptShortDto attemptToAttemptShortDto(Attempt attempt);
 }

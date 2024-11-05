@@ -3,13 +3,11 @@ package ru.nsu.ostest.adapter.in.rest.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.nsu.ostest.adapter.in.rest.model.session.AttemptDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.StartSessionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.*;
 import ru.nsu.ostest.domain.service.SessionService;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class SessionController {
         return sessionService.findById(id);
     }
 
-    @GetMapping
+    @PostMapping("/lab-student")
     public SessionDto getLabSessionForStudent(@RequestBody GetLabSessionFroStudentRequestDto request) {
         return sessionService.getLabSessionForStudent(request);
     }
@@ -40,8 +38,13 @@ public class SessionController {
     }
 
     @PostMapping("/{sessionId}/attempt")
-    public AttemptDto makeAttempt() {
-        throw new IllegalArgumentException("Not implemented");
+    @ResponseStatus(HttpStatus.CREATED)
+    public AttemptDto makeAttempt(@RequestBody MakeAttemptDto makeAttemptDto, @PathVariable Long sessionId) {
+        return sessionService.makeAttempt(sessionId);
     }
 
+    @GetMapping("/attempt/{attemptId}")
+    public AttemptDto getAttempt(@PathVariable UUID attemptId) {
+        return sessionService.findAttemptById(attemptId);
+    }
 }

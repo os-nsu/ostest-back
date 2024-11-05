@@ -25,6 +25,6 @@ public interface GroupMapper {
     GroupDto groupToGroupDto(Group group);
 
     @Mapping(target = "groupMembers", source = "group.users")
-    @Mapping(target = "groupDto", source = "group")
+    @Mapping(target = "name", source = "group.name")
     GroupFullDto mapToGroupFullDto(Group group);
 }

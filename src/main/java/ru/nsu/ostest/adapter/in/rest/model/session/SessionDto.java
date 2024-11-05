@@ -10,6 +10,6 @@ public record SessionDto(
         UserDto student,
         UserDto teacher,
         LaboratoryShortDto laboratory,
-        List<AttemptDto> attempts
+        List<AttemptShortDto> attempts
 ) {
 }

@@ -18,6 +18,7 @@ import ru.nsu.ostest.adapter.in.rest.exception.model.Error;
 import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
 import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
 import ru.nsu.ostest.domain.exception.UserNotFoundException;
+import ru.nsu.ostest.domain.exception.validation.ValidationException;
 import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 
@@ -26,7 +27,7 @@ import ru.nsu.ostest.security.exceptions.NotFoundException;
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
 
-    @ExceptionHandler({EntityNotFoundException.class})
+    @ExceptionHandler({EntityNotFoundException.class, ValidationException.class})
     public ResponseEntity<Object> handleException(EntityNotFoundException e) {
         return new ResponseEntity<>(Error.builder().code(HttpStatus.BAD_REQUEST.value())
                 .message(e.getMessage()).build(), HttpStatus.BAD_REQUEST);

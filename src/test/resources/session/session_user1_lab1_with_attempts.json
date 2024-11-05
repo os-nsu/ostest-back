@@ -1,0 +1,31 @@
+{
+  "id": null,
+  "student": {
+    "id": null,
+    "username": "username1",
+    "firstName": "firstName1",
+    "secondName": "secondName1",
+    "group": {
+      "name": "21207"
+    }
+  },
+  "laboratory": {
+    "id": null,
+    "name": "Laboratory1",
+    "description": "Description1",
+    "deadline": "2024-10-07T07:02:27Z",
+    "isHidden": "false"
+  },
+  "attempts": [
+    {
+      "id": null,
+      "sequenceOrder": 1,
+      "status": "IN_QUEUE"
+    },
+    {
+      "id": null,
+      "sequenceOrder": 2,
+      "status": "IN_QUEUE"
+    }
+  ]
+}

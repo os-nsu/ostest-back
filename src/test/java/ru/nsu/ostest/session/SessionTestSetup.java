@@ -8,14 +8,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.nsu.ostest.adapter.in.rest.model.session.GetLabSessionFroStudentRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
-import ru.nsu.ostest.adapter.in.rest.model.session.StartSessionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.*;
+import ru.nsu.ostest.domain.repository.AttemptRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -30,12 +30,39 @@ public class SessionTestSetup {
 
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private SessionRepository sessionRepository;
-
+    @Autowired
+    private AttemptRepository attemptRepository;
     @Autowired
     private MockMvc mockMvc;
+
+    public AttemptDto makeAttempt(MakeAttemptDto makeAttemptDto, Long sessionId) throws Exception {
+        var result = mockMvc.perform(post(PATH + "/{sessionId}/attempt", sessionId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(makeAttemptDto)))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        var attemptDto = objectMapper.readValue(result.getResponse().getContentAsString(), AttemptDto.class);
+
+        assertTrue(attemptRepository.findById(attemptDto.id()).isPresent());
+
+        return attemptDto;
+    }
+
+    public AttemptDto getAttemptById(UUID id) throws Exception {
+        var result = mockMvc.perform(get(PATH + "/attempt/{attemptId}", id))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        var attempt = objectMapper.readValue(result.getResponse().getContentAsString(), AttemptDto.class);
+
+        assertTrue(attemptRepository.findById(attempt.id()).isPresent());
+
+        return attempt;
+    }
+
 
     public SessionDto startSession(StartSessionRequestDto startSessionRequestDto) throws Exception {
         var result = mockMvc.perform(post(PATH + "/start")
@@ -51,8 +78,9 @@ public class SessionTestSetup {
         return session;
     }
 
-    public SessionDto getLabSessionForStudent(GetLabSessionFroStudentRequestDto getLabSessionFroStudentRequestDto) throws Exception {
-        var result = mockMvc.perform(get(PATH)
+    public SessionDto getLabSessionForStudent(GetLabSessionFroStudentRequestDto getLabSessionFroStudentRequestDto)
+            throws Exception {
+        var result = mockMvc.perform(post(PATH + "/lab-student")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getLabSessionFroStudentRequestDto)))
                 .andExpect(status().isOk())
@@ -99,4 +127,9 @@ public class SessionTestSetup {
         );
     }
 
+    public AttemptDto getAttemptDto(String path) throws IOException {
+        return objectMapper.readValue(
+                Resources.toString(Resources.getResource(path), StandardCharsets.UTF_8), AttemptDto.class
+        );
+    }
 }

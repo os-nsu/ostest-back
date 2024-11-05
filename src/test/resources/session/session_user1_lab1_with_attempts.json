@@ -19,12 +19,12 @@
   "attempts": [
     {
       "id": null,
-      "order": 1,
+      "sequenceOrder": 1,
       "status": "IN_QUEUE"
     },
     {
       "id": null,
-      "order": 2,
+      "sequenceOrder": 2,
       "status": "IN_QUEUE"
     }
   ]

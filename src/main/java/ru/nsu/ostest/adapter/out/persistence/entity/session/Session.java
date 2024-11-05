@@ -45,9 +45,9 @@ public class Session {
         attempt.setSession(this);
         attempt.setStatus(AttemptStatus.IN_QUEUE);
         if (attempts.isEmpty()) {
-            attempt.setOrder(1L);
+            attempt.setSequenceOrder(1L);
         } else {
-            attempt.setOrder(attempts.getLast().getOrder() + 1L);
+            attempt.setSequenceOrder(attempts.getLast().getSequenceOrder() + 1L);
         }
         attempts.add(attempt);
         return attempt;

@@ -27,7 +27,7 @@ public class SessionController {
         return sessionService.findById(id);
     }
 
-    @GetMapping
+    @PostMapping("/lab-student")
     public SessionDto getLabSessionForStudent(@RequestBody GetLabSessionFroStudentRequestDto request) {
         return sessionService.getLabSessionForStudent(request);
     }

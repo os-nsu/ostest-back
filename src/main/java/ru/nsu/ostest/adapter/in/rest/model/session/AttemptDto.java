@@ -7,7 +7,7 @@ import java.util.UUID;
 
 public record AttemptDto(
         UUID id,
-        Long order,
+        Long sequenceOrder,
         AttemptStatus status,
         TestResults testResults
 ) {

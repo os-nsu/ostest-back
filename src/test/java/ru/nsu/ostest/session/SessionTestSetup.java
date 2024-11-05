@@ -78,8 +78,9 @@ public class SessionTestSetup {
         return session;
     }
 
-    public SessionDto getLabSessionForStudent(GetLabSessionFroStudentRequestDto getLabSessionFroStudentRequestDto) throws Exception {
-        var result = mockMvc.perform(get(PATH)
+    public SessionDto getLabSessionForStudent(GetLabSessionFroStudentRequestDto getLabSessionFroStudentRequestDto)
+            throws Exception {
+        var result = mockMvc.perform(post(PATH + "/lab-student")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(getLabSessionFroStudentRequestDto)))
                 .andExpect(status().isOk())

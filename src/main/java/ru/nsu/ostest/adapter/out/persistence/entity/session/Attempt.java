@@ -26,7 +26,7 @@ public class Attempt {
     private UUID id;
 
     @Column(nullable = false, name = "order_number")
-    private Long order;
+    private Long sequenceOrder;
 
     @Enumerated(EnumType.STRING)
     private AttemptStatus status;

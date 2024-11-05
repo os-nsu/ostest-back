@@ -52,10 +52,7 @@ public class SessionControllerIntegrationTest {
     private static final String BRANCH_NAME = "Branch";
     private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
     private static final String SESSION_USER1_LAB1_DTO = "session/session_user1_lab1.json";
-    private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
-    private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
-    private static final String SESSION_USER1_LAB1_WITH_ATTEMPTS_DTO = "session/session_user1_lab1_with_attempts.json";
     private static final String ATTEMPT1_DTO = "session/attempt1.json";
     private static final String ATTEMPT2_DTO = "session/attempt2.json";
 
@@ -142,7 +139,7 @@ public class SessionControllerIntegrationTest {
         checkAttempt(attemptDto, sessionTestSetup.getAttemptDto(ATTEMPT2_DTO));
 
         sessionDto = sessionTestSetup.getSessionById(sessionDto.id());
-        checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_WITH_ATTEMPTS_DTO));
+        checkSession(sessionDto, sessionTestSetup.getSessionDto("session/session_user1_lab1_with_attempts.json"));
     }
 
     @Test
@@ -257,8 +254,8 @@ public class SessionControllerIntegrationTest {
 
         checkSession(sessionDto11, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
         checkSession(sessionDto22, sessionTestSetup.getSessionDto(SESSION_USER2_LAB2_DTO));
-        checkSession(sessionDto12, sessionTestSetup.getSessionDto(SESSION_USER1_LAB2_DTO));
-        checkSession(sessionDto21, sessionTestSetup.getSessionDto(SESSION_USER2_LAB1_DTO));
+        checkSession(sessionDto12, sessionTestSetup.getSessionDto("session/session_user1_lab2.json"));
+        checkSession(sessionDto21, sessionTestSetup.getSessionDto("session/session_user2_lab1.json"));
 
         var user1Sessions = sessionTestSetup.getUserSessions(student1.getId());
         var user2Sessions = sessionTestSetup.getUserSessions(student2.getId());

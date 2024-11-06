@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.GroupFullDto;
 import ru.nsu.ostest.adapter.mapper.GroupMapper;
+import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
@@ -35,6 +37,7 @@ public class GroupService {
     private final GroupRepository groupRepository;
     private final GroupMapper groupMapper;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public Group findGroupByName(String name) {
         return groupRepository.findByName(name);
@@ -52,15 +55,16 @@ public class GroupService {
         return groupMapper.groupToGroupDto(group);
     }
 
-    public GroupDto getGroup(Long id) {
-        return groupRepository.findById(id)
-                .map(groupMapper::groupToGroupDto)
-                .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE));
-    }
-
     public Page<GroupDto> getAllGroups(Pageable pageRequest) {
         return groupRepository.findAll(pageRequest)
                 .map(groupMapper::groupToGroupDto);
+    }
+
+    public GroupFullDto getGroupUsers(Long id) {
+        Group group = groupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE));
+
+        return groupMapper.mapToGroupFullDto(group);
     }
 
     @Transactional

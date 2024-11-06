@@ -1,4 +1,12 @@
 services:
+  test:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.test
+    volumes: 
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: /bin/sh -c "gradle test; sleep infinity"
+
   backend:
     build:
       context: .
@@ -11,6 +19,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: password
     depends_on:
       - postgres
+      - test
 
   postgres:
     image: postgres:16

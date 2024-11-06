@@ -101,8 +101,8 @@ public class SessionControllerIntegrationTest {
         groupRepository.flush();
 
         Group group = createGroup(GROUP_NUMBER);
-        Laboratory laboratory1 = createLaboratory(createLaboratoryCreationRequestDto('1'));
-        Laboratory laboratory2 = createLaboratory(createLaboratoryCreationRequestDto('2'));
+        Laboratory laboratory1 = createLaboratory(createLaboratoryCreationRequestDto(1));
+        Laboratory laboratory2 = createLaboratory(createLaboratoryCreationRequestDto(2));
         laboratories.add(laboratory1);
         laboratories.add(laboratory2);
 
@@ -286,8 +286,8 @@ public class SessionControllerIntegrationTest {
         return groupRepository.save(group);
     }
 
-    private LaboratoryCreationRequestDto createLaboratoryCreationRequestDto(char order) {
-        return new LaboratoryCreationRequestDto(LAB_NAME + order,
+    private LaboratoryCreationRequestDto createLaboratoryCreationRequestDto(int order) {
+        return new LaboratoryCreationRequestDto(LAB_NAME + order, order,
                 LAB_DESCRIPTION + order, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN, List.of());
 
     }

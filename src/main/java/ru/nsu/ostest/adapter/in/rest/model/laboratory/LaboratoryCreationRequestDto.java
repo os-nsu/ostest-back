@@ -9,6 +9,7 @@ import java.util.List;
 
 @Builder
 public record LaboratoryCreationRequestDto(@NotEmpty String name,
+                                           Integer number,
                                            String description,
                                            Integer semesterNumber,
                                            OffsetDateTime deadline,

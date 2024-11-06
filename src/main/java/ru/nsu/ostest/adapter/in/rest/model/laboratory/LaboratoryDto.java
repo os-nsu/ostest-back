@@ -8,6 +8,7 @@ import java.util.List;
 public record LaboratoryDto(
         Long id,
         String name,
+        Integer number,
         String description,
         Integer semesterNumber,
         OffsetDateTime deadline,

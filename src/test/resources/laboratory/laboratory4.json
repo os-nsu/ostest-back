@@ -1,6 +1,7 @@
 {
   "id": null,
   "name": "Test Laboratory4",
+  "number": 4,
   "description": "Test Description",
   "semesterNumber": 2,
   "deadline": "2024-10-07T07:02:27Z",

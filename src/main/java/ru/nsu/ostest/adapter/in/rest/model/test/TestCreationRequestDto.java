@@ -5,6 +5,7 @@ import ru.nsu.ostest.domain.common.enums.TestCategory;
 public record TestCreationRequestDto(
         String name,
         String description,
+        String code,
         TestCategory category
 ) {
 }

@@ -12,6 +12,7 @@
   "laboratory": {
     "id": null,
     "name": "Laboratory1",
+    "number": 1,
     "description": "Description1",
     "deadline": "2024-10-07T07:02:27Z",
     "isHidden": "false"

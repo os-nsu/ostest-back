@@ -45,6 +45,7 @@ public class LaboratoryControllerIntegrationTest {
     private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
     private static final String TEST_NAME = "Test Test";
     private static final String TEST_DESCRIPTION = "Test Description";
+    private static final String TEST_CODE = "Test Code";
     private static final String LABORATORY1_DTO = "laboratory/laboratory1.json";
     private static final String LABORATORY2_DTO = "laboratory/laboratory2.json";
     private static final String LABORATORY3_DTO = "laboratory/laboratory3.json";
@@ -83,9 +84,9 @@ public class LaboratoryControllerIntegrationTest {
         var test2 = createTest(2);
 
         var laboratoryDto = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN,
-                        List.of(new TestLaboratoryLinkDto(test1.getId(), true),
-                                new TestLaboratoryLinkDto(test2.getId(), false)))
+                new LaboratoryCreationRequestDto(LAB_NAME, 1, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
+                        IS_HIDDEN, List.of(new TestLaboratoryLinkDto(test1.getId(), true),
+                        new TestLaboratoryLinkDto(test2.getId(), false)))
         );
 
         checkLaboratory(laboratoryDto, laboratoryTestSetup.getLaboratoryDto("laboratory/laboratory_created.json"));
@@ -94,13 +95,14 @@ public class LaboratoryControllerIntegrationTest {
     @Test
     public void createLaboratory_ShouldReturnConflict_WhenDuplicateName() throws Exception {
         laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN,
-                        List.of())
+                new LaboratoryCreationRequestDto(LAB_NAME, 1, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
+                        IS_HIDDEN, List.of())
         );
 
         laboratoryTestSetup.createLaboratoryBad(
                 new LaboratoryCreationRequestDto(
                         LAB_NAME,
+                        2,
                         "Second Laboratory Description",
                         2,
                         DEADLINE,
@@ -113,8 +115,8 @@ public class LaboratoryControllerIntegrationTest {
     public void deleteLaboratory_ShouldReturnStatusOk_WhenLaboratoryExists() throws Exception {
 
         LaboratoryDto laboratoryDto = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN,
-                        List.of())
+                new LaboratoryCreationRequestDto(LAB_NAME, 1, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
+                        IS_HIDDEN, List.of())
         );
 
         laboratoryTestSetup.deleteLaboratory(laboratoryDto.id());
@@ -127,15 +129,16 @@ public class LaboratoryControllerIntegrationTest {
         var test3 = createTest(3);
 
         LaboratoryDto createdLaboratoryDto = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN,
-                        List.of(new TestLaboratoryLinkDto(test1.getId(), true),
-                                new TestLaboratoryLinkDto(test2.getId(), false)))
+                new LaboratoryCreationRequestDto(LAB_NAME, 1, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
+                        IS_HIDDEN, List.of(new TestLaboratoryLinkDto(test1.getId(), true),
+                        new TestLaboratoryLinkDto(test2.getId(), false)))
         );
 
         LaboratoryDto editedLaboratoryDto = laboratoryTestSetup.editLaboratory(
                 new LaboratoryEditionRequestDto(
                         createdLaboratoryDto.id(),
                         "New Laboratory Name",
+                        2,
                         "New Laboratory Description",
                         createdLaboratoryDto.semesterNumber(),
                         createdLaboratoryDto.deadline(),
@@ -151,12 +154,12 @@ public class LaboratoryControllerIntegrationTest {
     @Test
     public void editLaboratory_ShouldReturnConflict_WhenDuplicateName() throws Exception {
         laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN,
-                        List.of())
+                new LaboratoryCreationRequestDto(LAB_NAME, 1, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
+                        IS_HIDDEN, List.of())
         );
 
         LaboratoryDto createdLaboratoryDto = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto("Second Lab Name", LAB_DESCRIPTION, SEMESTER_NUMBER,
+                new LaboratoryCreationRequestDto("Second Lab Name", 2, LAB_DESCRIPTION, SEMESTER_NUMBER,
                         DEADLINE, IS_HIDDEN, List.of())
         );
 
@@ -164,6 +167,7 @@ public class LaboratoryControllerIntegrationTest {
                 new LaboratoryEditionRequestDto(
                         createdLaboratoryDto.id(),
                         LAB_NAME,
+                        2,
                         "New Laboratory Description",
                         createdLaboratoryDto.semesterNumber(),
                         createdLaboratoryDto.deadline(),
@@ -176,11 +180,11 @@ public class LaboratoryControllerIntegrationTest {
     @Test
     public void getLaboratoryById_ShouldReturnOk_WhenValidRequest() throws Exception {
         var laboratoryDto1 = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME + '1', LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
-                        IS_HIDDEN, List.of()));
+                new LaboratoryCreationRequestDto(LAB_NAME + '1', 1, LAB_DESCRIPTION, SEMESTER_NUMBER,
+                        DEADLINE, IS_HIDDEN, List.of()));
         var laboratoryDto2 = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME + '2', LAB_DESCRIPTION, 2, DEADLINE,
-                        true, List.of()));
+                new LaboratoryCreationRequestDto(LAB_NAME + '2', 2, LAB_DESCRIPTION, 2,
+                        DEADLINE, true, List.of()));
 
         checkLaboratory(laboratoryDto1, laboratoryTestSetup.getLaboratoryDto(LABORATORY1_DTO));
         checkLaboratory(laboratoryDto2, laboratoryTestSetup.getLaboratoryDto(LABORATORY2_DTO));
@@ -201,17 +205,17 @@ public class LaboratoryControllerIntegrationTest {
     @Test
     public void searchLaboratories_ShouldReturnOk_WhenValidRequest() throws Exception {
         var laboratoryDto1 = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME + '1', LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
-                        IS_HIDDEN, List.of()));
+                new LaboratoryCreationRequestDto(LAB_NAME + '1', 1, LAB_DESCRIPTION, SEMESTER_NUMBER,
+                        DEADLINE, IS_HIDDEN, List.of()));
         var laboratoryDto2 = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME + '2', LAB_DESCRIPTION, 2, DEADLINE,
-                        !IS_HIDDEN, List.of()));
+                new LaboratoryCreationRequestDto(LAB_NAME + '2', 2, LAB_DESCRIPTION, 2,
+                        DEADLINE, !IS_HIDDEN, List.of()));
         var laboratoryDto3 = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME + '3', LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
-                        !IS_HIDDEN, List.of()));
+                new LaboratoryCreationRequestDto(LAB_NAME + '3', 3, LAB_DESCRIPTION, SEMESTER_NUMBER,
+                        DEADLINE, !IS_HIDDEN, List.of()));
         var laboratoryDto4 = laboratoryTestSetup.createLaboratory(
-                new LaboratoryCreationRequestDto(LAB_NAME + '4', LAB_DESCRIPTION, 2, DEADLINE,
-                        IS_HIDDEN, List.of()));
+                new LaboratoryCreationRequestDto(LAB_NAME + '4', 4, LAB_DESCRIPTION, 2,
+                        DEADLINE, IS_HIDDEN, List.of()));
 
         var laboratoryShortDto1 = laboratoryMapper.laboratoryDtoToLaboratoryShortDto(laboratoryDto1);
         var laboratoryShortDto2 = laboratoryMapper.laboratoryDtoToLaboratoryShortDto(laboratoryDto2);
@@ -261,7 +265,8 @@ public class LaboratoryControllerIntegrationTest {
 
     private ru.nsu.ostest.adapter.out.persistence.entity.test.Test createTest(int orderNumber) {
         TestCreationRequestDto testCreationRequestDto =
-                new TestCreationRequestDto(TEST_NAME + orderNumber, TEST_DESCRIPTION, TestCategory.DEFAULT);
+                new TestCreationRequestDto(TEST_NAME + orderNumber, TEST_DESCRIPTION, TEST_CODE,
+                        TestCategory.DEFAULT);
         var test1 =
                 testMapper.testCreationRequestDtoToTest(testCreationRequestDto);
         test1.setScriptBody(getBytesFromFile(createMultipartFile()));

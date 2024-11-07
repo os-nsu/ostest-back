@@ -22,10 +22,14 @@ import ru.nsu.ostest.domain.exception.validation.ValidationException;
 import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.exceptions.NotFoundException;
 
+import java.text.MessageFormat;
+
 @RestControllerAdvice
 @CrossOrigin(maxAge = 1440)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
+    public static final String INVALID_TOKEN_MESSAGE = "Invalid token: {}";
+    public static final String AUTH_FAILED_MESSAGE = "Auth failed: {}";
 
     @ExceptionHandler({EntityNotFoundException.class, ValidationException.class})
     public ResponseEntity<Object> handleException(EntityNotFoundException e) {
@@ -72,17 +76,18 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({AuthException.class})
     protected ResponseEntity<Object> handleAuthException(Exception e) {
         String message = e.getMessage();
+        logger.error(AUTH_FAILED_MESSAGE, message);
         return new ResponseEntity<>(Error.builder().code(HttpStatus.UNAUTHORIZED.value())
-                .message("Auth failed: " + message).build(), HttpStatus.UNAUTHORIZED);
+                .message(MessageFormat.format(AUTH_FAILED_MESSAGE, message)).build(), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler({ExpiredJwtException.class, MalformedJwtException.class, UnsupportedJwtException.class})
     protected ResponseEntity<Object> handleJwtException(RuntimeException e) {
         String message = e.getMessage();
-        logger.error("Invalid token: {}", message, e);
+        logger.error(INVALID_TOKEN_MESSAGE, message);
         return new ResponseEntity<>(
                 Error.builder().code(HttpStatus.UNAUTHORIZED.value())
-                        .message("Invalid token: " + message).build(), HttpStatus.UNAUTHORIZED);
+                        .message(MessageFormat.format(INVALID_TOKEN_MESSAGE, message)).build(), HttpStatus.UNAUTHORIZED);
     }
 
 }

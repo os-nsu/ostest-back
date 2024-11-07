@@ -9,12 +9,14 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
+import ru.nsu.ostest.security.exceptions.AuthException;
 import ru.nsu.ostest.security.impl.AuthServiceImpl;
 import ru.nsu.ostest.security.impl.BlacklistService;
 import ru.nsu.ostest.security.impl.JwtProviderImpl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,12 +31,15 @@ class AuthServiceUnitTest {
     @Mock
     private BlacklistService blacklistService;
 
+    @Mock
+    private ConcurrentHashMap<String, String> refreshStorage;
+
     @Test
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void logout_ShouldRemoveTokens_WhenValidRequest() {
         String validRefreshToken = "validRefreshToken";
         String validAccessToken = "validAccessToken";
-
+        refreshStorage.put("userId", validRefreshToken);
         Claims claims = Mockito.mock(Claims.class);
         when(claims.getSubject()).thenReturn("userId");
 
@@ -44,7 +49,7 @@ class AuthServiceUnitTest {
         LogoutRequest request = new LogoutRequest(validAccessToken, validRefreshToken);
 
         authService.logout(request);
-
+        assertFalse(refreshStorage.contains("userId"));
         verify(blacklistService, times(1)).addToBlacklist(validAccessToken);
     }
 
@@ -58,11 +63,12 @@ class AuthServiceUnitTest {
 
         LogoutRequest request = new LogoutRequest(validAccessToken, invalidRefreshToken);
 
-        Exception exception = assertThrows(Exception.class, () -> {
+        AuthException exception = assertThrows(AuthException.class, () -> {
             authService.logout(request);
         });
 
         verify(blacklistService, never()).addToBlacklist(anyString());
+        verify(refreshStorage, never()).remove("userId");
 
         assertEquals("Invalid JWT", exception.getMessage());
     }

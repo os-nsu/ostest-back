@@ -37,4 +37,8 @@ public interface TestMapper {
     @Mapping(source = "testLaboratoryLink.test.code", target = "code")
     @Mapping(source = "testLaboratoryLink.test.category", target = "category")
     TestDto fromTestLaboratoryLink(TestLaboratoryLink testLaboratoryLink);
+
+    default String TestLaboratoryLinkToCode(TestLaboratoryLink testLaboratoryLink) {
+        return testLaboratoryLink.getTest().getCode();
+    }
 }

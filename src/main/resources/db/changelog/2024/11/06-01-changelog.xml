@@ -5,9 +5,26 @@
             <column name="number" type="integer"/>
         </addColumn>
     </changeSet>
+    <changeSet author="anastasiya (generated)" id="1730892507656-1">
+        <addColumn tableName="attempt">
+            <column name="created_at" type="timestamp(6)">
+                <constraints nullable="false"/>
+            </column>
+        </addColumn>
+    </changeSet>
     <changeSet author="anastasiya (generated)" id="1730892507656-2">
         <addColumn tableName="test">
-            <column name="code" type="varchar(255)"/>
+            <column name="code" type="longtext"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="anastasiya (generated)" id="1730892507656-4">
+        <addColumn tableName="attempt">
+            <column name="branch" type="varchar(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="anastasiya (generated)" id="1730892507656-5">
+        <addColumn tableName="attempt">
+            <column name="repository_url" type="varchar(255)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

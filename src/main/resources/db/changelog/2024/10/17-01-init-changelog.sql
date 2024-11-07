@@ -32,8 +32,9 @@ BEGIN
         'вызов переопределённого хука start_hook() и выведена строка "hello from then_start()");
     i. Сделать так, чтобы вызов end_hook выводил строку "init end" по аналогии со start_hook."';
 
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+INSERT INTO laboratory (name, number, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 1. Compile & assembling & launch',
+        1,
         description,
         4,
         '2024-05-06 23:59:59Z',
@@ -78,8 +79,9 @@ BEGIN
 4. Работа с жёсткими ссылками:
     a. Напишите плагин, который будет копировать лог файлы в резервную директорию, при этом не используя read и write.';
 
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+INSERT INTO laboratory (name, number, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 2. Files',
+        2,
         description,
         4,
         '2025-05-06 23:59:59Z',
@@ -125,8 +127,9 @@ BEGIN
 3. Протестируйте кэш.
     a. Закэшируйте файл /proc/self/maps, а после выведите его в лог.';
 
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+INSERT INTO laboratory (name, number, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 3. Address space',
+        3,
         description,
         4,
         '2025-05-06 23:59:59Z',
@@ -148,8 +151,9 @@ BEGIN
         ' а значит где-то надо хранить структуры, их описывающие.
 4. Добавить в логгер возможность логировать сообщения сразу нескольких процессов (пока без примитивов синхронизации).';
 
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+INSERT INTO laboratory (name, number, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 4. Processes',
+        4,
         description,
         4,
         '2025-05-06 23:59:59Z',
@@ -170,8 +174,9 @@ BEGIN
     'порождать трассер, поскольку иначе без изменений в конфигурационных файлах операционной системы это ' ||
     'работать не будет. Соответственно он же отвечает за завершение этого дочернего процесса.';
 
-INSERT INTO laboratory (name, description, semester_number, deadline, is_hidden)
+INSERT INTO laboratory (name, number, description, semester_number, deadline, is_hidden)
 VALUES ('Laboratory 5. System calls',
+        5,
         description,
         4,
         '2025-05-06 23:59:59Z',

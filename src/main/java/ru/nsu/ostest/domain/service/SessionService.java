@@ -11,6 +11,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
+import ru.nsu.ostest.domain.common.enums.AttemptStatus;
 import ru.nsu.ostest.domain.exception.validation.AttemptNotFoundException;
 import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
 import ru.nsu.ostest.domain.repository.AttemptRepository;
@@ -54,9 +55,9 @@ public class SessionService {
         return sessionMapper.sessionToSessionDto(session);
     }
 
-    public SessionDto getLabSessionForStudent(GetLabSessionFroStudentRequestDto getLabSessionFroStudentRequestDto) {
-        Long studentId = getLabSessionFroStudentRequestDto.studentId();
-        Long laboratoryId = getLabSessionFroStudentRequestDto.laboratoryId();
+    public SessionDto getLabSessionForStudent(GetLabSessionFromStudentRequestDto getLabSessionFromStudentRequestDto) {
+        Long studentId = getLabSessionFromStudentRequestDto.studentId();
+        Long laboratoryId = getLabSessionFromStudentRequestDto.laboratoryId();
         Session session = sessionRepository.getSessionByStudentIdAndLaboratoryId(studentId, laboratoryId);
         return sessionMapper.sessionToSessionDto(session);
     }
@@ -66,10 +67,11 @@ public class SessionService {
     }
 
     @Transactional
-    public AttemptDto makeAttempt(Long sessionId) {
+    public AttemptDto makeAttempt(MakeAttemptDto makeAttemptDto, Long sessionId) {
         Session session = sessionRepository.findById(sessionId)
                 .orElseThrow(() -> SessionNotFoundException.notFoundSessionWithId(sessionId));
-        Attempt attempt = session.makeAttempt();
+        Attempt attempt = attemptMapper.makeAttemptDtoToAttempt(makeAttemptDto);
+        attempt = session.makeAttempt(attempt);
         attempt = attemptRepository.save(attempt);
         return attemptMapper.attemptToAttemptDto(attempt);
     }
@@ -77,5 +79,17 @@ public class SessionService {
     public AttemptDto findAttemptById(UUID id) {
         return attemptMapper.attemptToAttemptDto(attemptRepository.findById(id)
                 .orElseThrow(() -> AttemptNotFoundException.notFoundAttemptWithId(id)));
+    }
+
+    @Transactional
+    public AvailableTaskResponse getAvailableTask() {
+        Attempt attempt =
+                attemptRepository.findFirstByStatusOrderByCreatedAtAsc(AttemptStatus.IN_QUEUE).orElse(null);
+        if (attempt != null) {
+            attempt.setStatus(AttemptStatus.IN_PROGRESS);
+            attempt = attemptRepository.save(attempt);
+            return attemptMapper.toAvailableTaskResponse(attempt);
+        }
+        return AvailableTaskResponse.unavailableTaskResponse();
     }
 }

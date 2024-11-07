@@ -40,8 +40,7 @@ public class Session {
     @OneToMany(mappedBy = "session", orphanRemoval = true, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Attempt> attempts = new ArrayList<>();
 
-    public Attempt makeAttempt() {
-        Attempt attempt = new Attempt();
+    public Attempt makeAttempt(Attempt attempt) {
         attempt.setSession(this);
         attempt.setStatus(AttemptStatus.IN_QUEUE);
         if (attempts.isEmpty()) {

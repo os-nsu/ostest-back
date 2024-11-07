@@ -7,6 +7,8 @@ import java.util.UUID;
 
 public record AttemptDto(
         UUID id,
+        String repositoryUrl,
+        String branch,
         Long sequenceOrder,
         AttemptStatus status,
         TestResults testResults

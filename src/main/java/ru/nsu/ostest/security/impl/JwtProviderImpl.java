@@ -20,11 +20,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 
@@ -34,11 +30,14 @@ public class JwtProviderImpl implements JwtProvider {
 
     private final SecretKey jwtAccessSecret;
     private final SecretKey jwtRefreshSecret;
+    private final BlacklistService blacklistService;
 
     public JwtProviderImpl(@Value("${jwt.secret.access}") String jwtAccessSecret,
-                           @Value("${jwt.secret.refresh}") String jwtRefreshSecret) {
+                           @Value("${jwt.secret.refresh}") String jwtRefreshSecret,
+                           BlacklistService blacklistService) {
         this.jwtAccessSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtAccessSecret));
         this.jwtRefreshSecret = Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtRefreshSecret));
+        this.blacklistService = blacklistService;
     }
 
     public String generateAccessToken(@NonNull User user) {
@@ -87,6 +86,10 @@ public class JwtProviderImpl implements JwtProvider {
     }
 
     private boolean validateToken(@NonNull String token, @NonNull Key secret) {
+        if (blacklistService.isTokenBlacklisted(token)) {
+            log.error("Token is blacklisted");
+            return false;
+        }
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secret).build().parseClaimsJws(token);

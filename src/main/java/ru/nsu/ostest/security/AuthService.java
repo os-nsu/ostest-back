@@ -3,6 +3,7 @@ package ru.nsu.ostest.security;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.NonNull;
 import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
 
 public interface AuthService {
@@ -14,4 +15,6 @@ public interface AuthService {
     JwtResponse refresh(@NonNull String refreshToken);
 
     Long getUserIdFromJwt(HttpServletRequest request);
+
+    void logout(@NonNull LogoutRequest refreshToken);
 }

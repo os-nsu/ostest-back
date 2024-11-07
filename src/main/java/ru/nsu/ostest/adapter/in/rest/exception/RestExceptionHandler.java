@@ -25,16 +25,19 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({ValidationException.class})
     public ResponseEntity<Object> handleBadRequestException(Exception e) {
+        logger.error(e.getMessage());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler({NoRightsException.class})
     protected ResponseEntity<Object> handleAccessDeniedException(Exception e) {
+        logger.error(e.getMessage());
         return buildErrorResponse(HttpStatus.FORBIDDEN, e.getMessage());
     }
 
     @ExceptionHandler({AuthorizationException.class})
     protected ResponseEntity<Object> handleAuthException(Exception e) {
+        logger.error(e.getMessage());
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, "Auth failed: " + e.getMessage());
     }
 

@@ -1,6 +1,6 @@
 package ru.nsu.ostest.domain.exception.validation;
 
-public class TestNotFoundException extends NotFoundException {
+public class TestNotFoundException extends ValidationException {
 
     private TestNotFoundException(String message) {
         super(message);

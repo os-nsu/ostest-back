@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Service
 public class GroupService {
-    private static final String DUPLICATED_NAME_MESSAGE = "A group with this name already exists.";
 
     private final GroupRepository groupRepository;
     private final GroupMapper groupMapper;
@@ -115,14 +114,12 @@ public class GroupService {
     private void checkIfDuplicatedName(String name, Long exceptedId) {
         Group group = groupRepository.findByName(name);
         if (group != null && !group.getId().equals(exceptedId)) {
-            log.error(DUPLICATED_NAME_MESSAGE);
             throw DuplicateGroupNameException.of(name);
         }
     }
 
     private void checkIfDuplicatedName(String name) {
         if (groupRepository.findByName(name) != null) {
-            log.error(DUPLICATED_NAME_MESSAGE);
             throw DuplicateGroupNameException.of(name);
         }
     }

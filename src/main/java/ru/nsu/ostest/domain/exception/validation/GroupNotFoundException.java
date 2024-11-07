@@ -1,6 +1,6 @@
 package ru.nsu.ostest.domain.exception.validation;
 
-public class GroupNotFoundException extends NotFoundException {
+public class GroupNotFoundException extends ValidationException {
 
     private GroupNotFoundException(String message) {
         super(message);

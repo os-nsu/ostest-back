@@ -1,6 +1,8 @@
 package ru.nsu.ostest.domain.exception;
 
-public class NoRightsException extends RuntimeException {
+import ru.nsu.ostest.security.exception.AuthorizationException;
+
+public class NoRightsException extends AuthorizationException {
     public NoRightsException() {
         super("No rights.");
     }

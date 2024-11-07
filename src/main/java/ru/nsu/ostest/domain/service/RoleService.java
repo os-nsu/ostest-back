@@ -19,7 +19,6 @@ public class RoleService {
     public Role findRole(RoleEnum name) {
         Optional<Role> roleOptional = roleRepository.findByName(name.toString());
         if (roleOptional.isEmpty()) {
-            log.error("Couldn't find role [{}]", name);
             throw RoleNotFoundException.notFoundRoleWithName(name.toString());
         }
         return roleOptional.get();

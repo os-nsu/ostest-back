@@ -34,7 +34,6 @@ public class AuthServiceImpl implements AuthService {
         if (passwordEncoder.matches(authRequest.password(), user.getUserPassword().getPassword())) {
             return getJwtResponse(user);
         } else {
-            log.error(AuthConstants.WRONG_PASSWORD_MESSAGE);
             throw new WrongPasswordException();
         }
     }

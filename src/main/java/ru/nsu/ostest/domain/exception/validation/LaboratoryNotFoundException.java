@@ -1,6 +1,6 @@
 package ru.nsu.ostest.domain.exception.validation;
 
-public class LaboratoryNotFoundException extends NotFoundException {
+public class LaboratoryNotFoundException extends ValidationException {
 
     private LaboratoryNotFoundException(String message) {
         super(message);

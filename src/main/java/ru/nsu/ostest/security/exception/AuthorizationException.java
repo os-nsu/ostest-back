@@ -1,6 +1,8 @@
 package ru.nsu.ostest.security.exception;
 
-public class AuthorizationException extends RuntimeException {
+import ru.nsu.ostest.domain.exception.DomainException;
+
+public class AuthorizationException extends DomainException {
     public AuthorizationException(String message) {
         super(message);
     }

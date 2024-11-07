@@ -59,7 +59,6 @@ public class UserService {
 
     private void validateUsername(String username) {
         if (userRepository.findByUsername(username).isPresent()) {
-            log.error("Login {} is already used", username);
             throw DuplicateUserNameException.of(username);
         }
     }

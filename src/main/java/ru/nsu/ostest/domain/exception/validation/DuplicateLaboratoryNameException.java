@@ -1,6 +1,6 @@
 package ru.nsu.ostest.domain.exception.validation;
 
-public class DuplicateLaboratoryNameException extends DuplicateNameException {
+public class DuplicateLaboratoryNameException extends ValidationException {
     private DuplicateLaboratoryNameException(String message) {
         super(message);
     }

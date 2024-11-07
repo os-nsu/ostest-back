@@ -1,6 +1,6 @@
 package ru.nsu.ostest.domain.exception.validation;
 
-public class RoleNotFoundException extends NotFoundException {
+public class RoleNotFoundException extends ValidationException {
 
     private RoleNotFoundException(String message) {
         super(message);

@@ -23,7 +23,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Service
 public class TestService {
-    private static final String DUPLICATED_NAME_MESSAGE = "A file with this name already exists.";
     private static final String FILE_READING_FAILED_MESSAGE = "Failed to read file.";
 
     private final TestRepository testRepository;
@@ -80,7 +79,6 @@ public class TestService {
         try {
             script = file.getBytes();
         } catch (IOException e) {
-            log.error(FILE_READING_FAILED_MESSAGE);
             throw new RuntimeException(FILE_READING_FAILED_MESSAGE);
         }
         log.info("File read.");
@@ -90,14 +88,12 @@ public class TestService {
     private void checkIfDuplicatedName(String name, Long exceptedId) {
         Test test = testRepository.findByName(name);
         if (test != null && !test.getId().equals(exceptedId)) {
-            log.error(DUPLICATED_NAME_MESSAGE);
             throw DuplicateTestNameException.of(name);
         }
     }
 
     private void checkIfDuplicatedName(String name) {
         if (testRepository.findByName(name) != null) {
-            log.error(DUPLICATED_NAME_MESSAGE);
             throw DuplicateTestNameException.of(name);
         }
     }

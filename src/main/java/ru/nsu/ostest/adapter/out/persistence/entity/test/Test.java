@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.Length;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
 
 import java.util.ArrayList;
@@ -24,6 +25,9 @@ public class Test {
     private Long id;
 
     private String name;
+
+    @Column(length = Length.LONG32, unique = true)
+    private String code;
 
     private String description;
 

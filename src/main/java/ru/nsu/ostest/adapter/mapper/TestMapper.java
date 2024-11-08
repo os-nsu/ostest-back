@@ -34,6 +34,11 @@ public interface TestMapper {
     @Mapping(source = "testLaboratoryLink.test.id", target = "id")
     @Mapping(source = "testLaboratoryLink.test.name", target = "name")
     @Mapping(source = "testLaboratoryLink.test.description", target = "description")
+    @Mapping(source = "testLaboratoryLink.test.code", target = "code")
     @Mapping(source = "testLaboratoryLink.test.category", target = "category")
     TestDto fromTestLaboratoryLink(TestLaboratoryLink testLaboratoryLink);
+
+    default String testLaboratoryLinkToCode(TestLaboratoryLink testLaboratoryLink) {
+        return testLaboratoryLink.getTest().getCode();
+    }
 }

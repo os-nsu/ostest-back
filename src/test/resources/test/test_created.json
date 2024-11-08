@@ -2,5 +2,6 @@
   "id": 12,
   "name": "Test Test",
   "description": "Test Description",
+  "code": "Test Code",
   "category": "DEFAULT"
 }

@@ -48,7 +48,7 @@ public class SessionControllerIntegrationTest {
     private static final String LAB_DESCRIPTION = "Description";
     private static final boolean IS_HIDDEN = false;
     private static final int SEMESTER_NUMBER = 1;
-    private static final String REPOSITORY_LINK = "Link";
+    private static final String REPOSITORY_URL = "Url";
     private static final String BRANCH_NAME = "Branch";
     private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
     private static final String SESSION_USER1_LAB1_DTO = "session/session_user1_lab1.json";
@@ -101,8 +101,8 @@ public class SessionControllerIntegrationTest {
         groupRepository.flush();
 
         Group group = createGroup(GROUP_NUMBER);
-        Laboratory laboratory1 = createLaboratory(createLaboratoryCreationRequestDto('1'));
-        Laboratory laboratory2 = createLaboratory(createLaboratoryCreationRequestDto('2'));
+        Laboratory laboratory1 = createLaboratory(createLaboratoryCreationRequestDto(1));
+        Laboratory laboratory2 = createLaboratory(createLaboratoryCreationRequestDto(2));
         laboratories.add(laboratory1);
         laboratories.add(laboratory2);
 
@@ -130,7 +130,7 @@ public class SessionControllerIntegrationTest {
         var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.getId(), laboratory.getId()));
         checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
 
-        var makeAttemptDto = new MakeAttemptDto(REPOSITORY_LINK, BRANCH_NAME, laboratory.getId());
+        var makeAttemptDto = new MakeAttemptDto(REPOSITORY_URL, BRANCH_NAME, laboratory.getId());
 
         var attemptDto = sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto.id());
         checkAttempt(attemptDto, sessionTestSetup.getAttemptDto(ATTEMPT1_DTO));
@@ -150,7 +150,7 @@ public class SessionControllerIntegrationTest {
         var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.getId(), laboratory.getId()));
         checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
 
-        var makeAttemptDto = new MakeAttemptDto(REPOSITORY_LINK, BRANCH_NAME, laboratory.getId());
+        var makeAttemptDto = new MakeAttemptDto(REPOSITORY_URL, BRANCH_NAME, laboratory.getId());
 
         var attemptDto1 = sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto.id());
         checkAttempt(attemptDto1, sessionTestSetup.getAttemptDto(ATTEMPT1_DTO));
@@ -220,9 +220,9 @@ public class SessionControllerIntegrationTest {
         long session2Id = sessionDto2.id();
 
         sessionDto1 = sessionTestSetup.getLabSessionForStudent(
-                new GetLabSessionFroStudentRequestDto(student1.getId(), laboratory1.getId()));
+                new GetLabSessionFromStudentRequestDto(student1.getId(), laboratory1.getId()));
         sessionDto2 = sessionTestSetup.getLabSessionForStudent(
-                new GetLabSessionFroStudentRequestDto(student2.getId(), laboratory2.getId()));
+                new GetLabSessionFromStudentRequestDto(student2.getId(), laboratory2.getId()));
 
         assertEquals(session1Id, sessionDto1.id());
         assertEquals(session2Id, sessionDto2.id());
@@ -286,8 +286,8 @@ public class SessionControllerIntegrationTest {
         return groupRepository.save(group);
     }
 
-    private LaboratoryCreationRequestDto createLaboratoryCreationRequestDto(char order) {
-        return new LaboratoryCreationRequestDto(LAB_NAME + order,
+    private LaboratoryCreationRequestDto createLaboratoryCreationRequestDto(int order) {
+        return new LaboratoryCreationRequestDto(LAB_NAME + order, order,
                 LAB_DESCRIPTION + order, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN, List.of());
 
     }

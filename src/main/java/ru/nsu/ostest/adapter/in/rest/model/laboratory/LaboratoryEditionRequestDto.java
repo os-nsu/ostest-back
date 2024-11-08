@@ -7,6 +7,7 @@ import java.util.List;
 
 public record LaboratoryEditionRequestDto(Long id,
                                           String name,
+                                          Integer number,
                                           String description,
                                           Integer semesterNumber,
                                           OffsetDateTime deadline,

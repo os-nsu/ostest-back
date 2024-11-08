@@ -7,6 +7,7 @@ public record TestEditionRequestDto(
         Long id,
         String name,
         String description,
+        String code,
         TestCategory category
 ) {
 

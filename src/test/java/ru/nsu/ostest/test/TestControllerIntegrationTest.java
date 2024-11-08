@@ -36,6 +36,7 @@ public class TestControllerIntegrationTest {
 
     private static final String TEST_NAME = "Test Test";
     private static final String TEST_DESCRIPTION = "Test Description";
+    private static final String TEST_CODE = "Test Code";
 
     @Autowired
     private TestTestSetup testTestSetup;
@@ -43,7 +44,8 @@ public class TestControllerIntegrationTest {
 
     @Test
     public void createTest_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TEST_CODE,
+                TestCategory.DEFAULT);
         MockMultipartFile file = createMultipartFile("test content");
 
         var testDto = testTestSetup.createTest(request, file);
@@ -55,7 +57,8 @@ public class TestControllerIntegrationTest {
     public void getTestScript_ShouldReturnSavedScript_WhenValidRequestAndScriptSaved() throws Exception {
         String content = "test content";
 
-        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TEST_CODE,
+                TestCategory.DEFAULT);
         MockMultipartFile file = createMultipartFile(content);
         var testDto = testTestSetup.createTest(request, file);
 
@@ -66,7 +69,8 @@ public class TestControllerIntegrationTest {
 
     @Test
     public void createTest_ShouldReturnConflict_WhenDuplicateName() throws Exception {
-        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        TestCreationRequestDto request = new TestCreationRequestDto(TEST_NAME, TEST_DESCRIPTION, TEST_CODE,
+                TestCategory.DEFAULT);
         MockMultipartFile file = createMultipartFile("test content");
 
         testTestSetup.createTestBad(request, file);
@@ -74,7 +78,8 @@ public class TestControllerIntegrationTest {
 
     @Test
     public void deleteTest_ShouldReturnStatusOk_WhenTestExists() throws Exception {
-        TestCreationRequestDto request = new TestCreationRequestDto("test for deleting", TEST_DESCRIPTION, TestCategory.DEFAULT);
+        TestCreationRequestDto request = new TestCreationRequestDto("test for deleting", TEST_DESCRIPTION,
+                TEST_CODE, TestCategory.DEFAULT);
         MockMultipartFile file = createMultipartFile("test content");
         var testDto = testTestSetup.createTest(request, file);
 
@@ -83,13 +88,16 @@ public class TestControllerIntegrationTest {
 
     @Test
     public void editTest_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        TestCreationRequestDto request = new TestCreationRequestDto("test name", "some description", TestCategory.DEFAULT);
+        TestCreationRequestDto request = new TestCreationRequestDto("test name", "some description",
+                TEST_CODE, TestCategory.DEFAULT);
         MockMultipartFile file = createMultipartFile("test content");
         TestDto createdTestDto = testTestSetup.createTest(request, file);
 
 
         MockMultipartFile editedFile = createMultipartFile("new test content");
-        TestEditionRequestDto testEditionRequestDto = new TestEditionRequestDto(createdTestDto.id(), "new name", "new description", TestCategory.DEFAULT);
+        TestEditionRequestDto testEditionRequestDto =
+                new TestEditionRequestDto(createdTestDto.id(), "new name", "new description",
+                        TEST_CODE, TestCategory.DEFAULT);
         TestDto editedTestDto = testTestSetup.editTest(testEditionRequestDto, editedFile);
 
 
@@ -101,15 +109,18 @@ public class TestControllerIntegrationTest {
         final String NAME1 = "name1";
         final String NAME2 = "name2";
 
-        TestCreationRequestDto request1 = new TestCreationRequestDto(NAME1, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        TestCreationRequestDto request1 = new TestCreationRequestDto(NAME1, TEST_DESCRIPTION,
+                TEST_CODE, TestCategory.DEFAULT);
         MockMultipartFile file1 = createMultipartFile("test content 1");
         TestDto createdTestDto1 = testTestSetup.createTest(request1, file1);
 
-        TestCreationRequestDto request2 = new TestCreationRequestDto(NAME2, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        TestCreationRequestDto request2 = new TestCreationRequestDto(NAME2, TEST_DESCRIPTION,
+                TEST_CODE + 1, TestCategory.DEFAULT);
         MockMultipartFile file2 = createMultipartFile("test content 2");
         testTestSetup.createTest(request2, file2);
 
-        TestEditionRequestDto request = new TestEditionRequestDto(createdTestDto1.id(), NAME2, TEST_DESCRIPTION, TestCategory.DEFAULT);
+        TestEditionRequestDto request = new TestEditionRequestDto(createdTestDto1.id(), NAME2, TEST_DESCRIPTION,
+                TEST_CODE + 2, TestCategory.DEFAULT);
         MockMultipartFile editedFile = createMultipartFile("test content edited");
         testTestSetup.editTestBad(request, editedFile);
     }

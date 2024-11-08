@@ -1,6 +1,8 @@
 {
   "id": null,
   "sequenceOrder": 1,
+  "repositoryUrl": "Url",
+  "branch": "Branch",
   "status": "IN_QUEUE",
   "testResults": null
 }

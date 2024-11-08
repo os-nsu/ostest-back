@@ -1,6 +1,7 @@
 {
   "id": null,
   "name": "Test Laboratory",
+  "number": 1,
   "description": "Test Description",
   "semesterNumber": 1,
   "deadline": "2024-10-07T07:02:27Z",
@@ -10,12 +11,14 @@
       "id": null,
       "name": "Test Test1",
       "description": "Test Description",
+      "code": "Test Code1",
       "category": "DEFAULT"
     },
     {
       "id": null,
       "name": "Test Test2",
       "description": "Test Description",
+      "code": "Test Code2",
       "category": "DEFAULT"
     }
   ]

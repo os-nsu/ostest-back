@@ -28,7 +28,7 @@ public class SessionController {
     }
 
     @PostMapping("/lab-student")
-    public SessionDto getLabSessionForStudent(@RequestBody GetLabSessionFroStudentRequestDto request) {
+    public SessionDto getLabSessionForStudent(@RequestBody GetLabSessionFromStudentRequestDto request) {
         return sessionService.getLabSessionForStudent(request);
     }
 
@@ -40,7 +40,7 @@ public class SessionController {
     @PostMapping("/{sessionId}/attempt")
     @ResponseStatus(HttpStatus.CREATED)
     public AttemptDto makeAttempt(@RequestBody MakeAttemptDto makeAttemptDto, @PathVariable Long sessionId) {
-        return sessionService.makeAttempt(sessionId);
+        return sessionService.makeAttempt(makeAttemptDto, sessionId);
     }
 
     @GetMapping("/attempt/{attemptId}")

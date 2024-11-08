@@ -1,0 +1,8 @@
+{
+  "id": null,
+  "repositoryUrl": "Url4",
+  "branch": "Branch4",
+  "laboratoryNumber": 2,
+  "status": "AVAILABLE",
+  "connectedTests" : ["Test Code3", "Test Code4"]
+}

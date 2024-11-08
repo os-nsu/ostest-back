@@ -35,6 +35,8 @@ public class Laboratory {
 
     private Integer semesterNumber;
 
+    private Integer number;
+
     private OffsetDateTime deadline;
 
     private Boolean isHidden;

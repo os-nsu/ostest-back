@@ -26,7 +26,7 @@ public class Test {
 
     private String name;
 
-    @Column(length = Length.LONG32)
+    @Column(length = Length.LONG32, unique = true)
     private String code;
 
     private String description;

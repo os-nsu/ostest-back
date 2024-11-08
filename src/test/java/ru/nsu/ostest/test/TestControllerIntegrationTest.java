@@ -115,12 +115,12 @@ public class TestControllerIntegrationTest {
         TestDto createdTestDto1 = testTestSetup.createTest(request1, file1);
 
         TestCreationRequestDto request2 = new TestCreationRequestDto(NAME2, TEST_DESCRIPTION,
-                TEST_CODE, TestCategory.DEFAULT);
+                TEST_CODE + 1, TestCategory.DEFAULT);
         MockMultipartFile file2 = createMultipartFile("test content 2");
         testTestSetup.createTest(request2, file2);
 
         TestEditionRequestDto request = new TestEditionRequestDto(createdTestDto1.id(), NAME2, TEST_DESCRIPTION,
-                TEST_CODE, TestCategory.DEFAULT);
+                TEST_CODE + 2, TestCategory.DEFAULT);
         MockMultipartFile editedFile = createMultipartFile("test content edited");
         testTestSetup.editTestBad(request, editedFile);
     }

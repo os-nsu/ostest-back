@@ -265,7 +265,7 @@ public class LaboratoryControllerIntegrationTest {
 
     private ru.nsu.ostest.adapter.out.persistence.entity.test.Test createTest(int orderNumber) {
         TestCreationRequestDto testCreationRequestDto =
-                new TestCreationRequestDto(TEST_NAME + orderNumber, TEST_DESCRIPTION, TEST_CODE,
+                new TestCreationRequestDto(TEST_NAME + orderNumber, TEST_DESCRIPTION, TEST_CODE + orderNumber,
                         TestCategory.DEFAULT);
         var test1 =
                 testMapper.testCreationRequestDtoToTest(testCreationRequestDto);

@@ -85,11 +85,11 @@ public class SessionService {
     public AvailableTaskResponse getAvailableTask() {
         Attempt attempt =
                 attemptRepository.findFirstByStatusOrderByCreatedAtAsc(AttemptStatus.IN_QUEUE).orElse(null);
-        if (attempt != null) {
-            attempt.setStatus(AttemptStatus.IN_PROGRESS);
-            attempt = attemptRepository.save(attempt);
-            return attemptMapper.toAvailableTaskResponse(attempt);
+        if (attempt == null) {
+            return AvailableTaskResponse.unavailableTaskResponse();
         }
-        return AvailableTaskResponse.unavailableTaskResponse();
+        attempt.setStatus(AttemptStatus.IN_PROGRESS);
+        attempt = attemptRepository.save(attempt);
+        return attemptMapper.toAvailableTaskResponse(attempt);
     }
 }

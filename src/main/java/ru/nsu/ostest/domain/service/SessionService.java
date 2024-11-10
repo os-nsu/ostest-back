@@ -15,7 +15,6 @@ import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
 import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
 import ru.nsu.ostest.domain.common.enums.AttemptStatus;
 import ru.nsu.ostest.domain.exception.validation.AttemptNotFoundException;
-import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
 import ru.nsu.ostest.domain.repository.AttemptRepository;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;

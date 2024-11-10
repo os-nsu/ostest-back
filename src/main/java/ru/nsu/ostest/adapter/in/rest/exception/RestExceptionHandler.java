@@ -13,20 +13,16 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.nsu.ostest.adapter.in.rest.exception.model.Error;
 
-import java.text.MessageFormat;
-
 import ru.nsu.ostest.domain.exception.DomainException;
+import ru.nsu.ostest.domain.exception.NoRightsException;
 import ru.nsu.ostest.domain.exception.validation.ValidationException;
 import ru.nsu.ostest.security.exception.AuthorizationException;
-import ru.nsu.ostest.security.impl.AuthConstants;
 
 
 @RestControllerAdvice
 @CrossOrigin(maxAge = 1440)
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(RestExceptionHandler.class);
-    public static final String INVALID_TOKEN_MESSAGE = "Invalid token: {}";
-    public static final String AUTH_FAILED_MESSAGE = "Auth failed: {}";
 
     @ExceptionHandler({ValidationException.class})
     public ResponseEntity<Object> handleBadRequestException(Exception e) {
@@ -49,8 +45,9 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler({ExpiredJwtException.class, MalformedJwtException.class, UnsupportedJwtException.class})
     protected ResponseEntity<Object> handleJwtException(RuntimeException e) {
         String message = e.getMessage();
-        logger.error(INVALID_TOKEN_MESSAGE, message);
-        return buildErrorResponse(HttpStatus.UNAUTHORIZED, INVALID_TOKEN_MESSAGE + message);
+        String invalidTokenErrMsg = "Invalid token: " + message;
+        logger.error(invalidTokenErrMsg);
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, invalidTokenErrMsg);
     }
 
     @ExceptionHandler({DomainException.class})

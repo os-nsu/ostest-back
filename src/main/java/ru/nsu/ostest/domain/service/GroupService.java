@@ -1,9 +1,6 @@
 package ru.nsu.ostest.domain.service;
 
-import jakarta.persistence.EntityNotFoundException;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -18,12 +15,10 @@ import ru.nsu.ostest.adapter.mapper.GroupMapper;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
-import ru.nsu.ostest.domain.exception.DuplicateTestNameException;
 import ru.nsu.ostest.domain.exception.validation.DuplicateGroupNameException;
 import ru.nsu.ostest.domain.exception.validation.GroupNotFoundException;
 import ru.nsu.ostest.domain.repository.GroupRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
-import ru.nsu.ostest.security.exceptions.NotFoundException;
 
 import java.util.List;
 import java.util.Set;
@@ -41,8 +36,6 @@ public class GroupService {
     private final UserMapper userMapper;
 
     public Group findGroupByName(String name) {
-        return groupRepository.findByName(name).orElseThrow(
-                () -> new EntityNotFoundException("Couldn't find group with name: " + name));
         return groupRepository.findByName(name);
     }
 
@@ -58,12 +51,6 @@ public class GroupService {
         return groupMapper.groupToGroupDto(group);
     }
 
-    public GroupDto getGroup(Long id) {
-        return groupRepository.findById(id)
-                .map(groupMapper::groupToGroupDto)
-                .orElseThrow(() -> GroupNotFoundException.notFoundGroupWithId(id));
-    }
-
     public Page<GroupDto> getAllGroups(Pageable pageRequest) {
         return groupRepository.findAll(pageRequest)
                 .map(groupMapper::groupToGroupDto);
@@ -71,7 +58,7 @@ public class GroupService {
 
     public GroupFullDto getGroupUsers(Long id) {
         Group group = groupRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(GROUP_NOT_FOUND_MESSAGE_TEMPLATE));
+                .orElseThrow(() -> GroupNotFoundException.notFoundGroupWithId(id));
 
         return groupMapper.mapToGroupFullDto(group);
     }

@@ -29,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProviderImpl jwtProviderImpl;
     private final BlacklistService blacklistService;
 
-    public static final String INVALID_JWT_MESSAGE = "Invalid JWT";
     public static final String VALIDATING_REFRESH_TOKEN_FAILED_MESSAGE = "Validating refresh token failed";
 
     @Override
@@ -68,7 +67,7 @@ public class AuthServiceImpl implements AuthService {
                 return jwtResponse;
             }
         }
-        log.error(AuthConstants.VALIDATING_REFRESH_TOKEN_FAILED);
+        log.error(VALIDATING_REFRESH_TOKEN_FAILED_MESSAGE);
         throw new InvalidJwtException();
     }
 
@@ -76,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
     public JwtResponse refresh(@NonNull String refreshToken) {
         log.info("Processing refresh request");
         if (!jwtProviderImpl.validateRefreshToken(refreshToken)) {
-            log.error(AuthConstants.VALIDATING_REFRESH_TOKEN_FAILED);
+            log.error(VALIDATING_REFRESH_TOKEN_FAILED_MESSAGE);
             throw new InvalidJwtException();
         }
         final Claims claims = jwtProviderImpl.getRefreshClaims(refreshToken);
@@ -104,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
 
         if (!jwtProviderImpl.validateRefreshToken(request.refreshToken())) {
             log.error(VALIDATING_REFRESH_TOKEN_FAILED_MESSAGE);
-            throw new AuthException(INVALID_JWT_MESSAGE);
+            throw new InvalidJwtException();
         }
 
         Claims claims = jwtProviderImpl.getRefreshClaims(request.refreshToken());

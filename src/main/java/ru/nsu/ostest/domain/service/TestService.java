@@ -5,25 +5,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
-
 import ru.nsu.ostest.adapter.in.rest.model.test.*;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import ru.nsu.ostest.adapter.mapper.TestMapper;
 import ru.nsu.ostest.domain.exception.validation.DuplicateTestNameException;
+import ru.nsu.ostest.domain.exception.validation.FailedFileReadingException;
 import ru.nsu.ostest.domain.exception.validation.TestNotFoundException;
 import ru.nsu.ostest.domain.repository.TestRepository;
-
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-
 import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class TestService {
-    private static final String FILE_READING_FAILED_MESSAGE = "Failed to read file.";
 
     private final TestRepository testRepository;
     private final TestMapper testMapper;
@@ -79,7 +76,7 @@ public class TestService {
         try {
             script = file.getBytes();
         } catch (IOException e) {
-            throw new RuntimeException(FILE_READING_FAILED_MESSAGE);
+            throw new FailedFileReadingException();
         }
         log.info("File read.");
         return script;

@@ -1,7 +1,6 @@
 package ru.nsu.ostest.domain.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -16,7 +15,6 @@ import ru.nsu.ostest.domain.exception.validation.DuplicateLaboratoryNameExceptio
 import ru.nsu.ostest.domain.exception.validation.LaboratoryNotFoundException;
 import ru.nsu.ostest.domain.exception.validation.TestNotFoundException;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
-import ru.nsu.ostest.domain.exception.DuplicateLaboratoryNameException;
 import ru.nsu.ostest.domain.repository.TestLaboratoryLinkRepository;
 import ru.nsu.ostest.domain.repository.TestRepository;
 import ru.nsu.ostest.domain.specification.LaboratorySpecification;

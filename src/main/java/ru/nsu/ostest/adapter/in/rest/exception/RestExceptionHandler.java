@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import ru.nsu.ostest.adapter.in.rest.exception.model.Error;
+import ru.nsu.ostest.domain.exception.DomainException;
 import ru.nsu.ostest.domain.exception.validation.ValidationException;
 import ru.nsu.ostest.domain.exception.NoRightsException;
 import ru.nsu.ostest.security.exception.AuthorizationException;
@@ -46,6 +47,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String message = e.getMessage();
         logger.error(AuthConstants.INVALID_TOKEN_MESSAGE + "{}", message, e);
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, AuthConstants.INVALID_TOKEN_MESSAGE + message);
+    }
+
+    @ExceptionHandler({DomainException.class})
+    public ResponseEntity<Object> handleDomainException(Exception e) {
+        logger.error(e.getMessage());
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     private ResponseEntity<Object> buildErrorResponse(HttpStatus status, String message) {

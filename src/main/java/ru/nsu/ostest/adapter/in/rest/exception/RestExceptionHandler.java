@@ -15,6 +15,7 @@ import ru.nsu.ostest.adapter.in.rest.exception.model.Error;
 
 import java.text.MessageFormat;
 
+import ru.nsu.ostest.domain.exception.DomainException;
 import ru.nsu.ostest.domain.exception.validation.ValidationException;
 import ru.nsu.ostest.security.exception.AuthorizationException;
 import ru.nsu.ostest.security.impl.AuthConstants;
@@ -50,6 +51,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         String message = e.getMessage();
         logger.error(INVALID_TOKEN_MESSAGE, message);
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, INVALID_TOKEN_MESSAGE + message);
+    }
+
+    @ExceptionHandler({DomainException.class})
+    public ResponseEntity<Object> handleDomainException(Exception e) {
+        logger.error(e.getMessage());
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     private ResponseEntity<Object> buildErrorResponse(HttpStatus status, String message) {

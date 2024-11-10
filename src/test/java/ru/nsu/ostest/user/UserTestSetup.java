@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.model.user.*;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
-import ru.nsu.ostest.domain.exception.UserNotFoundException;
+import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
 import ru.nsu.ostest.domain.repository.UserRepository;
 
 import java.io.IOException;
@@ -50,7 +50,8 @@ public class UserTestSetup {
     public UserDto createUserReturnsUserDto(UserCreationRequestDto creationRequestDto) throws Exception {
         var user = createUserReturnsUserPasswordDto(creationRequestDto);
         assertTrue(userRepository.findByUsername(user.username()).isPresent());
-        User userFromRepository = userRepository.findByUsername(user.username()).orElseThrow(() -> new UserNotFoundException("User not found"));
+        User userFromRepository = userRepository.findByUsername(user.username()).orElseThrow(() ->
+                UserNotFoundException.notFoundUserWithUsername(user.username()));
         return userMapper.userToUserDto(userFromRepository);
     }
 

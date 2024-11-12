@@ -3,6 +3,7 @@ package ru.nsu.ostest.domain.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.BadRequestException;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -10,12 +11,9 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.ostest.adapter.in.rest.model.filter.FieldDescriptor;
-import ru.nsu.ostest.adapter.in.rest.model.filter.FilterDescriptor;
-import ru.nsu.ostest.adapter.in.rest.model.filter.Pagination;
+import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
-import ru.nsu.ostest.adapter.in.rest.model.user.search.UserSearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
@@ -32,10 +30,12 @@ import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.impl.AuthServiceCommon;
 import ru.nsu.ostest.security.utils.PasswordGenerator;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+
+import static ru.nsu.ostest.adapter.in.rest.model.annotation.AnnotationProcessor.getFieldDescriptors;
+import static ru.nsu.ostest.adapter.in.rest.model.annotation.AnnotationProcessor.getFilterDescriptors;
+import static ru.nsu.ostest.adapter.in.rest.model.filter.Pagination.createPagination;
 
 @Slf4j
 @AllArgsConstructor
@@ -46,7 +46,8 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final GroupService groupService;
     private final RoleService roleService;
-    private final FilterService filterService;
+    @Qualifier("userFilterService")
+    private final FilterService<User> filterService;
     private final UserUpdateMapper userUpdateMapper;
     private JsonNullableMapper jsonNullableMapper;
 
@@ -153,7 +154,7 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public UserResponse getUsers(UserSearchRequestDto userRequest) {
+    public UserResponse getUsers(SearchRequestDto userRequest) {
         Pageable pageable = PageRequest.of(userRequest.pagination().index() - 1, userRequest.pagination().pageSize());
 
         Specification<User> spec = filterService.createSpecification(userRequest.filters());
@@ -167,59 +168,16 @@ public class UserService {
         return new UserResponse(
                 createPagination(userPage),
                 "Users",
-                getFieldDescriptors(),
-                getFilterDescriptors(),
-                convertToUserDtos(userPage.getContent())
+                getFieldDescriptors(User.class),
+                getFilterDescriptors(User.class),
+                convertToUserRows(userPage.getContent())
         );
     }
 
-    private Pagination createPagination(Page<User> userPage) {
-        return new Pagination(
-                userPage.getNumber() + 1,
-                userPage.getSize(),
-                (int) userPage.getTotalElements(),
-                userPage.getTotalPages()
-        );
-    }
 
-    private List<FieldDescriptor> getFieldDescriptors() {
-        List<FieldDescriptor> descriptors = new ArrayList<>();
-
-        Field[] fields = User.class.getDeclaredFields();
-        for (Field field : fields) {
-            if (!field.getName().equals("userPassword")) {
-                descriptors.add(new FieldDescriptor(field.getType().getSimpleName(), field.getName()));
-            }
-        }
-
-        return descriptors;
-    }
-
-
-    private List<FilterDescriptor> getFilterDescriptors() {
-        List<FilterDescriptor> filters = new ArrayList<>();
-
-        Field[] fields = User.class.getDeclaredFields();
-        for (Field field : fields) {
-            String fieldName = field.getName();
-            String fieldType = field.getType().getSimpleName();
-            if (fieldType.equals("groups") || fieldType.equals("roles")) {
-                fieldType = "String";
-            }
-            if (!fieldName.equals("userPassword")) {
-                filters.add(new FilterDescriptor(fieldType, fieldName, false));
-                if (fieldType.equals("String")) {
-                    filters.add(new FilterDescriptor(fieldType, fieldName, true));
-                }
-            }
-        }
-
-        return filters;
-    }
-
-
-    private List<UserDto> convertToUserDtos(List<User> users) {
+    private List<UserDto> convertToUserRows(List<User> users) {
         return users.stream().map(userMapper::userToUserDto).toList();
     }
+
 
 }

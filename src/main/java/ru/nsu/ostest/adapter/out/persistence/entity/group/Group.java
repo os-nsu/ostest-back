@@ -1,21 +1,8 @@
 package ru.nsu.ostest.adapter.out.persistence.entity.group;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
+import ru.nsu.ostest.adapter.in.rest.model.annotation.DescribableField;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 
 import java.util.HashSet;
@@ -38,7 +25,9 @@ public class Group {
     private Long id;
 
     @NonNull
-    private String name;
+    @DescribableField(includeInDescriptor = true, includeInFilter = true)
+    @Column(name = "name")
+    private String groupName;
 
     @JoinTable(
             name = "user_group",

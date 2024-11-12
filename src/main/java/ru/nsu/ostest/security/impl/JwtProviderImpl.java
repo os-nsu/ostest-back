@@ -20,11 +20,7 @@ import java.security.Key;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static com.google.common.net.HttpHeaders.AUTHORIZATION;
 
@@ -48,12 +44,12 @@ public class JwtProviderImpl implements JwtProvider {
         final Date accessExpiration = Date.from(accessExpirationInstant);
         final List<String> roles = new ArrayList<>();
         for (Role role : user.getRoles().stream().map(UserRole::getRole).toList()) {
-            roles.add(role.getName());
+            roles.add(role.getRoleName());
         }
         List<String> groups = Optional.of(user)
                 .map(User::getGroups)
                 .stream().flatMap(Collection::stream)
-                .map(Group::getName)
+                .map(Group::getGroupName)
                 .toList();
         log.info("Generated access token for user  with id [{}]", user.getId());
         return Jwts.builder()

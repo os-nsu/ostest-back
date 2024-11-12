@@ -232,7 +232,7 @@ public class SessionControllerIntegrationTest {
 
     private Group createGroup(String name) {
         Group group = new Group();
-        group.setName(name);
+        group.setGroupName(name);
         return groupRepository.save(group);
     }
 

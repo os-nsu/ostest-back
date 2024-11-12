@@ -3,15 +3,14 @@ package ru.nsu.ostest.domain.service;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FilterStrategyFactory {
-    private final Map<String, FilterStrategy> strategies = new HashMap<>();
+public class FilterStrategyFactory<T> {
+    private final Map<String, FilterStrategy<T>> strategies = new HashMap<>();
 
-    public FilterStrategyFactory() {
-        strategies.put("string", new StringFilterStrategy());
-        strategies.put("integer", new IntegerFilterStrategy());
+    public void registerStrategy(String type, FilterStrategy<T> strategy) {
+        strategies.put(type, strategy);
     }
 
-    public FilterStrategy getStrategy(String type) {
+    public FilterStrategy<T> getStrategy(String type) {
         return strategies.get(type);
     }
 }

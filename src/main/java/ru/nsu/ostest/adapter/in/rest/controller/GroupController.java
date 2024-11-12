@@ -11,6 +11,7 @@ import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupResponse;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupFullDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.GroupResponse;
 import ru.nsu.ostest.domain.service.GroupService;
 
 

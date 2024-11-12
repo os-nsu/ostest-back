@@ -52,6 +52,8 @@ public class SessionControllerIntegrationTest {
     private static final String BRANCH_NAME = "Branch";
     private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
     private static final String SESSION_USER1_LAB1_DTO = "session/session_user1_lab1.json";
+    private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
+    private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
     private static final String ATTEMPT1_DTO = "session/attempt1.json";
     private static final String ATTEMPT2_DTO = "session/attempt2.json";

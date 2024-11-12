@@ -179,5 +179,4 @@ public class UserTestSetup {
                 .andExpect(status().isOk());
 
     }
-
 }

@@ -12,7 +12,6 @@ import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.LogoutRequest;
 import ru.nsu.ostest.security.AuthService;
 
-
 @RestController
 @RequestMapping("/api/v1")
 @AllArgsConstructor

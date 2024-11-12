@@ -16,8 +16,8 @@ import ru.nsu.ostest.security.AuthService;
 import ru.nsu.ostest.security.exception.InvalidJwtException;
 import ru.nsu.ostest.security.exception.WrongPasswordException;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Service

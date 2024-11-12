@@ -40,7 +40,7 @@ public class Group {
     @NonNull
     private String name;
 
-//    @NonNull
+    @NonNull
     private Boolean isArchived;
 
     @JoinTable(

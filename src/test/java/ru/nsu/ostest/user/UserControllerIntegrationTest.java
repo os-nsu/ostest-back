@@ -280,7 +280,7 @@ class UserControllerIntegrationTest {
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .ignoringFields("group.*")
+                .ignoringFieldsMatchingRegexes("group.*")
                 .isEqualTo(expected);
     }
 

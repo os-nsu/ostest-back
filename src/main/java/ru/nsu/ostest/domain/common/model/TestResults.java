@@ -4,7 +4,9 @@ import lombok.Data;
 
 @Data
 public class TestResults {
-
-    private String status;
-
+    private boolean isPassed;
+    private String description;
+    private long memoryUsed;
+    private long duration;
+    private String name;
 }

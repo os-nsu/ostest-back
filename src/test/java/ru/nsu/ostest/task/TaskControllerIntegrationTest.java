@@ -16,7 +16,9 @@ import ru.nsu.ostest.TransactionalHelper;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
 import ru.nsu.ostest.adapter.in.rest.model.session.MakeAttemptDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestResultsDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.mapper.AttemptMapper;
@@ -26,6 +28,7 @@ import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
+import ru.nsu.ostest.adapter.out.persistence.entity.session.AttemptResults;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
@@ -38,6 +41,8 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
@@ -201,6 +206,54 @@ public class TaskControllerIntegrationTest {
         checkAvailableTaskResponse(unavailableTaskResponse,
                 taskTestSetup.getAvailableTaskResponse("task/unavailable_task.json"));
     }
+
+    @Test
+    void saveResults_ShouldReturnOk_WhenValidRequest() throws Exception {
+        Session session11 = sessions.getFirst();
+        Attempt attempt11 = makeAttempt(1, session11);
+
+        AvailableTaskResponse availableTaskResponse = taskTestSetup.getAvailableTask();
+        assertEquals(attempt11.getId(), availableTaskResponse.id());
+        List<TestResultsDto> testResults = List.of(
+                new TestResultsDto(true, "Test 1 Passed", 1000, 500, "Test 1"),
+                new TestResultsDto(false, "Test 2 Failed", 1200, 700, "Test 2")
+        );
+
+        AttemptResultSetRequest request = new AttemptResultSetRequest(
+                availableTaskResponse.id(),
+                true,
+                1200L,
+                testResults,
+                false,
+                "Some error details"
+        );
+
+        taskTestSetup.saveResult(request);
+        AttemptResults savedAttemptResult = taskTestSetup.getSavedAttemptResultByAttemptId(attempt11.getId());
+
+        assertNotNull(savedAttemptResult);
+        assertEquals(attempt11.getId(), savedAttemptResult.getAttempt().getId());
+        assertEquals(1200L, savedAttemptResult.getDuration());
+        assertFalse(savedAttemptResult.getIsError());
+        assertEquals("Some error details", savedAttemptResult.getErrorDetails());
+
+        assertNotNull(savedAttemptResult.getTestResultsJson());
+        assertEquals(testResults.size(), savedAttemptResult.getTestResultsJson().size());
+    }
+
+    @Test
+    void saveAttemptResult_ShouldReturnBadRequest_WhenInvalidRequest() throws Exception {
+        AttemptResultSetRequest invalidRequest = new AttemptResultSetRequest(
+                null,
+                null,
+                -1L,
+                null,
+                null,
+                null
+        );
+        taskTestSetup.saveResultInvalidRequest(invalidRequest);
+    }
+
 
     private void checkAvailableTaskResponse(AvailableTaskResponse actual, AvailableTaskResponse expected) {
         assertThat(actual)

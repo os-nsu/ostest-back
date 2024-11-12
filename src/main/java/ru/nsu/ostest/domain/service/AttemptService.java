@@ -1,0 +1,80 @@
+package ru.nsu.ostest.domain.service;
+
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import ru.nsu.ostest.adapter.in.rest.model.session.AttemptDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
+import ru.nsu.ostest.adapter.in.rest.model.session.MakeAttemptDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
+import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetResponse;
+import ru.nsu.ostest.adapter.mapper.AttemptMapper;
+import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
+import ru.nsu.ostest.adapter.out.persistence.entity.session.AttemptResults;
+import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
+import ru.nsu.ostest.domain.common.enums.AttemptStatus;
+import ru.nsu.ostest.domain.exception.validation.AttemptNotFoundException;
+import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
+import ru.nsu.ostest.domain.repository.AttemptRepository;
+import ru.nsu.ostest.domain.repository.AttemptResultsRepository;
+import ru.nsu.ostest.domain.repository.SessionRepository;
+
+import java.util.UUID;
+
+@Service
+@AllArgsConstructor
+public class AttemptService {
+
+    private final AttemptRepository attemptRepository;
+
+    private final AttemptResultsRepository attemptResultsRepository;
+
+    private final AttemptMapper attemptMapper;
+    private final SessionRepository sessionRepository;
+
+    @Transactional
+    public AttemptDto makeAttempt(MakeAttemptDto makeAttemptDto, Long sessionId) {
+        Session session = sessionRepository.findById(sessionId)
+                .orElseThrow(() -> SessionNotFoundException.notFoundSessionWithId(sessionId));
+        Attempt attempt = attemptMapper.makeAttemptDtoToAttempt(makeAttemptDto);
+        attempt = session.makeAttempt(attempt);
+        attempt = attemptRepository.save(attempt);
+        return attemptMapper.attemptToAttemptDto(attempt);
+    }
+
+    @Transactional
+    public AvailableTaskResponse getAvailableTask() {
+        Attempt attempt =
+                attemptRepository.findFirstByStatusOrderByCreatedAtAsc(AttemptStatus.IN_QUEUE).orElse(null);
+        if (attempt == null) {
+            return AvailableTaskResponse.unavailableTaskResponse();
+        }
+        attempt.setStatus(AttemptStatus.IN_PROGRESS);
+        attempt = attemptRepository.save(attempt);
+        return attemptMapper.toAvailableTaskResponse(attempt);
+    }
+
+    @Transactional
+    public AttemptResultSetResponse saveAttemptResult(AttemptResultSetRequest request) {
+        Attempt attempt = findAttemptById(request.getId());
+
+        AttemptStatus status = request.getIsPassed() ? AttemptStatus.SUCCESS : AttemptStatus.FAILURE;
+        attempt.setStatus(status);
+        attemptRepository.save(attempt);
+
+        AttemptResults attemptResults = attemptMapper.attemptResultSetRequestToAttemptResults(request, attempt);
+        attemptResultsRepository.save(attemptResults);
+
+        return new AttemptResultSetResponse(attempt.getId());
+    }
+
+    public AttemptDto getAttemptById(UUID id) {
+        return attemptMapper.attemptToAttemptDto(findAttemptById(id));
+    }
+
+    public Attempt findAttemptById(UUID id) {
+        return attemptRepository.findById(id)
+                .orElseThrow(() -> AttemptNotFoundException.notFoundAttemptWithId(id));
+    }
+
+}

@@ -1,10 +1,12 @@
 package ru.nsu.ostest.adapter.mapper;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 import org.mapstruct.ReportingPolicy;
 import org.mapstruct.control.DeepClone;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.SessionShortDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 
 import java.util.List;
@@ -17,7 +19,15 @@ import java.util.List;
 )
 public interface SessionMapper {
 
-    List<SessionDto> sessionToSessionDto(List<Session> session);
-
     SessionDto sessionToSessionDto(Session session);
+
+    List<SessionShortDto> sessionToSessionShortDto(List<Session> session);
+
+    @Mapping(target = "attemptsNumber", expression = "java(session.getAttempts().size())")
+    @Mapping(source = "session.laboratory.name", target = "laboratoryName")
+    SessionShortDto sessionToSessionShortDto(Session session);
+
+    @Mapping(target = "attemptsNumber", expression = "java(session.attempts().size())")
+    @Mapping(source = "session.laboratory.name", target = "laboratoryName")
+    SessionShortDto sessionDtoToSessionShortDto(SessionDto session);
 }

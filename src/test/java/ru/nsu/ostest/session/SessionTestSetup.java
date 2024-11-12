@@ -78,7 +78,7 @@ public class SessionTestSetup {
         return session;
     }
 
-    public SessionDto getLabSessionForStudent(GetLabSessionFromStudentRequestDto getLabSessionFromStudentRequestDto)
+    public SessionShortDto getLabSessionForStudent(GetLabSessionFromStudentRequestDto getLabSessionFromStudentRequestDto)
             throws Exception {
         var result = mockMvc.perform(post(PATH + "/lab-student")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -86,23 +86,23 @@ public class SessionTestSetup {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        var session = objectMapper.readValue(result.getResponse().getContentAsString(), SessionDto.class);
+        var session = objectMapper.readValue(result.getResponse().getContentAsString(), SessionShortDto.class);
 
         assertTrue(sessionRepository.findById(session.id()).isPresent());
 
         return session;
     }
 
-    public List<SessionDto> getUserSessions(Long userId) throws Exception {
+    public List<SessionShortDto> getUserSessions(Long userId) throws Exception {
         var result = mockMvc.perform(get(PATH + "/user/{userId}", userId))
                 .andExpect(status().isOk())
                 .andReturn();
 
         var sessionList = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<List<SessionDto>>() {
+                new TypeReference<List<SessionShortDto>>() {
                 });
 
-        for (SessionDto session : sessionList) {
+        for (SessionShortDto session : sessionList) {
             assertTrue(sessionRepository.findById(session.id()).isPresent());
         }
 
@@ -124,6 +124,12 @@ public class SessionTestSetup {
     public SessionDto getSessionDto(String path) throws IOException {
         return objectMapper.readValue(
                 Resources.toString(Resources.getResource(path), StandardCharsets.UTF_8), SessionDto.class
+        );
+    }
+
+    public SessionShortDto getSessionShortDto(String path) throws IOException {
+        return objectMapper.readValue(
+                Resources.toString(Resources.getResource(path), StandardCharsets.UTF_8), SessionShortDto.class
         );
     }
 

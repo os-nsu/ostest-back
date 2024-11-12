@@ -28,12 +28,12 @@ public class SessionController {
     }
 
     @PostMapping("/lab-student")
-    public SessionDto getLabSessionForStudent(@RequestBody GetLabSessionFromStudentRequestDto request) {
+    public SessionShortDto getLabSessionForStudent(@RequestBody GetLabSessionFromStudentRequestDto request) {
         return sessionService.getLabSessionForStudent(request);
     }
 
     @GetMapping("/user/{userId}")
-    public List<SessionDto> getUserSessions(@PathVariable Long userId) {
+    public List<SessionShortDto> getUserSessions(@PathVariable Long userId) {
         return sessionService.getUserSessions(userId);
     }
 

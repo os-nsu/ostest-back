@@ -10,6 +10,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
+import ru.nsu.ostest.domain.common.enums.SessionStatus;
 import ru.nsu.ostest.domain.exception.validation.LaboratoryNotFoundException;
 import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
 import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
@@ -44,6 +45,7 @@ public class SessionService {
 
         Session session = new Session();
         session.setStudent(student);
+        session.setStatus(SessionStatus.NEW);
         session.setLaboratory(laboratory);
 
         session = sessionRepository.save(session);
@@ -57,15 +59,16 @@ public class SessionService {
         return sessionMapper.sessionToSessionDto(session);
     }
 
-    public SessionDto getLabSessionForStudent(GetLabSessionFromStudentRequestDto getLabSessionFromStudentRequestDto) {
+    public SessionShortDto getLabSessionForStudent(GetLabSessionFromStudentRequestDto getLabSessionFromStudentRequestDto) {
         Long studentId = getLabSessionFromStudentRequestDto.studentId();
         Long laboratoryId = getLabSessionFromStudentRequestDto.laboratoryId();
         Session session = sessionRepository.getSessionByStudentIdAndLaboratoryId(studentId, laboratoryId);
-        return sessionMapper.sessionToSessionDto(session);
+        return sessionMapper.sessionToSessionShortDto(session);
     }
 
-    public List<SessionDto> getUserSessions(Long userId) {
-        return sessionMapper.sessionToSessionDto(sessionRepository.getSessionByStudentIdOrTeacherId(userId, userId));
+    public List<SessionShortDto> getUserSessions(Long userId) {
+        return sessionMapper.sessionToSessionShortDto(
+                sessionRepository.getSessionByStudentIdOrTeacherId(userId, userId));
     }
 
     @Transactional
@@ -75,6 +78,10 @@ public class SessionService {
         Attempt attempt = attemptMapper.makeAttemptDtoToAttempt(makeAttemptDto);
         attempt = session.makeAttempt(attempt);
         attempt = attemptRepository.save(attempt);
+        if (session.getStatus().equals(SessionStatus.NEW)) {
+            session.setStatus(SessionStatus.IN_PROGRESS);
+            sessionRepository.save(session);
+        }
         return attemptMapper.attemptToAttemptDto(attempt);
     }
 

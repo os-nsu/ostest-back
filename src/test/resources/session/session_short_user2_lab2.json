@@ -1,0 +1,15 @@
+{
+  "id": null,
+  "student": {
+    "id": null,
+    "username": "username2",
+    "firstName": "firstName2",
+    "secondName": "secondName2",
+    "group": {
+      "name": "21207"
+    }
+  },
+  "laboratoryName": "Laboratory2",
+  "status": "IN_PROGRESS",
+  "attemptsNumber": 1
+}

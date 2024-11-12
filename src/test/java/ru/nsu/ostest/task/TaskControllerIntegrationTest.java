@@ -17,8 +17,8 @@ import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestD
 import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
 import ru.nsu.ostest.adapter.in.rest.model.session.MakeAttemptDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleEnum;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.mapper.AttemptMapper;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.mapper.TestMapper;
@@ -238,7 +238,7 @@ public class TaskControllerIntegrationTest {
 
     private Group createGroup(String name) {
         Group group = new Group();
-        group.setName(name);
+        group.setGroupName(name);
         return groupRepository.save(group);
     }
 

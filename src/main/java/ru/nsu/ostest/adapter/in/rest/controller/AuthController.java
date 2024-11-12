@@ -6,10 +6,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.auth.JwtResponse;
 import ru.nsu.ostest.adapter.in.rest.model.user.auth.RefreshJwtRequest;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.LogoutRequest;
 import ru.nsu.ostest.security.AuthService;
 
 

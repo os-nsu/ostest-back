@@ -9,7 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import ru.nsu.ostest.adapter.in.rest.model.user.auth.JwtResponse;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.LogoutRequest;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;

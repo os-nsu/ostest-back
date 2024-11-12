@@ -1,6 +1,6 @@
 package ru.nsu.ostest.adapter.in.rest.model.user;
 
-import ru.nsu.ostest.adapter.out.persistence.entity.user.Role;
+import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleDto;
 
 import java.util.List;
 

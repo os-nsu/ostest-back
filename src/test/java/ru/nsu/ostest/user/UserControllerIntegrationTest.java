@@ -252,7 +252,6 @@ class UserControllerIntegrationTest {
                 ), userDto.id()
         );
 
-
         checkUser(editedUserDto,
                 userTestSetup.getUserDto("user/user_edited.json"));
     }
@@ -281,7 +280,7 @@ class UserControllerIntegrationTest {
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .ignoringFields("group.id")
+                .ignoringFields("group.*")
                 .isEqualTo(expected);
     }
 

@@ -40,6 +40,9 @@ public class Group {
     @NonNull
     private String name;
 
+//    @NonNull
+    private Boolean isArchived;
+
     @JoinTable(
             name = "user_group",
             joinColumns = @JoinColumn(name = "group_id"),

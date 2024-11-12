@@ -75,7 +75,7 @@ class UserControllerIntegrationTest {
         userRepository.deleteAll();
         groupRepository.deleteAll();
 
-        groupRepository.save(new Group(USER_GROUPNUMBER));
+        groupRepository.save(new Group(USER_GROUPNUMBER, false));
         String adminAuthority = "ADMIN";
         Authentication authentication = new JwtAuthentication(true, "password", List.of(adminAuthority));
         SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -6,6 +6,7 @@ import java.util.Set;
 public record GroupEditionRequestDto(
         Long id,
         String name,
+        Boolean isArchived,
         Set<Long> addUsers,
         Set<Long> deleteUsers
 ) {

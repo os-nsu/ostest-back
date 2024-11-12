@@ -9,8 +9,6 @@ import ru.nsu.ostest.adapter.in.rest.model.session.SessionDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.SessionShortDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 
-import java.util.List;
-
 @Mapper(
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         componentModel = MappingConstants.ComponentModel.SPRING,
@@ -20,8 +18,6 @@ import java.util.List;
 public interface SessionMapper {
 
     SessionDto sessionToSessionDto(Session session);
-
-    List<SessionShortDto> sessionToSessionShortDto(List<Session> session);
 
     @Mapping(target = "attemptsNumber", expression = "java(session.getAttempts().size())")
     @Mapping(source = "session.laboratory.name", target = "laboratoryName")

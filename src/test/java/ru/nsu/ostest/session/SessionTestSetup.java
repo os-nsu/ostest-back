@@ -6,6 +6,7 @@ import com.google.common.io.Resources;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.nsu.ostest.adapter.in.rest.model.session.*;
@@ -14,7 +15,6 @@ import ru.nsu.ostest.domain.repository.SessionRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -93,13 +93,14 @@ public class SessionTestSetup {
         return session;
     }
 
-    public List<SessionShortDto> getUserSessions(Long userId) throws Exception {
-        var result = mockMvc.perform(get(PATH + "/user/{userId}", userId))
+    public Page<SessionShortDto> getUserSessions(Long userId) throws Exception {
+        var result = mockMvc.perform(get(PATH + "/user/{userId}", userId)
+                        .param("size", "25"))
                 .andExpect(status().isOk())
                 .andReturn();
 
         var sessionList = objectMapper.readValue(result.getResponse().getContentAsString(),
-                new TypeReference<List<SessionShortDto>>() {
+                new TypeReference<CustomPageImpl<SessionShortDto>>() {
                 });
 
         for (SessionShortDto session : sessionList) {

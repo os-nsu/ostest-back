@@ -1,6 +1,8 @@
 package ru.nsu.ostest.domain.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.model.session.*;
@@ -21,7 +23,6 @@ import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -66,9 +67,9 @@ public class SessionService {
         return sessionMapper.sessionToSessionShortDto(session);
     }
 
-    public List<SessionShortDto> getUserSessions(Long userId) {
-        return sessionMapper.sessionToSessionShortDto(
-                sessionRepository.getSessionByStudentIdOrTeacherId(userId, userId));
+    public Page<SessionShortDto> getUserSessions(Long userId, Pageable pageRequest) {
+        return sessionRepository.getSessionByStudentIdOrTeacherId(userId, userId, pageRequest)
+                .map(sessionMapper::sessionToSessionShortDto);
     }
 
     @Transactional

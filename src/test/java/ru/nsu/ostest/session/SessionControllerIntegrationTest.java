@@ -273,13 +273,13 @@ public class SessionControllerIntegrationTest {
         var user1Sessions = sessionTestSetup.getUserSessions(student1.getId());
         var user2Sessions = sessionTestSetup.getUserSessions(student2.getId());
 
-        assertEquals(2, user1Sessions.size());
-        assertEquals(2, user2Sessions.size());
+        assertEquals(2, user1Sessions.getContent().size());
+        assertEquals(2, user2Sessions.getContent().size());
 
-        assertTrue(user1Sessions.contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto11)));
-        assertTrue(user1Sessions.contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto12)));
-        assertTrue(user2Sessions.contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto21)));
-        assertTrue(user2Sessions.contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto22)));
+        assertTrue(user1Sessions.getContent().contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto11)));
+        assertTrue(user1Sessions.getContent().contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto12)));
+        assertTrue(user2Sessions.getContent().contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto21)));
+        assertTrue(user2Sessions.getContent().contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto22)));
     }
 
     private Laboratory createLaboratory(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {

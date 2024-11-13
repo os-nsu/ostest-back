@@ -22,8 +22,6 @@ public class AttemptResults {
     @JdbcTypeCode(SqlTypes.JSON)
     private List<TestResults> testResultsJson;
     private long duration;
-    private Boolean isError;
-
     private String errorDetails;
 
 }

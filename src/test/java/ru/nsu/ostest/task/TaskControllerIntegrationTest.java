@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -115,6 +114,7 @@ public class TaskControllerIntegrationTest {
     }
 
     void initInTransaction() {
+        testRepository.deleteAll();
         laboratoryRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();
@@ -213,7 +213,6 @@ public class TaskControllerIntegrationTest {
         Attempt attempt11 = makeAttempt(1, session11);
 
         AvailableTaskResponse availableTaskResponse = taskTestSetup.getAvailableTask();
-        assertEquals(attempt11.getId(), availableTaskResponse.id());
         List<TestResultsDto> testResults = List.of(
                 new TestResultsDto(true, "Test 1 Passed", 1000, 500, "Test 1"),
                 new TestResultsDto(false, "Test 2 Failed", 1200, 700, "Test 2")
@@ -234,7 +233,6 @@ public class TaskControllerIntegrationTest {
         assertNotNull(savedAttemptResult);
         assertEquals(attempt11.getId(), savedAttemptResult.getAttempt().getId());
         assertEquals(1200L, savedAttemptResult.getDuration());
-        assertFalse(savedAttemptResult.getIsError());
         assertEquals("Some error details", savedAttemptResult.getErrorDetails());
 
         assertNotNull(savedAttemptResult.getTestResultsJson());

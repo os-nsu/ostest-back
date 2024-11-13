@@ -54,11 +54,17 @@ public class AttemptService {
         return attemptMapper.toAvailableTaskResponse(attempt);
     }
 
+    private AttemptStatus determineStatus(AttemptResultSetRequest request) {
+        if (Boolean.TRUE.equals(request.getIsError())) {
+            return AttemptStatus.ERROR;
+        }
+        return Boolean.TRUE.equals(request.getIsPassed()) ? AttemptStatus.SUCCESS : AttemptStatus.FAILURE;
+    }
+
     @Transactional
     public AttemptResultSetResponse saveAttemptResult(AttemptResultSetRequest request) {
         Attempt attempt = findAttemptById(request.getId());
-
-        AttemptStatus status = request.getIsPassed() ? AttemptStatus.SUCCESS : AttemptStatus.FAILURE;
+        AttemptStatus status = determineStatus(request);
         attempt.setStatus(status);
         attemptRepository.save(attempt);
 

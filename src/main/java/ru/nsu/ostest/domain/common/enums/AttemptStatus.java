@@ -4,5 +4,6 @@ public enum AttemptStatus {
     IN_QUEUE,
     IN_PROGRESS,
     SUCCESS,
-    FAILURE
+    FAILURE,
+    ERROR
 }

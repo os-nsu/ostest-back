@@ -31,7 +31,6 @@ public interface AttemptMapper {
     AttemptShortDto attemptToAttemptShortDto(Attempt attempt);
 
     @Mapping(target = "duration", source = "request.duration")
-    @Mapping(target = "isError", source = "request.isError")
     @Mapping(target = "errorDetails", source = "request.errorDetails")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "attempt", source = "attempt")

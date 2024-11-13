@@ -16,7 +16,6 @@ import ru.nsu.ostest.adapter.in.rest.model.session.*;
 import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
 import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
-import ru.nsu.ostest.adapter.mapper.SessionMapper;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
@@ -72,7 +71,7 @@ public class SessionControllerIntegrationTest {
     private UserMapper userMapper;
 
     @Autowired
-    private SessionMapper sessionMapper;
+    private SessionTestMapper sessionTestMapper;
 
     @Autowired
     private LaboratoryRepository laboratoryRepository;
@@ -276,10 +275,10 @@ public class SessionControllerIntegrationTest {
         assertEquals(2, user1Sessions.getContent().size());
         assertEquals(2, user2Sessions.getContent().size());
 
-        assertTrue(user1Sessions.getContent().contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto11)));
-        assertTrue(user1Sessions.getContent().contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto12)));
-        assertTrue(user2Sessions.getContent().contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto21)));
-        assertTrue(user2Sessions.getContent().contains(sessionMapper.sessionDtoToSessionShortDto(sessionDto22)));
+        assertTrue(user1Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto11)));
+        assertTrue(user1Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto12)));
+        assertTrue(user2Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto21)));
+        assertTrue(user2Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto22)));
     }
 
     private Laboratory createLaboratory(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {

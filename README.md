@@ -1,7 +1,20 @@
 # BE проекта OS Test
 
 ## Docker
-- Для настройки локального окружения нужно запустить docker compose
+- Для настройки локального окружения нужно запустить docker compose.
+- Для этого пишем
+`docker compose --env-file env.local up`
+
+If any problems, you can
+```
+docker compose down
+docker compose --env-file env.local up --build
+```
+
+#### Проверить на локалке работоспособность в терминале можно к примеру так:
+```
+curl -X POST http://localhost:8080/api/v1/login -H 'Content-Type: application/json' -d '{ "username": "dora_explorer", "password": "dora_explorer" }' 
+```
 
 ## Swagger
 - API локально можно гонять через Swagger

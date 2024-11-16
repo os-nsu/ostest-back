@@ -86,6 +86,12 @@ VALUES ('DEFAULT', 'Tests cleaning the project using ''make clean''.', 'test_suc
        ('DEFAULT', 'Tests that the proxy correctly terminates upon receiving specific signals.', 'test_proxy_termination_on_signal', null, '14');
 
 
+ALTER TABLE test_laboratory_link
+DROP CONSTRAINT "FKq9asnxuea0nm9lrk78gxqs8jk",
+ADD CONSTRAINT "FKq9asnxuea0nm9lrk78gxqs8jk"
+FOREIGN KEY (test_id) REFERENCES test(id) ON DELETE CASCADE;
+
+
 INSERT INTO "test_laboratory_link" (is_switched_on, laboratory_id, test_id)
 VALUES (true, 1, 1),
        (true, 1, 2),

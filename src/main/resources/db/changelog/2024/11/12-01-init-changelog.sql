@@ -49,7 +49,7 @@ VALUES ('22201', false),
        ('20216', true),
        ('19201', true),
        ('19202', true),
-       ('19203', true,
+       ('19203', true),
        ('19204', true),
        ('19205', true),
        ('19206', true),
@@ -59,7 +59,7 @@ VALUES ('22201', false),
        ('19210', true),
        ('19211', true),
        ('19212', true),
-       ('19213', true,
+       ('19213', true),
        ('19214', true),
        ('19215', true),
        ('19216', true);
@@ -79,16 +79,25 @@ VALUES ('DEFAULT', 'Tests cleaning the project using ''make clean''.', 'test_suc
        ('DEFAULT', 'Tests that the proxy starts successfully without arguments and can be terminated cleanly.', 'test_run_without_arguments', null, '7'),
        ('DEFAULT', 'Tests running the proxy successfully with ''--help'' argument.', 'test_run_with_help_argument', null, '8'),
        ('DEFAULT', 'Tests running the proxy with invalid arguments.', 'test_run_with_invalid_arguments', null, '9'),
-
        ('DEFAULT', 'Test that log file is created after starting the proxy.', 'test_log_file_creation', null, '10'),
        ('DEFAULT', 'Test that specific messages are presented in the log.', 'test_log_contains_message', null, '11'),
        ('DEFAULT', 'Test that messages appear in the log in the correct order.', 'test_log_messages_in_order', null, '12'),
-
        ('DEFAULT', 'Tests the launch of a proxy built with AddressSanitizer and UndefinedBehaviorSanitizer.', 'test_execution_with_sanitizers', null, '13'),
-
        ('DEFAULT', 'Tests that the proxy correctly terminates upon receiving specific signals.', 'test_proxy_termination_on_signal', null, '14');
 
 
-INSERT INTO "test_lab" ()
-VALUES (),
-       (),
+INSERT INTO "test_laboratory_link" (is_switched_on, laboratory_id, test_id)
+VALUES (true, 1, 1),
+       (true, 1, 2),
+       (true, 1, 3),
+       (true, 1, 4),
+       (true, 1, 5),
+       (true, 1, 6),
+       (true, 1, 7),
+       (true, 1, 8),
+       (true, 1, 9),
+       (true, 2, 10),
+       (true, 2, 11),
+       (true, 2, 12),
+       (true, 3, 13),
+       (true, 4, 14);

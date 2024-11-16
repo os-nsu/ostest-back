@@ -1,14 +1,6 @@
 package ru.nsu.ostest.adapter.out.persistence.entity.group;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,6 +33,7 @@ public class Group {
     private String name;
 
     @NonNull
+    @Column(nullable = false)
     private Boolean isArchived;
 
     @JoinTable(

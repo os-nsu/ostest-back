@@ -37,6 +37,10 @@ public class AttemptService {
         Attempt attempt = attemptMapper.makeAttemptDtoToAttempt(makeAttemptDto);
         attempt = session.makeAttempt(attempt);
         attempt = attemptRepository.save(attempt);
+        if (session.getStatus().equals(SessionStatus.NEW)) {
+            session.setStatus(SessionStatus.IN_PROGRESS);
+            sessionRepository.save(session);
+        }
         return attemptMapper.attemptToAttemptDto(attempt);
     }
 

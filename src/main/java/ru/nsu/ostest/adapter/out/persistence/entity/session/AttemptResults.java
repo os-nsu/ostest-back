@@ -24,5 +24,4 @@ public class AttemptResults {
 
     @OneToOne(mappedBy = "attemptResults", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private Attempt attempt;
-
 }

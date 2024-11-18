@@ -14,6 +14,8 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.TransactionalHelper;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.AttemptDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.AttemptResultDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
 import ru.nsu.ostest.adapter.in.rest.model.session.MakeAttemptDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
@@ -28,11 +30,11 @@ import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
-import ru.nsu.ostest.adapter.out.persistence.entity.session.AttemptResults;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
 import ru.nsu.ostest.domain.repository.*;
+import ru.nsu.ostest.session.SessionTestSetup;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -46,7 +48,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
-@Import({TaskTestSetup.class})
+@Import({TaskTestSetup.class, SessionTestSetup.class})
 @SpringBootTest
 public class TaskControllerIntegrationTest {
 
@@ -97,6 +99,10 @@ public class TaskControllerIntegrationTest {
 
     @Autowired
     private TaskTestSetup taskTestSetup;
+
+    @Autowired
+    private SessionTestSetup sessionTestSetup;
+
     private final List<Session> sessions = new ArrayList<>();
 
     @Container
@@ -228,15 +234,11 @@ public class TaskControllerIntegrationTest {
         );
 
         taskTestSetup.saveResult(request);
-        AttemptResults savedAttemptResult = taskTestSetup.getSavedAttemptResultByAttemptId(attempt11.getId());
-
+        AttemptDto attemptById = sessionTestSetup.getAttemptById(attempt11.getId());
+        AttemptResultDto savedAttemptResult = attemptById.attemptResultDto();
         assertNotNull(savedAttemptResult);
-        assertEquals(attempt11.getId(), savedAttemptResult.getAttempt().getId());
-        assertEquals(1200L, savedAttemptResult.getDuration());
-        assertEquals("Some error details", savedAttemptResult.getErrorDetails());
-
         assertNotNull(savedAttemptResult.getTestResultsJson());
-        assertEquals(testResults.size(), savedAttemptResult.getTestResultsJson().size());
+        checkAttemptResult(savedAttemptResult, taskTestSetup.getAttemptResultDto("attempt/attempt_results.json"));
     }
 
     @Test
@@ -251,7 +253,6 @@ public class TaskControllerIntegrationTest {
         );
         taskTestSetup.saveResultInvalidRequest(invalidRequest);
     }
-
 
     private void checkAvailableTaskResponse(AvailableTaskResponse actual, AvailableTaskResponse expected) {
         assertThat(actual)
@@ -339,5 +340,11 @@ public class TaskControllerIntegrationTest {
             throw new RuntimeException();
         }
         return script;
+    }
+
+    private void checkAttemptResult(AttemptResultDto actual, AttemptResultDto expected) {
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 }

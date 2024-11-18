@@ -10,7 +10,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TestResultsDto implements Serializable {
-    private boolean isPassed;
+    private Boolean isPassed;
     private String description;
     private long memoryUsed;
     private long duration;

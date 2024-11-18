@@ -1,7 +1,6 @@
 package ru.nsu.ostest.adapter.in.rest.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
 import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
@@ -21,9 +20,8 @@ public class TaskController {
     }
 
     @PostMapping("/result")
-    public ResponseEntity<AttemptResultSetResponse> saveResult(@RequestBody AttemptResultSetRequest request) {
-        AttemptResultSetResponse response = attemptService.saveAttemptResult(request);
-        return ResponseEntity.ok(response);
+    public AttemptResultSetResponse saveResult(@RequestBody AttemptResultSetRequest request) {
+        return attemptService.saveAttemptResult(request);
 
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import ru.nsu.ostest.adapter.in.rest.model.session.AttemptResultDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
 import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
 import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetResponse;
@@ -63,10 +64,8 @@ public class TaskTestSetup {
                 )
                 .andExpect(status().isOk())
                 .andReturn();
-
         var taskResults =
                 objectMapper.readValue(result.getResponse().getContentAsString(), AttemptResultSetResponse.class);
-
         return taskResults;
     }
 
@@ -85,6 +84,12 @@ public class TaskTestSetup {
     public AvailableTaskResponse getAvailableTaskResponse(String path) throws IOException {
         return objectMapper.readValue(
                 Resources.toString(Resources.getResource(path), StandardCharsets.UTF_8), AvailableTaskResponse.class
+        );
+    }
+
+    public AttemptResultDto getAttemptResultDto(String path) throws IOException {
+        return objectMapper.readValue(
+                Resources.toString(Resources.getResource(path), StandardCharsets.UTF_8), AttemptResultDto.class
         );
     }
 }

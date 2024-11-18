@@ -10,18 +10,19 @@ import java.util.List;
 
 @Entity
 @Data
-
 public class AttemptResults {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    private Attempt attempt;
-
     @JdbcTypeCode(SqlTypes.JSON)
     private List<TestResults> testResultsJson;
+
     private long duration;
+
     private String errorDetails;
+
+    @OneToOne(mappedBy = "attemptResults", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private Attempt attempt;
 
 }

@@ -24,11 +24,8 @@ import java.util.UUID;
 @Service
 @AllArgsConstructor
 public class AttemptService {
-
     private final AttemptRepository attemptRepository;
-
     private final AttemptResultsRepository attemptResultsRepository;
-
     private final AttemptMapper attemptMapper;
     private final SessionRepository sessionRepository;
 
@@ -66,11 +63,10 @@ public class AttemptService {
         Attempt attempt = findAttemptById(request.getId());
         AttemptStatus status = determineStatus(request);
         attempt.setStatus(status);
-        attemptRepository.save(attempt);
-
         AttemptResults attemptResults = attemptMapper.attemptResultSetRequestToAttemptResults(request, attempt);
-        attemptResultsRepository.save(attemptResults);
-
+        attempt.setAttemptResults(attemptResults);
+        attemptResults.setAttempt(attempt);
+        attemptRepository.save(attempt);
         return new AttemptResultSetResponse(attempt.getId());
     }
 

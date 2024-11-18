@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class TestResults {
-    private boolean isPassed;
+    private Boolean isPassed;
     private String description;
     private long memoryUsed;
     private long duration;

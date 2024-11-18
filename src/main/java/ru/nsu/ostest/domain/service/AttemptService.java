@@ -13,6 +13,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.AttemptResults;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.domain.common.enums.AttemptStatus;
+import ru.nsu.ostest.domain.common.enums.SessionStatus;
 import ru.nsu.ostest.domain.exception.validation.AttemptNotFoundException;
 import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
 import ru.nsu.ostest.domain.repository.AttemptRepository;
@@ -51,18 +52,27 @@ public class AttemptService {
         return attemptMapper.toAvailableTaskResponse(attempt);
     }
 
-    private AttemptStatus determineStatus(AttemptResultSetRequest request) {
+    private AttemptStatus determineAttemptStatus(AttemptResultSetRequest request) {
         if (Boolean.TRUE.equals(request.getIsError())) {
             return AttemptStatus.ERROR;
         }
         return Boolean.TRUE.equals(request.getIsPassed()) ? AttemptStatus.SUCCESS : AttemptStatus.FAILURE;
     }
 
+    private SessionStatus determineSessionStatus(AttemptResultSetRequest request) {
+        if (Boolean.TRUE.equals(request.getIsError())) {
+            return SessionStatus.ERROR;
+        }
+        return Boolean.TRUE.equals(request.getIsPassed()) ? SessionStatus.SUCCESS : SessionStatus.FAILURE;
+    }
+
     @Transactional
     public AttemptResultSetResponse saveAttemptResult(AttemptResultSetRequest request) {
         Attempt attempt = findAttemptById(request.getId());
-        AttemptStatus status = determineStatus(request);
-        attempt.setStatus(status);
+        AttemptStatus attemptStatus = determineAttemptStatus(request);
+        SessionStatus sessionStatus = determineSessionStatus(request);
+        attempt.setStatus(attemptStatus);
+        attempt.getSession().setStatus(sessionStatus);
         AttemptResults attemptResults = attemptMapper.attemptResultSetRequestToAttemptResults(request, attempt);
         attempt.setAttemptResults(attemptResults);
         attemptResults.setAttempt(attempt);

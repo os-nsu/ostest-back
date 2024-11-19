@@ -3,10 +3,7 @@ package ru.nsu.ostest.adapter.mapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import ru.nsu.ostest.adapter.in.rest.model.test.ShortTestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.*;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.Test;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 
@@ -36,7 +33,7 @@ public interface TestMapper {
     @Mapping(source = "testLaboratoryLink.test.description", target = "description")
     @Mapping(source = "testLaboratoryLink.test.code", target = "code")
     @Mapping(source = "testLaboratoryLink.test.category", target = "category")
-    TestDto fromTestLaboratoryLink(TestLaboratoryLink testLaboratoryLink);
+    LaboratoryTestDto fromTestLaboratoryLink(TestLaboratoryLink testLaboratoryLink);
 
     default String testLaboratoryLinkToCode(TestLaboratoryLink testLaboratoryLink) {
         return testLaboratoryLink.getTest().getCode();

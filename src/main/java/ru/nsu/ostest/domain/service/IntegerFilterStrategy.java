@@ -14,7 +14,6 @@ public class IntegerFilterStrategy<T> implements FilterStrategy<T> {
         Integer intValue = Integer.valueOf(filter.value());
 
         return (root, query, criteriaBuilder) -> {
-            @SuppressWarnings("unchecked")
             Path<Integer> path = (Path<Integer>) pathResolver.resolve(root, filter.fieldName());
             return criteriaBuilder.equal(path, intValue);
         };

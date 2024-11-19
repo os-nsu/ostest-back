@@ -30,33 +30,33 @@ public class FilterConfig {
     }
 
     @Bean
-    @Qualifier("userFilterStrategyFactory")
+    @Qualifier(BeanNamesConfig.USER_FILTER_STRATEGY_PROVIDER)
     @Primary
-    public FilterStrategyFactory<User> userFilterStrategyFactory(PathResolver<User> userPathResolver) {
-        FilterStrategyFactory<User> factory = new FilterStrategyFactory<>();
+    public FilterStrategyProvider<User> userFilterStrategyProvider(PathResolver<User> userPathResolver) {
+        FilterStrategyProvider<User> factory = new FilterStrategyProvider<>();
         factory.registerStrategy("string", new StringFilterStrategy<>(userPathResolver));
         factory.registerStrategy("integer", new IntegerFilterStrategy<>(userPathResolver));
         return factory;
     }
 
     @Bean
-    @Qualifier("userFilterService")
-    public FilterService<User> userFilterService(@Qualifier("userFilterStrategyFactory") FilterStrategyFactory<User> userFilterStrategyFactory) {
-        return new FilterServiceImpl<>(userFilterStrategyFactory);
+    @Qualifier(BeanNamesConfig.USER_FILTER_SERVICE)
+    public FilterService<User> userFilterService(@Qualifier(BeanNamesConfig.USER_FILTER_STRATEGY_PROVIDER) FilterStrategyProvider<User> userFilterStrategyProvider) {
+        return new FilterServiceImpl<>(userFilterStrategyProvider);
     }
 
     @Bean
-    @Qualifier("groupFilterStrategyFactory")
-    public FilterStrategyFactory<Group> groupFilterStrategyFactory(PathResolver<Group> groupPathResolver) {
-        FilterStrategyFactory<Group> factory = new FilterStrategyFactory<>();
+    @Qualifier(BeanNamesConfig.GROUP_FILTER_STRATEGY_PROVIDER)
+    public FilterStrategyProvider<Group> groupFilterStrategyProvider(PathResolver<Group> groupPathResolver) {
+        FilterStrategyProvider<Group> factory = new FilterStrategyProvider<>();
         factory.registerStrategy("string", new StringFilterStrategy<>(groupPathResolver));
         factory.registerStrategy("integer", new IntegerFilterStrategy<>(groupPathResolver));
         return factory;
     }
 
     @Bean
-    @Qualifier("groupFilterService")
-    public FilterService<Group> groupFilterService(@Qualifier("groupFilterStrategyFactory") FilterStrategyFactory<Group> groupFilterStrategyFactory) {
-        return new FilterServiceImpl<>(groupFilterStrategyFactory);
+    @Qualifier(BeanNamesConfig.GROUP_FILTER_SERVICE)
+    public FilterService<Group> groupFilterService(@Qualifier(BeanNamesConfig.GROUP_FILTER_STRATEGY_PROVIDER) FilterStrategyProvider<Group> groupFilterStrategyProvider) {
+        return new FilterServiceImpl<>(groupFilterStrategyProvider);
     }
 }

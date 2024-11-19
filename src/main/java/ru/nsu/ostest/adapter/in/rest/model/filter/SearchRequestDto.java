@@ -6,7 +6,7 @@ public record SearchRequestDto(List<Filter> filters,
                                Pagination pagination) {
     public SearchRequestDto {
         if (pagination == null) {
-            pagination = new Pagination(1, 20, null, null);
+            pagination = Pagination.getDefaultInstance();
         }
     }
 }

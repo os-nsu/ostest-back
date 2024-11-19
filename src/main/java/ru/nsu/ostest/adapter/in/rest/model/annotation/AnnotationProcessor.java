@@ -6,24 +6,9 @@ import ru.nsu.ostest.adapter.in.rest.model.filter.FilterDescriptor;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.List;
 
 public class AnnotationProcessor {
-    public static <T> List<FieldDescriptor> getFieldDescriptors(Class<T> clazz) {
-        List<FieldDescriptor> descriptors = new ArrayList<>();
-        processClassFields(clazz, descriptors);
-        return descriptors;
-    }
-
-    public static <T> List<FilterDescriptor> getFilterDescriptors(Class<T> clazz) {
-        List<FilterDescriptor> filters = new ArrayList<>();
-        processClassFilters(clazz, filters);
-
-        return filters;
-    }
-
-
     public static void processClassFields(Class<?> clazz, List<FieldDescriptor> descriptors) {
         Field[] fields = clazz.getDeclaredFields();
 

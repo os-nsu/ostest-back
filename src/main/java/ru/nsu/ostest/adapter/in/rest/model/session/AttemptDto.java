@@ -10,6 +10,6 @@ public record AttemptDto(
         String branch,
         Long sequenceOrder,
         AttemptStatus status,
-        AttemptResultDto attemptResultDto
+        AttemptResultDto attemptResult
 ) {
 }

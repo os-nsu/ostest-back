@@ -77,9 +77,9 @@ public class AttemptService {
         SessionStatus sessionStatus = determineSessionStatus(request);
         attempt.setStatus(attemptStatus);
         attempt.getSession().setStatus(sessionStatus);
+
         AttemptResults attemptResults = attemptMapper.attemptResultSetRequestToAttemptResults(request, attempt);
         attempt.setAttemptResults(attemptResults);
-        attemptResults.setAttempt(attempt);
         attemptRepository.save(attempt);
         return new AttemptResultSetResponse(attempt.getId());
     }

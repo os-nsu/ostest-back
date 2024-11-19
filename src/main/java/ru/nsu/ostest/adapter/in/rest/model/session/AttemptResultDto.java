@@ -10,5 +10,4 @@ public class AttemptResultDto {
     private List<TestResultsDto> testResultsJson;
     private long duration;
     private String errorDetails;
-
 }

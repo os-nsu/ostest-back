@@ -26,7 +26,7 @@ public interface AttemptMapper {
 
     Attempt makeAttemptDtoToAttempt(MakeAttemptDto makeAttemptDto);
 
-    @Mapping(target = "attemptResultDto", source = "attempt.attemptResults")
+    @Mapping(target = "attemptResult", source = "attempt.attemptResults")
     AttemptDto attemptToAttemptDto(Attempt attempt);
 
     AttemptShortDto attemptToAttemptShortDto(Attempt attempt);

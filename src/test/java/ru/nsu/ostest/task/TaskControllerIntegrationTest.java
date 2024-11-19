@@ -235,7 +235,7 @@ public class TaskControllerIntegrationTest {
 
         taskTestSetup.saveResult(request);
         AttemptDto attemptById = sessionTestSetup.getAttemptById(attempt11.getId());
-        AttemptResultDto savedAttemptResult = attemptById.attemptResultDto();
+        AttemptResultDto savedAttemptResult = attemptById.attemptResult();
         assertNotNull(savedAttemptResult);
         assertNotNull(savedAttemptResult.getTestResultsJson());
         checkAttemptResult(savedAttemptResult, taskTestSetup.getAttemptResultDto("attempt/attempt_results.json"));

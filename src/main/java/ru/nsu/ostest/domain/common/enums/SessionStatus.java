@@ -5,6 +5,5 @@ public enum SessionStatus {
     IN_PROGRESS,
     DONE,
     SUCCESS,
-    FAILURE,
-    ERROR
+    FAILURE
 }

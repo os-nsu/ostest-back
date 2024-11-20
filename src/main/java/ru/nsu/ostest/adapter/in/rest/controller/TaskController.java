@@ -22,6 +22,5 @@ public class TaskController {
     @PostMapping("/result")
     public AttemptResultSetResponse saveResult(@RequestBody AttemptResultSetRequest request) {
         return attemptService.saveAttemptResult(request);
-
     }
 }

@@ -12,13 +12,11 @@ import ru.nsu.ostest.adapter.in.rest.model.session.AttemptResultDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
 import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
 import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetResponse;
-import ru.nsu.ostest.adapter.out.persistence.entity.session.AttemptResults;
 import ru.nsu.ostest.domain.common.enums.AvailabilityStatus;
 import ru.nsu.ostest.domain.repository.AttemptRepository;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -59,14 +57,10 @@ public class TaskTestSetup {
     public AttemptResultSetResponse saveResult(AttemptResultSetRequest request) throws Exception {
         var result = mockMvc.perform(post("/api/task/result")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)
-                        )
-                )
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
                 .andReturn();
-        var taskResults =
-                objectMapper.readValue(result.getResponse().getContentAsString(), AttemptResultSetResponse.class);
-        return taskResults;
+        return objectMapper.readValue(result.getResponse().getContentAsString(), AttemptResultSetResponse.class);
     }
 
     public void saveResultInvalidRequest(AttemptResultSetRequest invalidRequest) throws Exception {
@@ -76,11 +70,6 @@ public class TaskTestSetup {
                 .andExpect(status().isBadRequest());
     }
 
-    public AttemptResults getSavedAttemptResultByAttemptId(UUID attemptId) {
-        return entityManager.createQuery("SELECT ar FROM AttemptResults ar WHERE ar.attempt.id = :attemptId", AttemptResults.class)
-                .setParameter("attemptId", attemptId)
-                .getSingleResult();
-    }
     public AvailableTaskResponse getAvailableTaskResponse(String path) throws IOException {
         return objectMapper.readValue(
                 Resources.toString(Resources.getResource(path), StandardCharsets.UTF_8), AvailableTaskResponse.class

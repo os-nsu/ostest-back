@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class AttemptResultDto {
-    private List<TestResultsDto> testResultsJson;
+    private List<TestResultsDto> testResults;
     private long duration;
     private String errorDetails;
 }

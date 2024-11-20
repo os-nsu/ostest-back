@@ -64,9 +64,7 @@ public class AttemptService {
     }
 
     private SessionStatus determineSessionStatus(AttemptResultSetRequest request) {
-        if (Boolean.TRUE.equals(request.getIsError())) {
-            return SessionStatus.ERROR;
-        }
+
         return Boolean.TRUE.equals(request.getIsPassed()) ? SessionStatus.SUCCESS : SessionStatus.FAILURE;
     }
 

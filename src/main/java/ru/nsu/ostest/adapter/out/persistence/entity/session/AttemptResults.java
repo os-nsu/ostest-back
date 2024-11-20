@@ -16,7 +16,7 @@ public class AttemptResults {
     private Long id;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    private List<TestResults> testResultsJson;
+    private List<TestResults> testResults;
 
     private long duration;
 

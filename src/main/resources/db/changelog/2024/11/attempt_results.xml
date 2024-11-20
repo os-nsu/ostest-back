@@ -11,7 +11,7 @@
                 <constraints nullable="false" primaryKey="true"
                              primaryKeyName="pk_attemptresults"/>
             </column>
-            <column name="test_results_json" type="jsonb"/>
+            <column name="test_results" type="jsonb"/>
             <column name="duration" type="BIGINT">
                 <constraints nullable="false"/>
             </column>

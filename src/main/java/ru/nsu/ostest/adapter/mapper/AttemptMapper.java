@@ -35,8 +35,6 @@ public interface AttemptMapper {
     @Mapping(target = "errorDetails", source = "request.errorDetails")
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "attempt", source = "attempt")
-    @Mapping(target = "testResultsJson", source = "request.testResults")
+    @Mapping(target = "testResults", source = "request.testResults")
     AttemptResults attemptResultSetRequestToAttemptResults(AttemptResultSetRequest request, Attempt attempt);
-
-
 }

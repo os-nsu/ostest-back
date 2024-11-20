@@ -37,6 +37,8 @@ public class GroupService {
     private final UserRepository userRepository;
     @Qualifier(BeanNamesConfig.GROUP_FILTER_SERVICE)
     private final FilterService<Group> filterService;
+    private final MetaProvider<Group> groupProvider;
+    private final GroupMetaProvider groupMetaProvider;
 
     public Group findGroupByName(String name) {
         return groupRepository.findByGroupName(name);
@@ -149,8 +151,8 @@ public class GroupService {
         return new GroupResponse(
                 createPagination(groupPage),
                 "Groups",
-                MetaProvider.getFieldDescriptors(Group.class),
-                MetaProvider.getFilterDescriptors(Group.class),
+                groupMetaProvider.getFieldDescriptors(),
+                groupMetaProvider.getFilterDescriptors(),
                 convertToGroupRows(groupPage.getContent())
         );
     }

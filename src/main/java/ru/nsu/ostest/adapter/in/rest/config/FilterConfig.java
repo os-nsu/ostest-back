@@ -59,4 +59,14 @@ public class FilterConfig {
     public FilterService<Group> groupFilterService(@Qualifier(BeanNamesConfig.GROUP_FILTER_STRATEGY_PROVIDER) FilterStrategyProvider<Group> groupFilterStrategyProvider) {
         return new FilterServiceImpl<>(groupFilterStrategyProvider);
     }
+
+    @Bean
+    public GroupMetaProvider groupMetaProvider() {
+        return new GroupMetaProvider();
+    }
+
+    @Bean
+    public UserMetaProvider userMetaProvider() {
+        return new UserMetaProvider();
+    }
 }

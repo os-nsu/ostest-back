@@ -47,8 +47,8 @@ public class UserService {
     @Qualifier(BeanNamesConfig.USER_FILTER_SERVICE)
     private final FilterService<User> filterService;
     private final UserUpdateMapper userUpdateMapper;
+    private final MetaProvider<User> userProvider;
     private JsonNullableMapper jsonNullableMapper;
-
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
@@ -166,16 +166,14 @@ public class UserService {
         return new UserResponse(
                 createPagination(userPage),
                 "Users",
-                MetaProvider.getFieldDescriptors(User.class),
-                MetaProvider.getFilterDescriptors(User.class),
+                userProvider.getFieldDescriptors(),
+                userProvider.getFilterDescriptors(),
                 convertToUserRows(userPage.getContent())
         );
     }
 
-
     private List<UserDto> convertToUserRows(List<User> users) {
         return users.stream().map(userMapper::userToUserDto).toList();
     }
-
 
 }

@@ -7,6 +7,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.session.*;
+import ru.nsu.ostest.domain.service.AttemptService;
 import ru.nsu.ostest.domain.service.SessionService;
 
 import java.util.UUID;
@@ -17,6 +18,7 @@ import java.util.UUID;
 public class SessionController {
 
     private final SessionService sessionService;
+    private final AttemptService attemptService;
 
     @PostMapping("/start")
     @ResponseStatus(HttpStatus.CREATED)
@@ -43,11 +45,11 @@ public class SessionController {
     @PostMapping("/{sessionId}/attempt")
     @ResponseStatus(HttpStatus.CREATED)
     public AttemptDto makeAttempt(@RequestBody MakeAttemptDto makeAttemptDto, @PathVariable Long sessionId) {
-        return sessionService.makeAttempt(makeAttemptDto, sessionId);
+        return attemptService.makeAttempt(makeAttemptDto, sessionId);
     }
 
     @GetMapping("/attempt/{attemptId}")
     public AttemptDto getAttempt(@PathVariable UUID attemptId) {
-        return sessionService.findAttemptById(attemptId);
+        return attemptService.getAttemptById(attemptId);
     }
 }

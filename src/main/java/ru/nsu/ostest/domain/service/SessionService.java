@@ -23,6 +23,7 @@ import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service

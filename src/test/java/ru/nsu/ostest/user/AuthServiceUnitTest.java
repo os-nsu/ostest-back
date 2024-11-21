@@ -8,7 +8,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.LogoutRequest;
 import ru.nsu.ostest.security.exception.InvalidJwtException;
 import ru.nsu.ostest.security.impl.AuthServiceImpl;
 import ru.nsu.ostest.security.impl.BlacklistService;

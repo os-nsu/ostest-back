@@ -13,8 +13,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.TransactionalHelper;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.*;
-import ru.nsu.ostest.adapter.in.rest.model.user.RoleEnum;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleEnum;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
@@ -52,6 +52,8 @@ public class SessionControllerIntegrationTest {
     private static final String BRANCH_NAME = "Branch";
     private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
     private static final String SESSION_USER1_LAB1_DTO = "session/session_user1_lab1.json";
+    private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
+    private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
     private static final String SESSION_SHORT_USER1_LAB1_DTO = "session/session_short_user1_lab1.json";
     private static final String SESSION_SHORT_USER2_LAB2_DTO = "session/session_short_user2_lab2.json";
@@ -294,7 +296,7 @@ public class SessionControllerIntegrationTest {
 
     private Group createGroup(String name) {
         Group group = new Group();
-        group.setName(name);
+        group.setGroupName(name);
         return groupRepository.save(group);
     }
 

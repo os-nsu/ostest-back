@@ -4,15 +4,16 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
-import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.group.GroupFullDto;
+import ru.nsu.ostest.adapter.in.rest.config.BeanNamesConfig;
+import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.*;
 import ru.nsu.ostest.adapter.mapper.GroupMapper;
-import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.exception.validation.DuplicateGroupNameException;
@@ -24,24 +25,28 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.nsu.ostest.adapter.in.rest.model.filter.Pagination.createPagination;
+
 
 @Slf4j
 @AllArgsConstructor
 @Service
 public class GroupService {
-
     private final GroupRepository groupRepository;
     private final GroupMapper groupMapper;
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
+    @Qualifier(BeanNamesConfig.GROUP_FILTER_SERVICE)
+    private final FilterService<Group> filterService;
+    private final MetaProvider<Group> groupProvider;
+    private final GroupMetaProvider groupMetaProvider;
 
     public Group findGroupByName(String name) {
-        return groupRepository.findByName(name);
+        return groupRepository.findByGroupName(name);
     }
 
     @Transactional
     public GroupDto create(GroupCreationRequestDto request) {
-        checkIfDuplicatedName(request.name());
+        checkIfDuplicatedName(request.groupName());
 
         Group group = groupMapper.groupCreationRequestDtoToGroup(request);
 
@@ -116,14 +121,14 @@ public class GroupService {
     }
 
     private void checkIfDuplicatedName(String name, Long exceptedId) {
-        Group group = groupRepository.findByName(name);
+        Group group = groupRepository.findByGroupName(name);
         if (group != null && !group.getId().equals(exceptedId)) {
             throw DuplicateGroupNameException.of(name);
         }
     }
 
     private void checkIfDuplicatedName(String name) {
-        if (groupRepository.findByName(name) != null) {
+        if (groupRepository.findByGroupName(name) != null) {
             throw DuplicateGroupNameException.of(name);
         }
     }
@@ -133,4 +138,26 @@ public class GroupService {
                 () -> GroupNotFoundException.notFoundGroupWithId(id));
     }
 
+    public GroupResponse getGroups(SearchRequestDto groupRequest) {
+        Pageable pageable = PageRequest.of(groupRequest.pagination().getIndex() - 1, groupRequest.pagination().getPageSize());
+
+        Specification<Group> spec = filterService.createSpecification(groupRequest.filters());
+        Page<Group> groupPage = groupRepository.findAll(spec, pageable);
+
+        return buildGroupResponse(groupPage);
+    }
+
+    public GroupResponse buildGroupResponse(Page<Group> groupPage) {
+        return new GroupResponse(
+                createPagination(groupPage),
+                "Groups",
+                groupMetaProvider.getFieldDescriptors(),
+                groupMetaProvider.getFilterDescriptors(),
+                convertToGroupRows(groupPage.getContent())
+        );
+    }
+
+    private List<GroupDto> convertToGroupRows(List<Group> groups) {
+        return groups.stream().map(groupMapper::groupToGroupDto).toList();
+    }
 }

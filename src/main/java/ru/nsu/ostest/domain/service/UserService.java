@@ -2,27 +2,38 @@ package ru.nsu.ostest.domain.service;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.config.BeanNamesConfig;
+import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
 import ru.nsu.ostest.adapter.mapper.JsonNullableMapper;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.mapper.UserUpdateMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserPassword;
-import ru.nsu.ostest.domain.exception.validation.DuplicateUserNameException;
 import ru.nsu.ostest.domain.exception.NoRightsException;
+import ru.nsu.ostest.domain.exception.validation.DuplicateUserNameException;
 import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.impl.AuthServiceCommon;
 import ru.nsu.ostest.security.utils.PasswordGenerator;
 
+import java.util.List;
 import java.util.Set;
+
+import static ru.nsu.ostest.adapter.in.rest.model.filter.Pagination.createPagination;
 
 @Slf4j
 @AllArgsConstructor
@@ -33,9 +44,11 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
     private final GroupService groupService;
     private final RoleService roleService;
+    @Qualifier(BeanNamesConfig.USER_FILTER_SERVICE)
+    private final FilterService<User> filterService;
     private final UserUpdateMapper userUpdateMapper;
+    private final MetaProvider<User> userProvider;
     private JsonNullableMapper jsonNullableMapper;
-
 
     public User findUserById(Long id) {
         return userRepository.findById(id).orElseThrow(
@@ -115,7 +128,6 @@ public class UserService {
         }
     }
 
-
     private void updateGroupIfNeeded(UserEditionRequestDto userEditDto, User user) {
         if (jsonNullableMapper.isPresentAndNotNull(userEditDto.groupId())) {
             Group updatedGroup = groupService.findGroupById(userEditDto.groupId().get());
@@ -139,4 +151,29 @@ public class UserService {
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
+
+    public UserResponse getUsers(SearchRequestDto userRequest) {
+        Pageable pageable = PageRequest.of(userRequest.pagination().getIndex() - 1, userRequest.pagination().getPageSize());
+
+        Specification<User> spec = filterService.createSpecification(userRequest.filters());
+        Page<User> userPage = userRepository.findAll(spec, pageable);
+
+        return buildUserResponse(userPage);
+
+    }
+
+    public UserResponse buildUserResponse(Page<User> userPage) {
+        return new UserResponse(
+                createPagination(userPage),
+                "Users",
+                userProvider.getFieldDescriptors(),
+                userProvider.getFilterDescriptors(),
+                convertToUserRows(userPage.getContent())
+        );
+    }
+
+    private List<UserDto> convertToUserRows(List<User> users) {
+        return users.stream().map(userMapper::userToUserDto).toList();
+    }
+
 }

@@ -9,7 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import ru.nsu.ostest.adapter.in.rest.model.user.*;
+import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.LogoutRequest;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
@@ -158,6 +165,13 @@ public class UserTestSetup {
                 .andExpect(status().isUnauthorized());
     }
 
+    public UserResponse searchUserReturnsUserResponse(SearchRequestDto userSearchRequestDto) throws Exception {
+        var result = mockMvc.perform(post(PATH + "/search")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(userSearchRequestDto)))
+                .andExpect(status().isOk()).andReturn();
+        return objectMapper.readValue(result.getResponse().getContentAsString(), UserResponse.class);
+    }
     public void logoutUser(LogoutRequest accessAndRefreshTokens) throws Exception {
         mockMvc.perform(post("/api/v1/logout")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -165,5 +179,4 @@ public class UserTestSetup {
                 .andExpect(status().isOk());
 
     }
-
 }

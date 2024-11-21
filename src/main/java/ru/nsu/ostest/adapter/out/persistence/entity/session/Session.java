@@ -8,6 +8,7 @@ import lombok.ToString;
 import ru.nsu.ostest.adapter.out.persistence.entity.laboratory.Laboratory;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.common.enums.AttemptStatus;
+import ru.nsu.ostest.domain.common.enums.SessionStatus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,9 @@ public class Session {
     @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Enumerated(EnumType.STRING)
+    private SessionStatus status;
 
     @ManyToOne(cascade = {CascadeType.PERSIST})
     @JoinColumn(name = "student_id")

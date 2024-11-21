@@ -14,11 +14,15 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.TransactionalHelper;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.AttemptDto;
+import ru.nsu.ostest.adapter.in.rest.model.session.AttemptResultDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
 import ru.nsu.ostest.adapter.in.rest.model.session.MakeAttemptDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleEnum;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestResultsDto;
 import ru.nsu.ostest.adapter.mapper.AttemptMapper;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.mapper.TestMapper;
@@ -30,6 +34,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
 import ru.nsu.ostest.domain.repository.*;
+import ru.nsu.ostest.session.SessionTestSetup;
 
 import java.io.IOException;
 import java.time.OffsetDateTime;
@@ -38,11 +43,12 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
-@Import({TaskTestSetup.class})
+@Import({TaskTestSetup.class, SessionTestSetup.class})
 @SpringBootTest
 public class TaskControllerIntegrationTest {
 
@@ -93,6 +99,10 @@ public class TaskControllerIntegrationTest {
 
     @Autowired
     private TaskTestSetup taskTestSetup;
+
+    @Autowired
+    private SessionTestSetup sessionTestSetup;
+
     private final List<Session> sessions = new ArrayList<>();
 
     @Container
@@ -110,6 +120,7 @@ public class TaskControllerIntegrationTest {
     }
 
     void initInTransaction() {
+        testRepository.deleteAll();
         laboratoryRepository.deleteAll();
         userRepository.deleteAll();
         groupRepository.deleteAll();
@@ -202,6 +213,47 @@ public class TaskControllerIntegrationTest {
                 taskTestSetup.getAvailableTaskResponse("task/unavailable_task.json"));
     }
 
+    @Test
+    void saveResults_ShouldReturnOk_WhenValidRequest() throws Exception {
+        Session session11 = sessions.getFirst();
+        Attempt attempt11 = makeAttempt(1, session11);
+
+        AvailableTaskResponse availableTaskResponse = taskTestSetup.getAvailableTask();
+        List<TestResultsDto> testResults = List.of(
+                new TestResultsDto(true, "Test 1 Passed", 1000, 500, "Test 1"),
+                new TestResultsDto(false, "Test 2 Failed", 1200, 700, "Test 2")
+        );
+
+        AttemptResultSetRequest request = new AttemptResultSetRequest(
+                availableTaskResponse.id(),
+                true,
+                1200L,
+                testResults,
+                false,
+                "Some error details"
+        );
+
+        taskTestSetup.saveResult(request);
+        AttemptDto attemptById = sessionTestSetup.getAttemptById(attempt11.getId());
+        AttemptResultDto savedAttemptResult = attemptById.attemptResult();
+        assertNotNull(savedAttemptResult);
+        assertNotNull(savedAttemptResult.getTestResults());
+        checkAttemptResult(savedAttemptResult, taskTestSetup.getAttemptResultDto("attempt/attempt_results.json"));
+    }
+
+    @Test
+    void saveAttemptResult_ShouldReturnBadRequest_WhenInvalidRequest() throws Exception {
+        AttemptResultSetRequest invalidRequest = new AttemptResultSetRequest(
+                null,
+                null,
+                -1L,
+                null,
+                null,
+                null
+        );
+        taskTestSetup.saveResultInvalidRequest(invalidRequest);
+    }
+
     private void checkAvailableTaskResponse(AvailableTaskResponse actual, AvailableTaskResponse expected) {
         assertThat(actual)
                 .usingRecursiveComparison()
@@ -288,5 +340,11 @@ public class TaskControllerIntegrationTest {
             throw new RuntimeException();
         }
         return script;
+    }
+
+    private void checkAttemptResult(AttemptResultDto actual, AttemptResultDto expected) {
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .isEqualTo(expected);
     }
 }

@@ -1,0 +1,20 @@
+{
+  "testResults": [
+    {
+      "isPassed": true,
+      "description": "Test 1 Passed",
+      "memoryUsed": 1000,
+      "duration": 500,
+      "name": "Test 1"
+    },
+    {
+      "isPassed": false,
+      "description": "Test 2 Failed",
+      "memoryUsed": 1200,
+      "duration": 700,
+      "name": "Test 2"
+    }
+  ],
+  "duration": 1200,
+  "errorDetails": "Some error details"
+}

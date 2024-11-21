@@ -55,6 +55,8 @@ public class SessionControllerIntegrationTest {
     private static final String SESSION_USER2_LAB1_DTO = "session/session_user2_lab1.json";
     private static final String SESSION_USER1_LAB2_DTO = "session/session_user1_lab2.json";
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
+    private static final String SESSION_SHORT_USER1_LAB1_DTO = "session/session_short_user1_lab1.json";
+    private static final String SESSION_SHORT_USER2_LAB2_DTO = "session/session_short_user2_lab2.json";
     private static final String ATTEMPT1_DTO = "session/attempt1.json";
     private static final String ATTEMPT2_DTO = "session/attempt2.json";
 
@@ -69,6 +71,9 @@ public class SessionControllerIntegrationTest {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private SessionTestMapper sessionTestMapper;
 
     @Autowired
     private LaboratoryRepository laboratoryRepository;
@@ -218,23 +223,30 @@ public class SessionControllerIntegrationTest {
         checkSession(sessionDto1, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
         checkSession(sessionDto2, sessionTestSetup.getSessionDto(SESSION_USER2_LAB2_DTO));
 
+        var makeAttemptDto = new MakeAttemptDto(REPOSITORY_URL, BRANCH_NAME, laboratory1.getId());
+        sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto1.id());
+        sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto1.id());
+
+        makeAttemptDto = new MakeAttemptDto(REPOSITORY_URL, BRANCH_NAME, laboratory2.getId());
+        sessionTestSetup.makeAttempt(makeAttemptDto, sessionDto2.id());
+
         long session1Id = sessionDto1.id();
         long session2Id = sessionDto2.id();
 
-        sessionDto1 = sessionTestSetup.getLabSessionForStudent(
+        var sessionShortDto1 = sessionTestSetup.getLabSessionForStudent(
                 new GetLabSessionFromStudentRequestDto(student1.getId(), laboratory1.getId()));
-        sessionDto2 = sessionTestSetup.getLabSessionForStudent(
+        var sessionShortDto2 = sessionTestSetup.getLabSessionForStudent(
                 new GetLabSessionFromStudentRequestDto(student2.getId(), laboratory2.getId()));
 
-        assertEquals(session1Id, sessionDto1.id());
-        assertEquals(session2Id, sessionDto2.id());
+        assertEquals(session1Id, sessionShortDto1.id());
+        assertEquals(session2Id, sessionShortDto2.id());
         assertEquals(laboratory1.getId(), sessionDto1.laboratory().id());
         assertEquals(laboratory2.getId(), sessionDto2.laboratory().id());
         assertEquals(student1.getId(), sessionDto1.student().id());
         assertEquals(student2.getId(), sessionDto2.student().id());
 
-        checkSession(sessionDto1, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
-        checkSession(sessionDto2, sessionTestSetup.getSessionDto(SESSION_USER2_LAB2_DTO));
+        checkSessionShort(sessionShortDto1, sessionTestSetup.getSessionShortDto(SESSION_SHORT_USER1_LAB1_DTO));
+        checkSessionShort(sessionShortDto2, sessionTestSetup.getSessionShortDto(SESSION_SHORT_USER2_LAB2_DTO));
     }
 
     @Test
@@ -262,13 +274,13 @@ public class SessionControllerIntegrationTest {
         var user1Sessions = sessionTestSetup.getUserSessions(student1.getId());
         var user2Sessions = sessionTestSetup.getUserSessions(student2.getId());
 
-        assertEquals(2, user1Sessions.size());
-        assertEquals(2, user2Sessions.size());
+        assertEquals(2, user1Sessions.getContent().size());
+        assertEquals(2, user2Sessions.getContent().size());
 
-        assertTrue(user1Sessions.contains(sessionDto11));
-        assertTrue(user1Sessions.contains(sessionDto12));
-        assertTrue(user2Sessions.contains(sessionDto21));
-        assertTrue(user2Sessions.contains(sessionDto22));
+        assertTrue(user1Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto11)));
+        assertTrue(user1Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto12)));
+        assertTrue(user2Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto21)));
+        assertTrue(user2Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto22)));
     }
 
     private Laboratory createLaboratory(LaboratoryCreationRequestDto laboratoryCreationRequestDto) {
@@ -303,6 +315,14 @@ public class SessionControllerIntegrationTest {
     }
 
     private void checkSession(SessionDto actual, SessionDto expected) {
+        assertThat(actual)
+                .usingRecursiveComparison()
+                .ignoringFields("id")
+                .ignoringFieldsMatchingRegexes(".*\\.id")
+                .isEqualTo(expected);
+    }
+
+    private void checkSessionShort(SessionShortDto actual, SessionShortDto expected) {
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("id")

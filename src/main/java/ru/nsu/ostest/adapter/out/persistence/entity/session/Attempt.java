@@ -6,10 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.type.SqlTypes;
 import ru.nsu.ostest.domain.common.enums.AttemptStatus;
-import ru.nsu.ostest.domain.common.model.TestResults;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -37,9 +34,6 @@ public class Attempt {
 
     private String branch;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    private TestResults testResults;
-
     @ManyToOne
     @JoinColumn(name = "session_id")
     private Session session;
@@ -47,4 +41,8 @@ public class Attempt {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private OffsetDateTime createdAt;
+
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    @JoinColumn(name = "attempt_results_id")
+    private AttemptResults attemptResults;
 }

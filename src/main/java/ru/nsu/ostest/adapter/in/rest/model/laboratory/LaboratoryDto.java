@@ -1,6 +1,6 @@
 package ru.nsu.ostest.adapter.in.rest.model.laboratory;
 
-import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.LaboratoryTestDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -13,6 +13,6 @@ public record LaboratoryDto(
         Integer semesterNumber,
         OffsetDateTime deadline,
         Boolean isHidden,
-        List<TestDto> tests
+        List<LaboratoryTestDto> tests
 ) {
 }

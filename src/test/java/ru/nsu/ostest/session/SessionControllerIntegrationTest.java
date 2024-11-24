@@ -50,6 +50,8 @@ public class SessionControllerIntegrationTest {
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
     private static final String ATTEMPT1_DTO = "session/attempt1.json";
     private static final String ATTEMPT2_DTO = "session/attempt2.json";
+    private static final List<UserDto> STUDENTS = new ArrayList<>();
+    private static final List<LaboratoryDto> LABORATORIES = new ArrayList<>();
 
     @Container
     @ServiceConnection
@@ -77,9 +79,6 @@ public class SessionControllerIntegrationTest {
 
     @Autowired
     private TransactionalHelper transactionalHelper;
-
-    private static final List<UserDto> students = new ArrayList<>();
-    private static final List<LaboratoryDto> laboratories = new ArrayList<>();
     private static boolean setUpIsDone = false;
 
     @BeforeEach
@@ -102,13 +101,13 @@ public class SessionControllerIntegrationTest {
             createGroup();
             LaboratoryDto laboratory1 = createLaboratory(createLaboratoryCreationRequestDto(1));
             LaboratoryDto laboratory2 = createLaboratory(createLaboratoryCreationRequestDto(2));
-            laboratories.add(laboratory1);
-            laboratories.add(laboratory2);
+            LABORATORIES.add(laboratory1);
+            LABORATORIES.add(laboratory2);
 
             UserDto student1 = createUser(createStudentCreationRequestDto('1'));
             UserDto student2 = createUser(createStudentCreationRequestDto('2'));
-            students.add(student1);
-            students.add(student2);
+            STUDENTS.add(student1);
+            STUDENTS.add(student2);
             setUpIsDone = true;
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -117,8 +116,8 @@ public class SessionControllerIntegrationTest {
 
     @Test
     public void createSession_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        UserDto student = students.getFirst();
-        LaboratoryDto laboratory = laboratories.getFirst();
+        UserDto student = STUDENTS.getFirst();
+        LaboratoryDto laboratory = LABORATORIES.getFirst();
 
         var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.id(), laboratory.id()));
 
@@ -127,8 +126,8 @@ public class SessionControllerIntegrationTest {
 
     @Test
     public void makeAttempt_ShouldReturnCreated_WhenValidRequest() throws Exception {
-        UserDto student = students.getFirst();
-        LaboratoryDto laboratory = laboratories.getFirst();
+        UserDto student = STUDENTS.getFirst();
+        LaboratoryDto laboratory = LABORATORIES.getFirst();
 
         var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.id(), laboratory.id()));
         checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
@@ -147,8 +146,8 @@ public class SessionControllerIntegrationTest {
 
     @Test
     public void getAttemptById_ShouldReturnOk_WhenValidRequest() throws Exception {
-        UserDto student = students.getFirst();
-        LaboratoryDto laboratory = laboratories.getFirst();
+        UserDto student = STUDENTS.getFirst();
+        LaboratoryDto laboratory = LABORATORIES.getFirst();
 
         var sessionDto = sessionTestSetup.startSession(new StartSessionRequestDto(student.id(), laboratory.id()));
         checkSession(sessionDto, sessionTestSetup.getSessionDto(SESSION_USER1_LAB1_DTO));
@@ -176,11 +175,11 @@ public class SessionControllerIntegrationTest {
 
     @Test
     public void getSessionById_ShouldReturnOk_WhenValidRequest() throws Exception {
-        UserDto student1 = students.getFirst();
-        UserDto student2 = students.get(1);
+        UserDto student1 = STUDENTS.getFirst();
+        UserDto student2 = STUDENTS.get(1);
 
-        LaboratoryDto laboratory1 = laboratories.getFirst();
-        LaboratoryDto laboratory2 = laboratories.get(1);
+        LaboratoryDto laboratory1 = LABORATORIES.getFirst();
+        LaboratoryDto laboratory2 = LABORATORIES.get(1);
 
         var sessionDto1 =
                 sessionTestSetup.startSession(new StartSessionRequestDto(student1.id(), laboratory1.id()));
@@ -205,11 +204,11 @@ public class SessionControllerIntegrationTest {
 
     @Test
     public void getLabSessionForStudent_ShouldReturnOk_WhenValidRequest() throws Exception {
-        UserDto student1 = students.getFirst();
-        UserDto student2 = students.get(1);
+        UserDto student1 = STUDENTS.getFirst();
+        UserDto student2 = STUDENTS.get(1);
 
-        LaboratoryDto laboratory1 = laboratories.getFirst();
-        LaboratoryDto laboratory2 = laboratories.get(1);
+        LaboratoryDto laboratory1 = LABORATORIES.getFirst();
+        LaboratoryDto laboratory2 = LABORATORIES.get(1);
 
         var sessionDto1 =
                 sessionTestSetup.startSession(new StartSessionRequestDto(student1.id(), laboratory1.id()));
@@ -249,11 +248,11 @@ public class SessionControllerIntegrationTest {
 
     @Test
     public void getUserSessions_ShouldReturnOk_WhenValidRequest() throws Exception {
-        UserDto student1 = students.getFirst();
-        UserDto student2 = students.get(1);
+        UserDto student1 = STUDENTS.getFirst();
+        UserDto student2 = STUDENTS.get(1);
 
-        LaboratoryDto laboratory1 = laboratories.getFirst();
-        LaboratoryDto laboratory2 = laboratories.get(1);
+        LaboratoryDto laboratory1 = LABORATORIES.getFirst();
+        LaboratoryDto laboratory2 = LABORATORIES.get(1);
 
         var sessionDto11 =
                 sessionTestSetup.startSession(new StartSessionRequestDto(student1.id(), laboratory1.id()));

@@ -79,7 +79,7 @@ public class SessionControllerIntegrationTest {
 
     @Autowired
     private TransactionalHelper transactionalHelper;
-    private static boolean setUpIsDone = false;
+    private static boolean SET_UP_IS_DONE = false;
 
     @BeforeEach
     void init() {
@@ -89,7 +89,7 @@ public class SessionControllerIntegrationTest {
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void initInTransaction() {
         sessionRepository.deleteAll();
-        if (setUpIsDone) {
+        if (SET_UP_IS_DONE) {
             return;
         }
         try {
@@ -108,7 +108,7 @@ public class SessionControllerIntegrationTest {
             UserDto student2 = createUser(createStudentCreationRequestDto('2'));
             STUDENTS.add(student1);
             STUDENTS.add(student2);
-            setUpIsDone = true;
+            SET_UP_IS_DONE = true;
         } catch (Exception e) {
             log.error(e.getMessage());
         }

@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -17,14 +16,14 @@ import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryEditionRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratorySearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestLaboratoryLinkDto;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
-import ru.nsu.ostest.adapter.mapper.TestMapper;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.TestRepository;
+import ru.nsu.ostest.test.TestTestSetup;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -34,7 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 @AutoConfigureMockMvc(addFilters = false)
-@Import({LaboratoryTestSetup.class})
+@Import({LaboratoryTestSetup.class, TestTestSetup.class})
 @SpringBootTest
 public class LaboratoryControllerIntegrationTest {
 
@@ -43,13 +42,8 @@ public class LaboratoryControllerIntegrationTest {
     private static final boolean IS_HIDDEN = false;
     private static final int SEMESTER_NUMBER = 1;
     private static final OffsetDateTime DEADLINE = OffsetDateTime.parse("2024-10-07T07:02:27Z");
-    private static final String TEST_NAME = "Test Test";
-    private static final String TEST_DESCRIPTION = "Test Description";
-    private static final String TEST_CODE = "Test Code";
     private static final String LABORATORY1_DTO = "laboratory/laboratory1.json";
     private static final String LABORATORY2_DTO = "laboratory/laboratory2.json";
-    private static final String LABORATORY3_DTO = "laboratory/laboratory3.json";
-    private static final String LABORATORY4_DTO = "laboratory/laboratory4.json";
 
     @Container
     @ServiceConnection
@@ -61,13 +55,13 @@ public class LaboratoryControllerIntegrationTest {
     private LaboratoryTestSetup laboratoryTestSetup;
 
     @Autowired
+    private TestTestSetup testTestSetup;
+
+    @Autowired
     private LaboratoryRepository laboratoryRepository;
 
     @Autowired
     private LaboratoryMapper laboratoryMapper;
-
-    @Autowired
-    private TestMapper testMapper;
 
     @Autowired
     private TestRepository testRepository;
@@ -85,8 +79,8 @@ public class LaboratoryControllerIntegrationTest {
 
         var laboratoryDto = laboratoryTestSetup.createLaboratory(
                 new LaboratoryCreationRequestDto(LAB_NAME, 1, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
-                        IS_HIDDEN, List.of(new TestLaboratoryLinkDto(test1.getId(), true),
-                        new TestLaboratoryLinkDto(test2.getId(), false)))
+                        IS_HIDDEN, List.of(new TestLaboratoryLinkDto(test1.id(), true),
+                        new TestLaboratoryLinkDto(test2.id(), false)))
         );
 
         checkLaboratory(laboratoryDto, laboratoryTestSetup.getLaboratoryDto("laboratory/laboratory_created.json"));
@@ -130,8 +124,8 @@ public class LaboratoryControllerIntegrationTest {
 
         LaboratoryDto createdLaboratoryDto = laboratoryTestSetup.createLaboratory(
                 new LaboratoryCreationRequestDto(LAB_NAME, 1, LAB_DESCRIPTION, SEMESTER_NUMBER, DEADLINE,
-                        IS_HIDDEN, List.of(new TestLaboratoryLinkDto(test1.getId(), true),
-                        new TestLaboratoryLinkDto(test2.getId(), false)))
+                        IS_HIDDEN, List.of(new TestLaboratoryLinkDto(test1.id(), true),
+                        new TestLaboratoryLinkDto(test2.id(), false)))
         );
 
         LaboratoryDto editedLaboratoryDto = laboratoryTestSetup.editLaboratory(
@@ -143,9 +137,9 @@ public class LaboratoryControllerIntegrationTest {
                         createdLaboratoryDto.semesterNumber(),
                         createdLaboratoryDto.deadline(),
                         !IS_HIDDEN,
-                        List.of(new TestLaboratoryLinkDto(test3.getId(), false)),
-                        List.of(new TestLaboratoryLinkDto(test1.getId(), false)),
-                        List.of(new TestLaboratoryLinkDto(test2.getId(), false))));
+                        List.of(new TestLaboratoryLinkDto(test3.id(), false)),
+                        List.of(new TestLaboratoryLinkDto(test1.id(), false)),
+                        List.of(new TestLaboratoryLinkDto(test2.id(), false))));
 
         checkLaboratory(editedLaboratoryDto,
                 laboratoryTestSetup.getLaboratoryDto("laboratory/laboratory_edited.json"));
@@ -224,8 +218,8 @@ public class LaboratoryControllerIntegrationTest {
 
         checkLaboratory(laboratoryDto1, laboratoryTestSetup.getLaboratoryDto(LABORATORY1_DTO));
         checkLaboratory(laboratoryDto2, laboratoryTestSetup.getLaboratoryDto(LABORATORY2_DTO));
-        checkLaboratory(laboratoryDto3, laboratoryTestSetup.getLaboratoryDto(LABORATORY3_DTO));
-        checkLaboratory(laboratoryDto4, laboratoryTestSetup.getLaboratoryDto(LABORATORY4_DTO));
+        checkLaboratory(laboratoryDto3, laboratoryTestSetup.getLaboratoryDto("laboratory/laboratory3.json"));
+        checkLaboratory(laboratoryDto4, laboratoryTestSetup.getLaboratoryDto("laboratory/laboratory4.json"));
 
         var searchedLaboratories =
                 laboratoryTestSetup.searchLaboratories(new LaboratorySearchRequestDto(false, 1));
@@ -263,14 +257,11 @@ public class LaboratoryControllerIntegrationTest {
                 .isEqualTo(expected);
     }
 
-    private ru.nsu.ostest.adapter.out.persistence.entity.test.Test createTest(int orderNumber) {
+    private TestDto createTest(int orderNumber) throws Exception {
         TestCreationRequestDto testCreationRequestDto =
-                new TestCreationRequestDto(TEST_NAME + orderNumber, TEST_DESCRIPTION, TEST_CODE + orderNumber,
-                        TestCategory.DEFAULT);
-        var test1 =
-                testMapper.testCreationRequestDtoToTest(testCreationRequestDto);
-        test1.setScriptBody(getBytesFromFile(createMultipartFile()));
-        return testRepository.save(test1);
+                new TestCreationRequestDto("Test Test" + orderNumber, "Test Description",
+                        "Test Code" + orderNumber, TestCategory.DEFAULT);
+        return testTestSetup.createTest(testCreationRequestDto, createMultipartFile());
     }
 
     private MockMultipartFile createMultipartFile() {
@@ -280,15 +271,5 @@ public class LaboratoryControllerIntegrationTest {
                 "text/plain",
                 "test content".getBytes()
         );
-    }
-
-    private byte[] getBytesFromFile(MultipartFile file) {
-        byte[] script;
-        try {
-            script = file.getBytes();
-        } catch (IOException e) {
-            throw new RuntimeException();
-        }
-        return script;
     }
 }

@@ -14,7 +14,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import ru.nsu.ostest.TransactionalHelper;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.LaboratoryDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.*;
@@ -76,18 +75,11 @@ public class SessionControllerIntegrationTest {
 
     @Autowired
     private UserTestSetup userTestSetup;
-
-    @Autowired
-    private TransactionalHelper transactionalHelper;
     private static boolean SET_UP_IS_DONE = false;
 
     @BeforeEach
-    void init() {
-        transactionalHelper.runInTransaction(this::initInTransaction);
-    }
-
     @WithMockUser(username = "admin", roles = {"ADMIN"})
-    void initInTransaction() {
+    void init() {
         sessionRepository.deleteAll();
         if (SET_UP_IS_DONE) {
             return;
@@ -99,13 +91,15 @@ public class SessionControllerIntegrationTest {
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
             createGroup();
-            LaboratoryDto laboratory1 = createLaboratory(createLaboratoryCreationRequestDto(1));
-            LaboratoryDto laboratory2 = createLaboratory(createLaboratoryCreationRequestDto(2));
+            LaboratoryDto laboratory1 =
+                    laboratoryTestSetup.createLaboratory(createLaboratoryCreationRequestDto(1));
+            LaboratoryDto laboratory2 =
+                    laboratoryTestSetup.createLaboratory(createLaboratoryCreationRequestDto(2));
             LABORATORIES.add(laboratory1);
             LABORATORIES.add(laboratory2);
 
-            UserDto student1 = createUser(createStudentCreationRequestDto('1'));
-            UserDto student2 = createUser(createStudentCreationRequestDto('2'));
+            UserDto student1 = userTestSetup.createUserReturnsUserDto(createStudentCreationRequestDto('1'));
+            UserDto student2 = userTestSetup.createUserReturnsUserDto(createStudentCreationRequestDto('2'));
             STUDENTS.add(student1);
             STUDENTS.add(student2);
             SET_UP_IS_DONE = true;
@@ -278,14 +272,6 @@ public class SessionControllerIntegrationTest {
         assertTrue(user1Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto12)));
         assertTrue(user2Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto21)));
         assertTrue(user2Sessions.getContent().contains(sessionTestMapper.sessionDtoToSessionShortDto(sessionDto22)));
-    }
-
-    private LaboratoryDto createLaboratory(LaboratoryCreationRequestDto laboratoryCreationRequestDto) throws Exception {
-        return laboratoryTestSetup.createLaboratory(laboratoryCreationRequestDto);
-    }
-
-    private UserDto createUser(UserCreationRequestDto userCreationRequestDto) throws Exception {
-        return userTestSetup.createUserReturnsUserDto(userCreationRequestDto);
     }
 
     private void createGroup() {

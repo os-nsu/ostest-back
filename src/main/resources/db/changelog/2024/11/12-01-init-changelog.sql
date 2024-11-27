@@ -90,7 +90,7 @@ ALTER TABLE test_laboratory_link
 DROP CONSTRAINT "FKq9asnxuea0nm9lrk78gxqs8jk",
 ADD CONSTRAINT "FKq9asnxuea0nm9lrk78gxqs8jk"
 FOREIGN KEY (test_id) REFERENCES test(id) ON DELETE CASCADE;
-test
+
 
 INSERT INTO "test_laboratory_link" (is_switched_on, laboratory_id, test_id)
 VALUES (true, 1, 1),

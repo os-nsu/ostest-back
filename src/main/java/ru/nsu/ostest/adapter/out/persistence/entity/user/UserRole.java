@@ -5,6 +5,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import ru.nsu.ostest.adapter.in.rest.model.annotation.DescribableField;
 
 @Getter
 @Setter
@@ -24,5 +25,6 @@ public class UserRole {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id")
+    @DescribableField(includeInDescriptor = true, includeInFilter = true)
     private Role role;
 }

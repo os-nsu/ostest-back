@@ -3,11 +3,17 @@ package ru.nsu.ostest.adapter.in.rest.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import ru.nsu.ostest.adapter.in.rest.model.user.*;
+import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UsersBatchCreationRequestDto;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
 
@@ -30,7 +36,7 @@ public class UserController {
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserPasswordDto register(@RequestBody UserCreationRequestDto userDto) throws BadRequestException {
+    public UserPasswordDto register(@RequestBody UserCreationRequestDto userDto) {
         return userService.addUser(userDto);
     }
 
@@ -40,8 +46,8 @@ public class UserController {
     }
 
     @PostMapping("/search")
-    public List<UserDto> searchUsers(@RequestBody UserSearchRequestDto request) {
-        throw new IllegalArgumentException("Not implemented");
+    public UserResponse searchUsers(@RequestBody SearchRequestDto userRequest) {
+        return userService.getUsers(userRequest);
     }
 
     @PostMapping("/batch")
@@ -50,7 +56,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto editUser(@PathVariable Long id, @NotNull @RequestBody UserEditionRequestDto userUpdateRequest) throws BadRequestException {
+    public UserDto editUser(@PathVariable Long id, @NotNull @RequestBody UserEditionRequestDto userUpdateRequest) {
         return userService.updateUser(id, userUpdateRequest);
     }
 

@@ -2,6 +2,7 @@ package ru.nsu.ostest.adapter.out.persistence.entity.user;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ru.nsu.ostest.adapter.in.rest.model.annotation.DescribableField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +19,14 @@ public class Role {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(nullable = false)
-    private String name;
+    @Column(name = "name", nullable = false)
+    @DescribableField(includeInDescriptor = true, includeInFilter = true)
+    private String roleName;
 
     @OneToMany(mappedBy = "role", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<UserRole> userRoles = new ArrayList<>();
 
     public Role(String name) {
-        this.name = name;
+        this.roleName = name;
     }
 }

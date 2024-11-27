@@ -17,7 +17,14 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import ru.nsu.ostest.adapter.in.rest.model.user.*;
+import ru.nsu.ostest.adapter.in.rest.model.filter.*;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleEnum;
+import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
 import ru.nsu.ostest.domain.repository.GroupRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
@@ -27,9 +34,12 @@ import ru.nsu.ostest.security.impl.JwtAuthentication;
 import ru.nsu.ostest.security.impl.JwtProviderImpl;
 
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -119,6 +129,53 @@ class UserControllerIntegrationTest {
     }
 
     @Test
+    void searchUser_ShouldReturnAllFiltersStatusOk_WhenEmptyRequest() throws Exception {
+
+        UserResponse userResponse = userTestSetup.searchUserReturnsUserResponse(
+                new SearchRequestDto(null, null)
+        );
+        assertThat(userResponse).isNotNull();
+        assertThat(userResponse.filters()).hasSize(10);
+        assertTrue(userResponse.filters().stream().map(FilterDescriptor::fieldName).toList().containsAll(List.of("username", "firstName", "secondName", "groupName", "roleName")));
+        assertThat(userResponse.fieldsDescriptors()).hasSize(5);
+        assertTrue(userResponse.fieldsDescriptors().stream().map(FieldDescriptor::name).toList().containsAll(List.of("username", "firstName", "secondName", "groupName", "roleName")));
+    }
+
+    @Test
+    void searchUser_ShouldReturnStatusOk_WhenRequestHasFilter() throws Exception {
+        userTestSetup.createUserReturnsUserDto(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+        userTestSetup.createUserReturnsUserDto(
+                new UserCreationRequestDto(
+                        "Second User Username",
+                        "Second User FirstName",
+                        "Second User SecondName",
+                        USER_GROUPNUMBER,
+                        USER_ROLE
+                ));
+
+        SearchRequestDto userSearchRequestDto = new SearchRequestDto(new ArrayList<>(Collections.singleton(new Filter("username", false, "string", "Test"))), new Pagination(1, 2, 0, 0));
+        UserResponse userResponse = userTestSetup.searchUserReturnsUserResponse(userSearchRequestDto);
+        assertThat(userResponse).isNotNull();
+        assertThat(userResponse.users()).hasSize(1);
+        assertThat(userResponse.users().getFirst().username()).isEqualTo(USER_USERNAME);
+    }
+
+    @Test
+    void searchUser_ShouldReturnStatusOk_WhenRequestHasFilterAndPagination() throws Exception {
+        userTestSetup.createUserReturnsUserDto(
+                new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
+        );
+        SearchRequestDto userSearchRequestDto = new SearchRequestDto(new ArrayList<>(Collections.singleton(new Filter("username", false, "string", "Test"))), null);
+        UserResponse userResponse = userTestSetup.searchUserReturnsUserResponse(userSearchRequestDto);
+        assertThat(userResponse).isNotNull();
+        assertThat(userResponse.users()).hasSize(1);
+        assertThat(userResponse.users().getFirst().username()).isEqualTo(USER_USERNAME);
+    }
+
+
+    @Test
     void changeUserPassword_ShouldReturnStatusOk_WhenUserExists() throws Exception {
         userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
@@ -195,7 +252,6 @@ class UserControllerIntegrationTest {
                 ), userDto.id()
         );
 
-
         checkUser(editedUserDto,
                 userTestSetup.getUserDto("user/user_edited.json"));
     }
@@ -224,7 +280,7 @@ class UserControllerIntegrationTest {
         assertThat(actual)
                 .usingRecursiveComparison()
                 .ignoringFields("id")
-                .ignoringFields("group.id")
+                .ignoringFieldsMatchingRegexes("group.*")
                 .isEqualTo(expected);
     }
 

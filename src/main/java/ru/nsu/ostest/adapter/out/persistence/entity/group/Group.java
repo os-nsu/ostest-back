@@ -1,6 +1,9 @@
 package ru.nsu.ostest.adapter.out.persistence.entity.group;
 
 import jakarta.persistence.*;
+import lombok.*;
+import ru.nsu.ostest.adapter.in.rest.model.annotation.DescribableField;
+import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,7 +33,9 @@ public class Group {
     private Long id;
 
     @NonNull
-    private String name;
+    @DescribableField(includeInDescriptor = true, includeInFilter = true)
+    @Column(name = "name")
+    private String groupName;
 
     @NonNull
     @Column(nullable = false)

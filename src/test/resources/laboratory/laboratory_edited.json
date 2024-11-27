@@ -12,14 +12,16 @@
       "name": "Test Test1",
       "description": "Test Description",
       "code": "Test Code1",
-      "category": "DEFAULT"
+      "category": "DEFAULT",
+      "isSwitchedOn": false
     },
     {
       "id": null,
       "name": "Test Test3",
       "description": "Test Description",
       "code": "Test Code3",
-      "category": "DEFAULT"
+      "category": "DEFAULT",
+      "isSwitchedOn": false
     }
   ]
 }

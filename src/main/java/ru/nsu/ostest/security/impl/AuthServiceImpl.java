@@ -7,13 +7,14 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import ru.nsu.ostest.adapter.in.rest.model.user.JwtResponse;
-import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
-import ru.nsu.ostest.adapter.in.rest.model.user.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.auth.JwtResponse;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.LogoutRequest;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
-import ru.nsu.ostest.security.exceptions.AuthException;
+import ru.nsu.ostest.security.exception.InvalidJwtException;
+import ru.nsu.ostest.security.exception.WrongPasswordException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,7 +29,6 @@ public class AuthServiceImpl implements AuthService {
     private final JwtProviderImpl jwtProviderImpl;
     private final BlacklistService blacklistService;
 
-    public static final String INVALID_JWT_MESSAGE = "Invalid JWT";
     public static final String VALIDATING_REFRESH_TOKEN_FAILED_MESSAGE = "Validating refresh token failed";
 
     @Override
@@ -38,7 +38,7 @@ public class AuthServiceImpl implements AuthService {
         if (passwordEncoder.matches(authRequest.password(), user.getUserPassword().getPassword())) {
             return getJwtResponse(user);
         } else {
-            throw new AuthException("Wrong password");
+            throw new WrongPasswordException();
         }
     }
 
@@ -68,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
             }
         }
         log.error(VALIDATING_REFRESH_TOKEN_FAILED_MESSAGE);
-        throw new AuthException(INVALID_JWT_MESSAGE);
+        throw new InvalidJwtException();
     }
 
     @Override
@@ -76,13 +76,13 @@ public class AuthServiceImpl implements AuthService {
         log.info("Processing refresh request");
         if (!jwtProviderImpl.validateRefreshToken(refreshToken)) {
             log.error(VALIDATING_REFRESH_TOKEN_FAILED_MESSAGE);
-            throw new AuthException(INVALID_JWT_MESSAGE);
+            throw new InvalidJwtException();
         }
         final Claims claims = jwtProviderImpl.getRefreshClaims(refreshToken);
         final String userId = claims.getSubject();
         final String saveRefreshToken = refreshStorage.get(userId);
         if (saveRefreshToken == null || !saveRefreshToken.equals(refreshToken)) {
-            throw new AuthException(INVALID_JWT_MESSAGE);
+            throw new InvalidJwtException();
         }
         User user = userService.findUserById(Long.valueOf(userId));
         return getJwtResponse(user);
@@ -103,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
 
         if (!jwtProviderImpl.validateRefreshToken(request.refreshToken())) {
             log.error(VALIDATING_REFRESH_TOKEN_FAILED_MESSAGE);
-            throw new AuthException(INVALID_JWT_MESSAGE);
+            throw new InvalidJwtException();
         }
 
         Claims claims = jwtProviderImpl.getRefreshClaims(request.refreshToken());

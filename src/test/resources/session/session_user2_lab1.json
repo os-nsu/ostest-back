@@ -1,12 +1,13 @@
 {
   "id": null,
+  "status": "NEW",
   "student": {
     "id": null,
     "username": "username2",
     "firstName": "firstName2",
     "secondName": "secondName2",
     "group": {
-      "name": "21207"
+      "groupName": "21207"
     }
   },
   "laboratory": {

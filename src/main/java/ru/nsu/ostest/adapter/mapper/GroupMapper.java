@@ -20,11 +20,12 @@ public interface GroupMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "users", ignore = true)
+    @Mapping(target = "groupName", source = "groupEditionRequestDto.name")
     void groupEditionRequestDtoToGroup(@MappingTarget Group group, GroupEditionRequestDto groupEditionRequestDto);
 
     GroupDto groupToGroupDto(Group group);
 
     @Mapping(target = "users", source = "group.users")
-    @Mapping(target = "name", source = "group.name")
+    @Mapping(target = "name", source = "group.groupName")
     GroupFullDto mapToGroupFullDto(Group group);
 }

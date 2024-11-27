@@ -8,8 +8,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.nsu.ostest.adapter.in.rest.model.user.LogoutRequest;
-import ru.nsu.ostest.security.exceptions.AuthException;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.LogoutRequest;
+import ru.nsu.ostest.security.exception.InvalidJwtException;
 import ru.nsu.ostest.security.impl.AuthServiceImpl;
 import ru.nsu.ostest.security.impl.BlacklistService;
 import ru.nsu.ostest.security.impl.JwtProviderImpl;
@@ -63,9 +63,7 @@ class AuthServiceUnitTest {
 
         LogoutRequest request = new LogoutRequest(validAccessToken, invalidRefreshToken);
 
-        AuthException exception = assertThrows(AuthException.class, () -> {
-            authService.logout(request);
-        });
+        InvalidJwtException exception = assertThrows(InvalidJwtException.class, () -> authService.logout(request));
 
         verify(blacklistService, never()).addToBlacklist(anyString());
         verify(refreshStorage, never()).remove("userId");

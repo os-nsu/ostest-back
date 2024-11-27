@@ -5,11 +5,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
+import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupDto;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.GroupResponse;
 import ru.nsu.ostest.adapter.in.rest.model.group.GroupFullDto;
+import ru.nsu.ostest.adapter.in.rest.model.group.GroupResponse;
 import ru.nsu.ostest.domain.service.GroupService;
+
 
 @RequiredArgsConstructor
 @RestController
@@ -25,6 +29,11 @@ public class GroupController {
     @GetMapping("/{id}")
     public GroupFullDto getGroup(@PathVariable Long id) {
         return groupService.getGroupUsers(id);
+    }
+
+    @PostMapping("/search")
+    public GroupResponse searchGroups(@RequestBody SearchRequestDto groupRequest) {
+        return groupService.getGroups(groupRequest);
     }
 
     @GetMapping("/search")

@@ -1,6 +1,6 @@
 package ru.nsu.ostest.domain.exception.validation;
 
-public class SessionNotFoundException extends NotFoundException {
+public class SessionNotFoundException extends ValidationException {
 
     private SessionNotFoundException(String message) {
         super(message);

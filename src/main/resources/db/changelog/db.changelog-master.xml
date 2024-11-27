@@ -24,4 +24,6 @@
     <include file="db/changelog/2024/11/08-01-init-changelog.sql"/>
     <include file="db/changelog/2024/11/12-01-changelog.xml"/>
     <include file="db/changelog/2024/11/attempt_results.xml"/>
+    <include file="db/changelog/2024/11/09-01changelog.xml"/>
+    <include file="db/changelog/2024/11/12-01-init-changelog.sql"/>
 </databaseChangeLog>

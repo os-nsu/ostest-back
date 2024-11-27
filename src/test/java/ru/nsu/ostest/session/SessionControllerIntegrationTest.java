@@ -49,8 +49,8 @@ public class SessionControllerIntegrationTest {
     private static final String SESSION_USER2_LAB2_DTO = "session/session_user2_lab2.json";
     private static final String ATTEMPT1_DTO = "session/attempt1.json";
     private static final String ATTEMPT2_DTO = "session/attempt2.json";
-    private static final List<UserDto> STUDENTS = new ArrayList<>();
-    private static final List<LaboratoryDto> LABORATORIES = new ArrayList<>();
+    private List<UserDto> STUDENTS;
+    private List<LaboratoryDto> LABORATORIES;
 
     @Container
     @ServiceConnection
@@ -75,15 +75,16 @@ public class SessionControllerIntegrationTest {
 
     @Autowired
     private UserTestSetup userTestSetup;
-    private static boolean SET_UP_IS_DONE = false;
 
     @BeforeEach
     @WithMockUser(username = "admin", roles = {"ADMIN"})
     void init() {
         sessionRepository.deleteAll();
-        if (SET_UP_IS_DONE) {
-            return;
-        }
+        groupRepository.deleteAll();
+        userTestSetup.deleteAllUsrs();
+        laboratoryTestSetup.deleteAllLabs();
+        STUDENTS = new ArrayList<>();
+        LABORATORIES = new ArrayList<>();
         try {
             String adminAuthority = "ADMIN";
             Authentication authentication = new JwtAuthentication(true, "password",
@@ -100,9 +101,9 @@ public class SessionControllerIntegrationTest {
 
             UserDto student1 = userTestSetup.createUserReturnsUserDto(createStudentCreationRequestDto('1'));
             UserDto student2 = userTestSetup.createUserReturnsUserDto(createStudentCreationRequestDto('2'));
+
             STUDENTS.add(student1);
             STUDENTS.add(student2);
-            SET_UP_IS_DONE = true;
         } catch (Exception e) {
             log.error(e.getMessage());
         }

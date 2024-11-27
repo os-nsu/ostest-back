@@ -54,6 +54,11 @@ public class UserTestSetup {
     }
 
     @Transactional
+    public void deleteAllUsrs() {
+        userRepository.deleteAll();
+    }
+
+    @Transactional
     public UserDto createUserReturnsUserDto(UserCreationRequestDto creationRequestDto) throws Exception {
         var user = createUserReturnsUserPasswordDto(creationRequestDto);
         assertTrue(userRepository.findByUsername(user.username()).isPresent());

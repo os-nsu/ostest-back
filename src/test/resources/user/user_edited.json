@@ -3,6 +3,7 @@
   "firstName": "NewUserFirstName",
   "secondName": "NewUserSecondName",
   "group": {
-    "name": "Test GroupNumber"
+    "name": "Test GroupNumber",
+    "isArchived": false
   }
 }

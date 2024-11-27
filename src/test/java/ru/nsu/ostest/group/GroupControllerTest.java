@@ -85,7 +85,7 @@ public class GroupControllerTest {
 
     @Test
     void test_addUserToGroup() throws Exception {
-        GroupCreationRequestDto groupCreationRequestDto = new GroupCreationRequestDto("GROUP111");
+        GroupCreationRequestDto groupCreationRequestDto = new GroupCreationRequestDto("GROUP111", false);
         MockHttpServletResponse response = mockMvc.perform(post("/api/group")
                         .with(admin())
                         .content(objectMapper.writeValueAsString(groupCreationRequestDto))
@@ -125,7 +125,7 @@ public class GroupControllerTest {
         UserDto userDto = objectMapper.readValue(response.getContentAsByteArray(), UserDto.class);
         Long userId = userDto.id();
 
-        GroupEditionRequestDto groupEditionRequestDto = new GroupEditionRequestDto(groupId, "GROUP222", Set.of(2L, userId), null);
+        GroupEditionRequestDto groupEditionRequestDto = new GroupEditionRequestDto(groupId, "GROUP222", false, Set.of(2L, userId), null);
         response = mockMvc.perform(put("/api/group")
                         .with(admin())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -140,7 +140,7 @@ public class GroupControllerTest {
         transactionalHelper.runInTransaction(this::showGroups);
         // todo: сделать assert на наличие группы у пользователя
 
-        groupEditionRequestDto = new GroupEditionRequestDto(groupId, "GROUP222", null, Set.of(userId));
+        groupEditionRequestDto = new GroupEditionRequestDto(groupId, "GROUP222", false, null, Set.of(userId));
         response = mockMvc.perform(put("/api/group")
                         .with(admin())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -214,8 +214,8 @@ public class GroupControllerTest {
 
     @Test
     void searchUser_ShouldReturnStatusOk_WhenRequestHasFilterAndPagination() throws Exception {
-        createGroup(new GroupCreationRequestDto("GROUP111"));
-        createGroup(new GroupCreationRequestDto("GROUP112"));
+        createGroup(new GroupCreationRequestDto("GROUP111", false));
+        createGroup(new GroupCreationRequestDto("GROUP112", false));
 
         SearchRequestDto userSearchRequestDto = new SearchRequestDto(new ArrayList<>(Collections.singleton(new Filter("groupName", false, "string", "GROUP"))), new Pagination(1, 1, 0, 0));
         GroupResponse groupResponse = searchUserReturnsUserResponse(userSearchRequestDto);
@@ -244,7 +244,7 @@ public class GroupControllerTest {
 
     @Test
     void searchUser_ShouldReturnStatusOk_WhenRequestHasFilter() throws Exception {
-        createGroup(new GroupCreationRequestDto("GROUP111"));
+        createGroup(new GroupCreationRequestDto("GROUP111", false));
 
         SearchRequestDto userSearchRequestDto = new SearchRequestDto(new ArrayList<>(Collections.singleton(new Filter("groupName", false, "string", "111"))), null);
         GroupResponse userResponse = searchUserReturnsUserResponse(userSearchRequestDto);

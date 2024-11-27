@@ -3,6 +3,14 @@ package ru.nsu.ostest.adapter.out.persistence.entity.group;
 import jakarta.persistence.*;
 import lombok.*;
 import ru.nsu.ostest.adapter.in.rest.model.annotation.DescribableField;
+import jakarta.persistence.*;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 
 import java.util.HashSet;
@@ -28,6 +36,10 @@ public class Group {
     @DescribableField(includeInDescriptor = true, includeInFilter = true)
     @Column(name = "name")
     private String groupName;
+
+    @NonNull
+    @Column(nullable = false)
+    private Boolean isArchived;
 
     @JoinTable(
             name = "user_group",

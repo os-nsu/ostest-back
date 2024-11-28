@@ -10,10 +10,8 @@ import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
-import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.userData.UsersBatchCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.*;
+import ru.nsu.ostest.domain.service.RatingService;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
 
@@ -27,6 +25,7 @@ public class UserController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final RatingService ratingService;
 
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable Long id) {
@@ -75,6 +74,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);
+    }
+
+    @GetMapping("/rating")
+    public List<StudentRatingDTO> getRating(@RequestParam(value = "topN", required = false) Integer topN) {
+        return ratingService.getRating(topN);
     }
 
 }

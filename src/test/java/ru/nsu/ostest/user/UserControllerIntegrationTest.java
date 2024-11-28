@@ -1,6 +1,7 @@
 package ru.nsu.ostest.user;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -26,7 +27,9 @@ import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
 import ru.nsu.ostest.adapter.out.persistence.entity.group.Group;
+import ru.nsu.ostest.adapter.out.persistence.entity.user.StudentRating;
 import ru.nsu.ostest.domain.repository.GroupRepository;
+import ru.nsu.ostest.domain.repository.RatingRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.AuthService;
@@ -69,6 +72,9 @@ class UserControllerIntegrationTest {
 
     @Autowired
     private GroupRepository groupRepository;
+
+    @MockBean
+    private RatingRepository ratingRepository;
 
     @MockBean
     private JwtProviderImpl jwtProviderImpl;
@@ -257,6 +263,20 @@ class UserControllerIntegrationTest {
     }
 
     @Test
+    void getTopUsers_ShouldReturnStatusOk() throws Exception {
+        List<StudentRating> mockedUsers = List.of(new StudentRating(1l, "User1", "User1", "User1", 2l), new StudentRating(2l, "User2", "User2", "User2", 1l));
+
+        when(ratingRepository.findTopNStudents(Integer.MAX_VALUE)).thenReturn(mockedUsers);
+
+        var users = userTestSetup.getTopUsers();
+
+        assertThat(users).isNotNull();
+        assertThat(users).hasSize(2);
+        assertThat(users.get(0).getUsername()).isEqualTo("User1");
+    }
+
+    @Test
+    @Transactional
     void editUser_ShouldReturnConflict_WhenDuplicateName() throws Exception {
         UserDto createdUserDto = userTestSetup.createUserReturnsUserDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)

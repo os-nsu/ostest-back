@@ -7,16 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
-import ru.nsu.ostest.adapter.in.rest.model.user.userData.LogoutRequest;
-import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserDto;
-import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.userData.*;
 import ru.nsu.ostest.adapter.mapper.UserMapper;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
@@ -25,8 +24,10 @@ import ru.nsu.ostest.domain.repository.UserRepository;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -141,6 +142,25 @@ public class UserTestSetup {
         assertTrue(userRepository.findById(user.id()).isPresent());
 
         return user;
+    }
+
+    public List<StudentRatingDTO> getTopUsers() throws Exception {
+        var result = mockMvc.perform(get(PATH + "/rating")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .with(admin())
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+        List<StudentRatingDTO> users = objectMapper.readValue(
+                result.getResponse().getContentAsString(),
+                objectMapper.getTypeFactory().constructCollectionType(List.class, StudentRatingDTO.class)
+        );
+        return users;
+    }
+
+    private SecurityMockMvcRequestPostProcessors.UserRequestPostProcessor admin() {
+        return user("admin")
+                .authorities(new SimpleGrantedAuthority("ADMIN"));
     }
 
     public void editUserBad(UserEditionRequestDto userEditionRequestDto, Long id) throws Exception {

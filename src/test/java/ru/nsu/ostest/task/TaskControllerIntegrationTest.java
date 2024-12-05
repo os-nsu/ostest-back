@@ -20,9 +20,9 @@ import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
 import ru.nsu.ostest.adapter.in.rest.model.session.MakeAttemptDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.test.TestResultsDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleEnum;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
-import ru.nsu.ostest.adapter.in.rest.model.test.TestResultsDto;
 import ru.nsu.ostest.adapter.mapper.AttemptMapper;
 import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.adapter.mapper.TestMapper;
@@ -297,7 +297,6 @@ public class TaskControllerIntegrationTest {
     private LaboratoryCreationRequestDto createLaboratoryCreationRequestDto(int order) {
         return new LaboratoryCreationRequestDto(LAB_NAME + order, order,
                 LAB_DESCRIPTION + order, SEMESTER_NUMBER, DEADLINE, IS_HIDDEN, List.of());
-
     }
 
     private UserCreationRequestDto createStudentCreationRequestDto(int order) {
@@ -305,7 +304,6 @@ public class TaskControllerIntegrationTest {
                 FIRST_NAME + order,
                 SECOND_NAME + order,
                 GROUP_NUMBER, RoleEnum.STUDENT);
-
     }
 
     private MakeAttemptDto createMakeAttemptDto(int order, long laboratoryId) {

@@ -145,17 +145,15 @@ public class UserTestSetup {
     }
 
     public List<StudentRatingDTO> getTopUsers() throws Exception {
-        var result = mockMvc.perform(get(PATH + "/rating")
+        var result = mockMvc.perform(get("/api/rating")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .with(admin())
-                )
+                        .with(admin()))
                 .andExpect(status().isOk())
                 .andReturn();
-        List<StudentRatingDTO> users = objectMapper.readValue(
+        return objectMapper.readValue(
                 result.getResponse().getContentAsString(),
                 objectMapper.getTypeFactory().constructCollectionType(List.class, StudentRatingDTO.class)
         );
-        return users;
     }
 
     private SecurityMockMvcRequestPostProcessors.UserRequestPostProcessor admin() {

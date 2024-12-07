@@ -22,12 +22,6 @@ jobs:
     - name: Add host to known_hosts
       run: ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Install ssh keys
-      run:
-        install -m 600 -D /dev/null ~/.ssh/back_rsa
-        echo "${{ secrets.BACK_SSH_PRIVATE_KEY }}" > ~/.ssh/back_rsa
-        ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
-
     - name: Add osplan SSH Key
       run: |
         echo "${{ secrets.OSPLAN_SSH_PRIVATE_KEY }}" > ~/.ssh/osplan_rsa

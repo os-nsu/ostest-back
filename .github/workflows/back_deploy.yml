@@ -94,8 +94,7 @@ jobs:
           git pull
           docker-compose down
           docker compose --env-file env.back_vm up --build -d
-          sleep 10
-          docker logs $(docker ps -q --filter "ancestor=ostest-back-backend")
+           
           EOF
 
       - name: See logs

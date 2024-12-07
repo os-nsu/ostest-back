@@ -24,7 +24,7 @@ jobs:
 
     - name: Install ssh keys
       run:
-        install -m 600 -D /dev/null ~/.ssh/front_rsa
+        install -m 600 -D /dev/null ~/.ssh/back_rsa
         echo "${{ secrets.BACK_SSH_PRIVATE_KEY }}" > ~/.ssh/back_rsa
         ssh-keyscan -H ${{ secrets.SSH_HOST }} > ~/.ssh/known_hosts
 
@@ -54,20 +54,20 @@ jobs:
           git checkout check/13269
           git pull origin check/13269
 
-          if [ ! -f env.front_vm ]; then
-            echo "env.front_vm not found. Cloning repository to fetch it..."
+          if [ ! -f env.back_vm ]; then
+            echo "env.back_vm not found. Cloning repository to fetch it..."
 
             if ! git clone https://github.com/os-nsu/ostest-plan.git; then
               echo "Failed to clone repository"
               exit 1
             fi
 
-            mv ostest-plan/env.front_vm .
+            mv ostest-plan/env.back_vm .
             rm -rf ostest-plan
 
             echo "moved env file"
           else
-            echo "env.front_vm already exists"
+            echo "env.back_vm already exists"
           fi
 
           exit
@@ -95,13 +95,13 @@ jobs:
       - name: Deploy to our remote server
         run: |
           set -e
-          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/front_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF | tee deployment_log.txt
+          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/back_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF | tee deployment_log.txt
           cd ${{ secrets.BACK_WORK_DIR }}
           git pull
           docker-compose down
-          docker compose --env-file env.front_vm up --build -d
+          docker compose --env-file env.back_vm up --build -d
           sleep 10
-          docker logs $(docker ps -q --filter "ancestor=ostest-front-frontend")
+          docker logs $(docker ps -q --filter "ancestor=ostest-back-backend")
           EOF
 
       - name: See logs

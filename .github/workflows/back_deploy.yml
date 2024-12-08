@@ -1,0 +1,103 @@
+name: deploy-back
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  connect_to_server:
+    name: run pull
+    runs-on: ubuntu-24.04
+
+    steps:
+    - name: Setup SSH directory
+      run: mkdir -p ~/.ssh
+
+    - name: Install ssh keys
+      run: |
+        echo "${{ secrets.BACK_SSH_PRIVATE_KEY }}" > ~/.ssh/back_rsa
+        chmod 600 ~/.ssh/back_rsa 
+
+    - name: Add host to known_hosts
+      run: ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+    - name: Add osplan SSH Key
+      run: |
+        echo "${{ secrets.OSPLAN_SSH_PRIVATE_KEY }}" > ~/.ssh/osplan_rsa
+        chmod 600 ~/.ssh/osplan_rsa
+
+    - name: Connect and pull
+      run: |
+        ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/back_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} '
+        set -e
+
+        echo "----- Connected to server -----"
+
+          cd ${{ secrets.BACK_WORK_DIR }}
+          echo "Now in project dir:"
+          pwd
+          ls -la
+
+          ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/osplan_rsa
+
+          git fetch --all
+          git checkout main
+          git pull origin main
+
+          if [ ! -f env.back_vm ]; then
+            echo "env.back_vm not found. Cloning repository to fetch it..."
+
+            if ! git clone https://github.com/os-nsu/ostest-plan.git; then
+              echo "Failed to clone repository"
+              exit 1
+            fi
+
+            mv ostest-plan/env.back_vm .
+            rm -rf ostest-plan
+
+            echo "moved env file"
+          else
+            echo "env.back_vm already exists"
+          fi
+
+          exit
+        '
+
+  build:
+    runs-on: ubuntu-24.04
+    needs: connect_to_server
+
+    steps:
+      - name: Setup SSH directory
+        run: mkdir -p ~/.ssh
+
+      - name: Install ssh keys
+        run: |
+          echo "${{ secrets.BACK_SSH_PRIVATE_KEY }}" > ~/.ssh/back_rsa
+          chmod 600 ~/.ssh/back_rsa
+
+      - name: Add host to known_hosts
+        run: ssh-keyscan -H -p ${{ secrets.SSH_PORT }} ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Deploy to our remote server
+        run: |
+          set -e
+          ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/back_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF | tee deployment_log.txt
+          cd ${{ secrets.BACK_WORK_DIR }}
+          git pull
+          docker-compose down
+          docker compose --env-file env.back_vm up --build -d
+           
+          EOF
+
+      - name: See logs
+        uses: actions/upload-artifact@v4
+        with:
+          path: deployment_log.txt

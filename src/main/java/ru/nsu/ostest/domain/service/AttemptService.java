@@ -17,16 +17,16 @@ import ru.nsu.ostest.domain.common.enums.SessionStatus;
 import ru.nsu.ostest.domain.exception.validation.AttemptNotFoundException;
 import ru.nsu.ostest.domain.exception.validation.SessionNotFoundException;
 import ru.nsu.ostest.domain.repository.AttemptRepository;
-import ru.nsu.ostest.domain.repository.AttemptResultsRepository;
 import ru.nsu.ostest.domain.repository.SessionRepository;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
 @AllArgsConstructor
 public class AttemptService {
     private final AttemptRepository attemptRepository;
-    private final AttemptResultsRepository attemptResultsRepository;
     private final AttemptMapper attemptMapper;
     private final SessionRepository sessionRepository;
 
@@ -82,6 +82,20 @@ public class AttemptService {
         return new AttemptResultSetResponse(attempt.getId());
     }
 
+    @Transactional
+    public void checkForTimeouts(long timeoutMinutes) {
+        OffsetDateTime timeoutThreshold = OffsetDateTime.now().minusMinutes(timeoutMinutes);
+        List<Attempt> timedOutAttempts = attemptRepository.findAllByStatusAndCreatedAtBefore(
+                AttemptStatus.IN_PROGRESS, timeoutThreshold);
+
+        for (Attempt attempt : timedOutAttempts) {
+            attempt.setStatus(AttemptStatus.TIMEOUT);
+            attempt.getSession().setStatus(SessionStatus.FAILURE);
+            attemptRepository.save(attempt);
+            sessionRepository.save(attempt.getSession());
+        }
+    }
+
     public AttemptDto getAttemptById(UUID id) {
         return attemptMapper.attemptToAttemptDto(findAttemptById(id));
     }
@@ -90,5 +104,4 @@ public class AttemptService {
         return attemptRepository.findById(id)
                 .orElseThrow(() -> AttemptNotFoundException.notFoundAttemptWithId(id));
     }
-
 }

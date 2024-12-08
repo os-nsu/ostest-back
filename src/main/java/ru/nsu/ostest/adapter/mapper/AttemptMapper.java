@@ -11,7 +11,6 @@ import ru.nsu.ostest.adapter.out.persistence.entity.session.AttemptResults;
 import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Mapper(
         unmappedTargetPolicy = ReportingPolicy.IGNORE,

@@ -3,12 +3,12 @@ name: deploy-back
 on:
   push:
     branches:
-      - feature/13269/script-for-cicd
+      - main
 
 jobs:
   connect_to_server:
     name: run pull
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     steps:
     - name: Setup SSH directory
@@ -45,8 +45,8 @@ jobs:
           ssh-add ~/.ssh/osplan_rsa
 
           git fetch --all
-          git checkout check/13269
-          git pull origin check/13269
+          git checkout main
+          git pull origin main
 
           if [ ! -f env.back_vm ]; then
             echo "env.back_vm not found. Cloning repository to fetch it..."
@@ -68,7 +68,7 @@ jobs:
         '
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs: connect_to_server
 
     steps:

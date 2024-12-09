@@ -39,7 +39,7 @@ public class Attempt {
     private Session session;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     private OffsetDateTime createdAt;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)

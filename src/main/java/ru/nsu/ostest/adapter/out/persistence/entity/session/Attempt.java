@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import ru.nsu.ostest.domain.common.enums.AttemptStatus;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Getter
@@ -39,10 +40,17 @@ public class Attempt {
     private Session session;
 
     @CreationTimestamp
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     private OffsetDateTime createdAt;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     @JoinColumn(name = "attempt_results_id")
     private AttemptResults attemptResults;
+
+    @PostLoad
+    public void adjustTimeZone() {
+        if (createdAt != null) {
+            createdAt = createdAt.withOffsetSameInstant(ZoneOffset.ofHours(6));
+        }
+    }
 }

@@ -3,7 +3,7 @@ name: deploy-back
 on:
   push:
     branches:
-      - main
+      - feature/13269/script-for-cicd
 
 jobs:
   connect_to_server:
@@ -46,7 +46,7 @@ jobs:
 
           git fetch --all
           git checkout main
-          git pull origin main
+          git pull origin check/13269
 
           if [ ! -f env.back_vm ]; then
             echo "env.back_vm not found. Cloning repository to fetch it..."

@@ -38,7 +38,10 @@ jobs:
           echo "Now in project dir:"
           pwd
           ls -la
-
+          
+          cd .git/objects
+          sudo chown -R <${{ secrets.SSH_USER }}>:<${{ secrets.SSH_USER }}>
+  
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
           eval "$(ssh-agent -s)"

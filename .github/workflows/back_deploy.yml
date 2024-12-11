@@ -40,7 +40,7 @@ jobs:
           ls -la
           
           cd .git/objects
-          sudo chown -R <${{ secrets.SSH_USER }}>:<${{ secrets.SSH_USER }}>
+          sudo chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }}
   
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 

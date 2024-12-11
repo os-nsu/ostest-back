@@ -54,7 +54,7 @@ jobs:
           git checkout main
           git pull origin main
 
-          if [ ! -f env.back_m ]; then
+          if [ ! -f env.back_vm ]; then
             echo "env.back_vm not found. Cloning repository to fetch it..."
 
             if ! git clone https://github.com/os-nsu/ostest-plan.git; then

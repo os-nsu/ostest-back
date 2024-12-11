@@ -3,7 +3,7 @@ name: deploy-back
 on:
   push:
     branches:
-      - feature/13269/fixed-script-for-cicd
+      - main
 
 jobs:
   connect_to_server:
@@ -44,8 +44,6 @@ jobs:
           
           cd ..
           cd ..
-          echo "Now in project dir:"
-          pwd
         
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 

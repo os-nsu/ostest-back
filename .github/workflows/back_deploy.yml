@@ -41,7 +41,12 @@ jobs:
           
           cd .git/objects
           sudo chown -R ${{ secrets.SSH_USER }}:${{ secrets.SSH_USER }} *
-  
+          
+          cd ..
+          cd ..
+          echo "Now in project dir:"
+          pwd
+        
           ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
           eval "$(ssh-agent -s)"
@@ -49,7 +54,7 @@ jobs:
 
           git fetch --all
           git checkout main
-          git pull main
+          git pull origin main
 
           if [ ! -f env.back_m ]; then
             echo "env.back_vm not found. Cloning repository to fetch it..."

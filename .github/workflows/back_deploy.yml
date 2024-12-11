@@ -3,7 +3,7 @@ name: deploy-back
 on:
   push:
     branches:
-      - feature/13269/script-for-cicd
+      - feature/13269/fixed-script-for-cicd
 
 jobs:
   connect_to_server:

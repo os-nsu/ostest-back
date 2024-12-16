@@ -1,5 +1,6 @@
 package ru.nsu.ostest.adapter.in.rest.config;
 
+import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Path;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -16,9 +17,9 @@ public class FilterConfig {
     public PathResolver<User> userPathResolver() {
         return (root, fieldName) -> {
             if ("groupName".equals(fieldName)) {
-                return root.join("groups").get("groupName");
+                return root.join("groups", JoinType.LEFT).get("groupName");
             } else if ("roleName".equals(fieldName)) {
-                return root.join("roles").get("role").get("roleName");
+                return root.join("roles", JoinType.LEFT).get("role").get("roleName");
             }
             return root.get(fieldName);
         };

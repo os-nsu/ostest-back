@@ -16,6 +16,7 @@ import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserEditionRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UsersBatchCreationRequestDto;
 import ru.nsu.ostest.domain.service.UserService;
 import ru.nsu.ostest.security.AuthService;
+import ru.nsu.ostest.security.annotations.AdminOnlyAccess;
 
 import java.security.Principal;
 import java.util.List;
@@ -27,13 +28,12 @@ public class UserController {
 
     private final AuthService authService;
     private final UserService userService;
-
     @GetMapping("/{id}")
     public UserDto getUser(@PathVariable Long id) {
         throw new IllegalArgumentException("Not implemented");
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @AdminOnlyAccess
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     public UserPasswordDto register(@RequestBody UserCreationRequestDto userDto) {
@@ -45,16 +45,19 @@ public class UserController {
         return userService.getUserDtoById(authService.getUserIdFromJwt(request));
     }
 
+    @AdminOnlyAccess
     @PostMapping("/search")
     public UserResponse searchUsers(@RequestBody SearchRequestDto userRequest) {
         return userService.getUsers(userRequest);
     }
 
+    @AdminOnlyAccess
     @PostMapping("/batch")
     public List<UserDto> createUsers(@RequestBody UsersBatchCreationRequestDto request) {
         throw new IllegalArgumentException("Not implemented");
     }
 
+    @AdminOnlyAccess
     @PatchMapping("/{id}")
     public UserDto editUser(@PathVariable Long id, @NotNull @RequestBody UserEditionRequestDto userUpdateRequest) {
         return userService.updateUser(id, userUpdateRequest);
@@ -66,12 +69,14 @@ public class UserController {
         userService.changePassword(username, changePasswordDto.newPassword());
     }
 
+    @AdminOnlyAccess
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/change-password/{id}")
     public void changePassword(@RequestBody ChangePasswordDto changePasswordDto, @PathVariable Long id) {
         userService.changePassword(id, changePasswordDto.newPassword());
     }
 
+    @AdminOnlyAccess
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
         userService.deleteById(id);

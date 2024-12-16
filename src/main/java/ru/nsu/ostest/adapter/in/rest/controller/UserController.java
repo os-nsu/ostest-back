@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.AdminChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
@@ -66,13 +67,13 @@ public class UserController {
     @PutMapping("/change-password")
     public void changePassword(@RequestBody ChangePasswordDto changePasswordDto, @NotNull Principal principal) {
         String username = principal.getName();
-        userService.changePassword(username, changePasswordDto.newPassword());
+        userService.changePassword(username, changePasswordDto);
     }
 
     @AdminOnlyAccess
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/change-password/{id}")
-    public void changePassword(@RequestBody ChangePasswordDto changePasswordDto, @PathVariable Long id) {
+    public void changePassword(@RequestBody AdminChangePasswordDto changePasswordDto, @PathVariable Long id) {
         userService.changePassword(id, changePasswordDto.newPassword());
     }
 

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.config.BeanNamesConfig;
 import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
 import ru.nsu.ostest.adapter.in.rest.model.user.userData.UserCreationRequestDto;
@@ -25,6 +26,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.UserPassword;
 import ru.nsu.ostest.domain.exception.NoRightsException;
 import ru.nsu.ostest.domain.exception.validation.DuplicateUserNameException;
+import ru.nsu.ostest.domain.exception.validation.InvalidOldPasswordException;
 import ru.nsu.ostest.domain.exception.validation.UserNotFoundException;
 import ru.nsu.ostest.domain.repository.UserRepository;
 import ru.nsu.ostest.security.impl.AuthServiceCommon;
@@ -87,10 +89,13 @@ public class UserService {
         return password;
     }
 
-    public void changePassword(String username, String newPassword) {
+    public void changePassword(String username, ChangePasswordDto passwordDto) {
         User user = findUserByUsername(username);
         UserPassword userPassword = user.getUserPassword();
-        userPassword.setPassword(passwordEncoder.encode(newPassword));
+        if (!passwordEncoder.matches(passwordDto.oldPassword(), userPassword.getPassword())) {
+            throw new InvalidOldPasswordException();
+        }
+        userPassword.setPassword(passwordEncoder.encode(passwordDto.newPassword()));
         userRepository.save(user);
     }
 

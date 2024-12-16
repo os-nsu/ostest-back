@@ -19,6 +19,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import ru.nsu.ostest.adapter.in.rest.model.filter.*;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.AdminChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.role.RoleEnum;
@@ -183,14 +184,14 @@ class UserControllerIntegrationTest {
 
     @Test
     void changeUserPassword_ShouldReturnStatusOk_WhenUserExists() throws Exception {
-        userTestSetup.createUserReturnsUserDto(
+        var passwordDto = userTestSetup.createUserReturnsUserPasswordDto(
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
         Principal mockPrincipal = Mockito.mock(Principal.class);
         Mockito.when(mockPrincipal.getName()).thenReturn(USER_USERNAME);
-
         String newPassword = "newPass";
-        userTestSetup.changeUserPassword(new ChangePasswordDto(newPassword), mockPrincipal);
+        String oldPassword = passwordDto.password();
+        userTestSetup.changeUserPassword(new ChangePasswordDto(oldPassword, newPassword), mockPrincipal);
         userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, newPassword));
     }
 
@@ -201,7 +202,7 @@ class UserControllerIntegrationTest {
                 new UserCreationRequestDto(USER_USERNAME, USER_FIRSTNAME, USER_SECONDNAME, USER_GROUPNUMBER, USER_ROLE)
         );
         String newPassword = "newPass";
-        userTestSetup.changeUserPassword(new ChangePasswordDto(newPassword), user.id());
+        userTestSetup.changeUserPassword(new AdminChangePasswordDto(newPassword), user.id());
         userTestSetup.loginUser(new UserPasswordDto(USER_USERNAME, newPassword));
     }
 

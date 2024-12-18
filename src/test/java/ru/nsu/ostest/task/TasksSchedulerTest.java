@@ -136,10 +136,10 @@ public class TasksSchedulerTest {
 
         var makeAttemptLab1Dto = new MakeAttemptDto(REPOSITORY_URL, BRANCH_NAME, laboratory1.id());
         var attemptDto11 = sessionTestSetup.makeAttempt(makeAttemptLab1Dto, sessionDto11.id());
-        var attemptDto12 = sessionTestSetup.makeAttempt(makeAttemptLab1Dto, sessionDto12.id());
+        var attemptDto21 = sessionTestSetup.makeAttempt(makeAttemptLab1Dto, sessionDto21.id());
 
         var makeAttemptLab2Dto = new MakeAttemptDto(REPOSITORY_URL, BRANCH_NAME, laboratory2.id());
-        var attemptDto21 = sessionTestSetup.makeAttempt(makeAttemptLab2Dto, sessionDto21.id());
+        var attemptDto12 = sessionTestSetup.makeAttempt(makeAttemptLab2Dto, sessionDto12.id());
         var attemptDto22 = sessionTestSetup.makeAttempt(makeAttemptLab2Dto, sessionDto22.id());
 
         Attempt attempt11 = attemptRepository.findById(attemptDto11.id()).orElse(null);

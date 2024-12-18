@@ -1,9 +1,6 @@
 package ru.nsu.ostest.adapter.mapper;
 
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
-import org.mapstruct.ReportingPolicy;
+import org.mapstruct.*;
 import ru.nsu.ostest.adapter.in.rest.model.session.AttemptDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.AttemptShortDto;
 import ru.nsu.ostest.adapter.in.rest.model.session.AvailableTaskResponse;
@@ -11,6 +8,9 @@ import ru.nsu.ostest.adapter.in.rest.model.session.MakeAttemptDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.AttemptResultSetRequest;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.Attempt;
 import ru.nsu.ostest.adapter.out.persistence.entity.session.AttemptResults;
+import ru.nsu.ostest.adapter.out.persistence.entity.test.TestLaboratoryLink;
+
+import java.util.List;
 
 @Mapper(
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
@@ -20,9 +20,18 @@ import ru.nsu.ostest.adapter.out.persistence.entity.session.AttemptResults;
 public interface AttemptMapper {
 
     @Mapping(source = "session.laboratory.number", target = "laboratoryNumber")
-    @Mapping(source = "session.laboratory.testsLinks", target = "connectedTests")
+    @Mapping(target = "connectedTests",
+            expression = "java(filterAndMapTests(attempt.getSession().getLaboratory().getTestsLinks()))")
     @Mapping(target = "status", expression = "java(AvailabilityStatus.AVAILABLE)")
     AvailableTaskResponse toAvailableTaskResponse(Attempt attempt);
+
+    @Named("filterTests")
+    default List<String> filterAndMapTests(List<TestLaboratoryLink> testsLinks) {
+        return testsLinks.stream()
+                .filter(TestLaboratoryLink::getIsSwitchedOn)
+                .map(it -> it.getTest().getCode())
+                .toList();
+    }
 
     Attempt makeAttemptDtoToAttempt(MakeAttemptDto makeAttemptDto);
 

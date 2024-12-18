@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.AdminChangePasswordDto;
@@ -71,7 +70,6 @@ public class UserController {
     }
 
     @AdminOnlyAccess
-    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/change-password/{id}")
     public void changePassword(@RequestBody AdminChangePasswordDto changePasswordDto, @PathVariable Long id) {
         userService.changePassword(id, changePasswordDto.newPassword());

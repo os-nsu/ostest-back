@@ -12,6 +12,7 @@ import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequ
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import ru.nsu.ostest.adapter.in.rest.model.filter.SearchRequestDto;
+import ru.nsu.ostest.adapter.in.rest.model.user.password.AdminChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.ChangePasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.password.UserPasswordDto;
 import ru.nsu.ostest.adapter.in.rest.model.user.search.UserResponse;
@@ -122,7 +123,7 @@ public class UserTestSetup {
                 .andExpect(status().isOk());
     }
 
-    public void changeUserPassword(ChangePasswordDto passwordDto, Long id) throws Exception {
+    public void changeUserPassword(AdminChangePasswordDto passwordDto, Long id) throws Exception {
         mockMvc.perform(put(PATH + "/change-password/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(passwordDto)))

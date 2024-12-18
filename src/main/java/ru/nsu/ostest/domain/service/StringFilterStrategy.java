@@ -12,13 +12,17 @@ public class StringFilterStrategy<T> implements FilterStrategy<T> {
     @Override
     public Specification<T> toSpecification(Filter filter) {
         return (root, query, criteriaBuilder) -> {
-            String value = filter.value();
+            String value = filter.value().toLowerCase();
             Path<String> path = (Path<String>) pathResolver.resolve(root, filter.fieldName());
-
-            if (filter.exactSearch()) {
-                return criteriaBuilder.equal(path, value);
+            if ("null".equalsIgnoreCase(value)) {
+                return criteriaBuilder.or(
+                        criteriaBuilder.isNull(path),
+                        criteriaBuilder.equal(criteriaBuilder.trim(path), "")
+                );
+            } else if (filter.exactSearch()) {
+                return criteriaBuilder.equal(criteriaBuilder.lower(path), value);
             } else {
-                return criteriaBuilder.like(path, "%" + value + "%");
+                return criteriaBuilder.like(criteriaBuilder.lower(path), "%" + value + "%");
             }
         };
     }

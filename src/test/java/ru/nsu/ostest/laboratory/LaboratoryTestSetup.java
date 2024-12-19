@@ -126,5 +126,4 @@ public class LaboratoryTestSetup {
                 Resources.toString(Resources.getResource(path), StandardCharsets.UTF_8), LaboratoryDto.class
         );
     }
-
 }

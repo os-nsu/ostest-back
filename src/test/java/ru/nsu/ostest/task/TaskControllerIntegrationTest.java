@@ -1,5 +1,6 @@
 package ru.nsu.ostest.task;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.multipart.MultipartFile;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -34,6 +37,7 @@ import ru.nsu.ostest.adapter.out.persistence.entity.session.Session;
 import ru.nsu.ostest.adapter.out.persistence.entity.user.User;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
 import ru.nsu.ostest.domain.repository.*;
+import ru.nsu.ostest.security.impl.JwtAuthentication;
 import ru.nsu.ostest.session.SessionTestSetup;
 
 import java.io.IOException;
@@ -43,7 +47,6 @@ import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @Testcontainers
@@ -117,6 +120,10 @@ public class TaskControllerIntegrationTest {
     @BeforeEach
     void init() {
         transactionalHelper.runInTransaction(this::initInTransaction);
+
+        String adminAuthority = "ADMIN";
+        Authentication authentication = new JwtAuthentication(true, "password", List.of(adminAuthority));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     void initInTransaction() {
@@ -236,8 +243,8 @@ public class TaskControllerIntegrationTest {
         taskTestSetup.saveResult(request);
         AttemptDto attemptById = sessionTestSetup.getAttemptById(attempt11.getId());
         AttemptResultDto savedAttemptResult = attemptById.attemptResult();
-        assertNotNull(savedAttemptResult);
-        assertNotNull(savedAttemptResult.getTestResults());
+        Assertions.assertNotNull(savedAttemptResult);
+        Assertions.assertNotNull(savedAttemptResult.getTestResults());
         checkAttemptResult(savedAttemptResult, taskTestSetup.getAttemptResultDto("attempt/attempt_results.json"));
     }
 

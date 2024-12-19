@@ -1,6 +1,7 @@
 package ru.nsu.ostest.test;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -8,6 +9,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.jdbc.Sql;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -16,6 +19,9 @@ import ru.nsu.ostest.adapter.in.rest.model.test.TestCreationRequestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestDto;
 import ru.nsu.ostest.adapter.in.rest.model.test.TestEditionRequestDto;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
+import ru.nsu.ostest.security.impl.JwtAuthentication;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,6 +47,12 @@ public class TestControllerIntegrationTest {
     @Autowired
     private TestTestSetup testTestSetup;
 
+    @BeforeEach
+    void init() {
+        String adminAuthority = "ADMIN";
+        Authentication authentication = new JwtAuthentication(true, "password", List.of(adminAuthority));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
 
     @Test
     public void createTest_ShouldReturnCreated_WhenValidRequest() throws Exception {

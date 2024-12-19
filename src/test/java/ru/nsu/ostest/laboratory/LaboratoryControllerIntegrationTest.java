@@ -8,6 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Import;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -22,6 +24,7 @@ import ru.nsu.ostest.adapter.mapper.LaboratoryMapper;
 import ru.nsu.ostest.domain.common.enums.TestCategory;
 import ru.nsu.ostest.domain.repository.LaboratoryRepository;
 import ru.nsu.ostest.domain.repository.TestRepository;
+import ru.nsu.ostest.security.impl.JwtAuthentication;
 import ru.nsu.ostest.test.TestTestSetup;
 
 import java.time.OffsetDateTime;
@@ -70,6 +73,10 @@ public class LaboratoryControllerIntegrationTest {
     void setUp() {
         laboratoryRepository.deleteAll();
         testRepository.deleteAll();
+
+        String adminAuthority = "ADMIN";
+        Authentication authentication = new JwtAuthentication(true, "password", List.of(adminAuthority));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test

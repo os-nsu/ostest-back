@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.laboratory.*;
 import ru.nsu.ostest.domain.service.LaboratoryService;
+import ru.nsu.ostest.security.annotations.AdminOnlyAccess;
 
 import java.util.List;
 
@@ -26,17 +27,20 @@ public class LaboratoryController {
         return laboratoryService.searchLaboratories(request);
     }
 
+    @AdminOnlyAccess
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public LaboratoryDto createLaboratory(@Valid @RequestBody LaboratoryCreationRequestDto request) {
         return laboratoryService.create(request);
     }
 
+    @AdminOnlyAccess
     @PutMapping
     public LaboratoryDto editLaboratory(@RequestBody LaboratoryEditionRequestDto request) {
         return laboratoryService.editLaboratory(request);
     }
 
+    @AdminOnlyAccess
     @DeleteMapping("/{id}")
     public void deleteLaboratory(@PathVariable Long id) {
         laboratoryService.deleteById(id);

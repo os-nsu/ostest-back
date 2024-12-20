@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.nsu.ostest.adapter.in.rest.model.session.*;
 import ru.nsu.ostest.domain.service.AttemptService;
 import ru.nsu.ostest.domain.service.SessionService;
+import ru.nsu.ostest.security.annotations.AdminOrStudentAccess;
 
 import java.util.UUID;
 
@@ -20,6 +21,7 @@ public class SessionController {
     private final SessionService sessionService;
     private final AttemptService attemptService;
 
+    @AdminOrStudentAccess
     @PostMapping("/start")
     @ResponseStatus(HttpStatus.CREATED)
     public SessionDto startSession(@RequestBody StartSessionRequestDto request) {
@@ -42,6 +44,7 @@ public class SessionController {
         return sessionService.getUserSessions(userId, pageable);
     }
 
+    @AdminOrStudentAccess
     @PostMapping("/{sessionId}/attempt")
     @ResponseStatus(HttpStatus.CREATED)
     public AttemptDto makeAttempt(@RequestBody MakeAttemptDto makeAttemptDto, @PathVariable Long sessionId) {

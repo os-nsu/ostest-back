@@ -57,18 +57,28 @@ jobs:
           if [ ! -f env.back_vm ]; then
             echo "env.back_vm not found. Cloning repository to fetch it..."
 
+            if [ -d "ostest-plan" ]; then
+              echo "Directory ostest-plan already exists. Removing it..."
+              rm -rf ostest-plan
+            fi
+
             if ! git clone https://github.com/os-nsu/ostest-plan.git; then
               echo "Failed to clone repository"
               exit 1
             fi
 
+            cd ostest-plan
+            git checkout 14348
+            git pull origin 14348
+            cd ..
+
             mv ostest-plan/env.back_vm .
             rm -rf ostest-plan
 
-            echo "moved env file"
-          else
+            echo "Moved env file"
+            else
             echo "env.back_vm already exists"
-          fi
+            fi
 
           exit
         '
@@ -99,7 +109,7 @@ jobs:
           cd ${{ secrets.BACK_WORK_DIR }}
           git pull
           docker compose down
-          docker compose --env-file env.back_vm up --build -d
+          docker compose --env-file env.back_vm up --build -d --verbose
           
           echo "Waiting for backend to become ready..."
           timeout 300s docker logs --follow ostest-back-backend-1 | tee backend_logs.txt | grep -q ".*Started OsTestApplication.*" || (echo "Backend did not start in time" && cat backend_logs.txt && exit 1)

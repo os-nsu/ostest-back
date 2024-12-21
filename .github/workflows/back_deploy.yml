@@ -102,7 +102,7 @@ jobs:
           docker compose --env-file env.back_vm up --build -d
           
           echo "Waiting for backend to become ready..."
-          timeout 200s docker logs ostest-back-backend-1 | grep -q "Started OsTestApplication" || (echo "Backend did not start in time" && exit 1)
+          timeout 300s docker logs ostest-back-backend-1 | grep -q "Started OsTestApplication" || (echo "Backend did not start in time" && exit 1)
 
           EOF
 

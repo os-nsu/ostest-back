@@ -3,7 +3,7 @@ name: deploy-back
 on:
   push:
     branches:
-      - main
+      - feature/14348/fix-deploy
 
 jobs:
   connect_to_server:

@@ -100,7 +100,9 @@ jobs:
           git pull
           docker-compose down
           docker compose --env-file env.back_vm up --build -d
-           
+          
+          sleep 30
+          
           EOF
 
       - name: See logs

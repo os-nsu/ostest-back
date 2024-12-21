@@ -98,11 +98,11 @@ jobs:
           ssh -p ${{ secrets.SSH_PORT }} -i ~/.ssh/back_rsa ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF | tee deployment_log.txt
           cd ${{ secrets.BACK_WORK_DIR }}
           git pull
-          docker-compose down
+          docker compose down
           docker compose --env-file env.back_vm up --build -d
           
           echo "Waiting for backend to become ready..."
-          timeout 300s docker logs --follow ostest-back-backend-1 | grep -q ".*Started OsTestApplication.*" || (echo "Backend did not start in time" && exit 1)
+          timeout 300s docker logs --follow ostest-back-backend-1 | tee backend_logs.txt | grep -q ".*Started OsTestApplication.*" || (echo "Backend did not start in time" && cat backend_logs.txt && exit 1)
 
           EOF
 
